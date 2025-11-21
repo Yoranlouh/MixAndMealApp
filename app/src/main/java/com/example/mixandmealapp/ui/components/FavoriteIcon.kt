@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -58,4 +59,41 @@ fun AccountScreen(
                                 .padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Text("Welcome, User!", style = MaterialTheme.typography.headlineMedium)
+                            Text("Welcome, User!",
+                                @Composable
+                                fun AccountScreen(
+                                    onLogout: () -> Unit = {},
+                                    onEditProfile: () -> Unit = {},
+                                    onSettingsClick: () -> Unit = {},
+                                    onHomeClick: () -> Unit = {}
+                                    @Composable
+                                        fun AccountScreen(
+                                            onLogout: () -> Unit = {},
+                                            onEditProfile: () -> Unit = {},
+                                            onSettingsClick: () -> Unit = {},
+                                            onHomeClick: () -> Unit = {}
+                                            @Composable
+                                        fun AccountScreen(
+                                            onLogout: () -> Unit = {},
+                                            onEditProfile: () -> Unit = {},
+                                            onSettingsClick: () -> Unit = {},
+                                            onHomeClick: () -> Unit = {}
+                                            @Composable
+                                        fun AccountScreen(
+                                            onLogout: () -> Unit = {},
+                                            onEditProfile: () -> Unit = {},
+                                            onSettingsClick: () -> Unit = {},
+                                            onHomeClick: () -> Unit = {}
+                                            @Composable
+                                        fun AccountScreen(
+                                            onLogout: () -> Unit = {},
+                                            onEditProfile: () -> Unit = {},
+                                            onSettingsClick: () -> Unit = {},
+                                            onHomeClick: () -> Unit = {}
+                                            @Composable
+                                        fun AccountScreen(
+                                            onLogout: () -> Unit = {},
+                                            onEditProfile: () -> Unit = {},
+                                            onSettingsClick: () -> Unit = {},
+                                            onHomeClick: () -> Unit = {}
+                                                    style = MaterialTheme.typography.headlineMedium)
