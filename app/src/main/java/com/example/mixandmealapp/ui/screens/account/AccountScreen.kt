@@ -17,12 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AccountScreen(
-    onLogout: () -> Unit = {},
-    onEditProfile: () -> Unit = {},
-    onSettingsClick: () -> Unit = {},
-    onHomeClick: () -> Unit = {},
+git pu,
 ) {
 
     Scaffold(
