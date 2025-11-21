@@ -32,3 +32,30 @@ fun AccountScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text("Welcome, User!", style = MaterialTheme.typography.headlineMedium)
+            Scaffold(
+                topBar = {
+                    TopAppBar(title = { Text("Account") })
+                }
+            ) { padding ->
+                Column(
+                    modifier = Modifier
+                        .padding(padding)
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text("Welcome, User!", style = MaterialTheme.typography.headlineMedium)
+
+                    Scaffold(
+                        topBar = {
+                            TopAppBar(title = { Text("Account") })
+                        }
+                    ) { padding ->
+                        Column(
+                            modifier = Modifier
+                                .padding(padding)
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text("Welcome, User!", style = MaterialTheme.typography.headlineMedium)
