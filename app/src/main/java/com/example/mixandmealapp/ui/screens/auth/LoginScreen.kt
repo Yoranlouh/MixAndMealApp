@@ -70,7 +70,6 @@ fun LoginScreen(
 
             PrimaryButton(
                 text = "Login",
-                modifier = Modifier,
                 onClick = { onLogin(email, password) },
             )
 
