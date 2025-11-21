@@ -1,0 +1,61 @@
+name: Enforce Branch Rules
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-branch-rules:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      - name: Parse XML rules
+        id: rules
+        run: |
+          TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+          SOURCE_BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          echo "Target: $TARGET_BRANCH"
+          echo "Source: $SOURCE_BRANCH"
+
+          # Extract allowed sources for this target branch
+          ALLOWED=$(xmllint --xpath \
+            "string(//branch[@name='$TARGET_BRANCH']/allowedSources/source/text())" \
+            .github/branch-rules.xml || echo "")
+
+          if [ -z "$ALLOWED" ]; then
+            echo "No rules for target branch: $TARGET_BRANCH"
+            exit 1
+          fi
+
+          echo "Allowed sources: $ALLOWED"
+
+          if [ "$ALLOWED" = "*" ]; then
+            echo "Any branch can merge into $TARGET_BRANCH"
+            exit 0
+          fi
+
+          # Split allowed sources into an array
+          IFS=',' read -r -a allowed_array <<< "$ALLOWED"
+
+          # Check if source is allowed
+          ALLOWED_FLAG=false
+          for A in "${allowed_array[@]}"; do
+            if [ "$A" = "$SOURCE_BRANCH" ]; then
+              ALLOWED_FLAG=true
+            fi
+          done
+
+          if [ "$ALLOWED_FLAG" = false ]; then
+            echo "❌ Merge not allowed!"
+            echo "Branch '$SOURCE_BRANCH' is NOT permitted to merge into '$TARGET_BRANCH'."
+            exit 1
+          fi
+
+          echo "✔ Branch merge allowed."

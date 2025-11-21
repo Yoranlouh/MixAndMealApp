@@ -1,0 +1,20 @@
+<branchRules>
+    <branch name="main">
+        <allowedSources>
+            <source>staging</source>
+        </allowedSources>
+    </branch>
+
+    <branch name="staging">
+        <allowedSources>
+            <source>testing</source>
+            <source>main</source>
+        </allowedSources>
+    </branch>
+
+    <branch name="testing">
+        <allowedSources>
+            <source>*</source> <!-- anyone can merge to testing -->
+        </allowedSources>
+    </branch>
+</branchRules>

@@ -18,7 +18,13 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 
-fun HomeScreen(onSettingsClick: () -> Unit = {}) {
+fun HomeScreen(
+    onSettingsClick: () -> Unit,
+    onAccountClick: () -> Unit,
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit,
+    onFavouritesClick: () -> Unit
+) {
 
     Column(
         modifier = Modifier
@@ -37,6 +43,34 @@ fun HomeScreen(onSettingsClick: () -> Unit = {}) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Go to Settings")
+        }
+
+        Button(
+            onClick = onAccountClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Go to Account")
+        }
+
+        Button(
+            onClick = onLoginClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Login")
+        }
+
+        Button(
+            onClick = onRegisterClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Register")
+        }
+
+        Button(
+            onClick = onFavouritesClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Favourites!")
         }
 
         Spacer(modifier = Modifier.height(16.dp))

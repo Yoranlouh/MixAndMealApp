@@ -5,6 +5,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mixandmealapp.ui.components.Navigation
+import com.example.mixandmealapp.ui.screens.account.AccountScreen
+import com.example.mixandmealapp.ui.screens.auth.LoginScreen
+import com.example.mixandmealapp.ui.screens.auth.RegisterScreen
+import com.example.mixandmealapp.ui.screens.favorites.FavouritesScreen
 import com.example.mixandmealtest.SettingsScreen
 
 
@@ -14,20 +19,37 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = Navigation.HOME
     ) {
-        composable("home") {
+
+        composable(Navigation.HOME) {
             HomeScreen(
-                onSettingsClick = {
-                    navController.navigate("settings")
-                }
-                // Add other navigation actions here as needed
+                onSettingsClick = {navController.navigate(Navigation.SETTINGS)},
+                onAccountClick = {navController.navigate(Navigation.ACCOUNT)},
+                onLoginClick = {navController.navigate(Navigation.LOGIN)},
+                onRegisterClick = {navController.navigate(Navigation.REGISTER)},
+                onFavouritesClick = {navController.navigate(Navigation.FAVOURITES)},
             )
+
         }
 
-        composable("settings") {
+        composable(Navigation.SETTINGS) {
             SettingsScreen()
         }
-        // Add other composable destinations here as needed
+        composable(Navigation.ACCOUNT) {
+            AccountScreen(
+                onHomeClick = {navController.navigate(Navigation.HOME)},
+                onSettingsClick = {navController.navigate(Navigation.SETTINGS)}
+            )
+        }
+        composable(Navigation.LOGIN) {
+            LoginScreen()
+        }
+        composable(Navigation.REGISTER) {
+            RegisterScreen()
+        }
+        composable(Navigation.FAVOURITES) {
+            FavouritesScreen()
+        }
     }
 }
