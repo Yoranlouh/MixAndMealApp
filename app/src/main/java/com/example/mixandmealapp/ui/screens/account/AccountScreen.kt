@@ -15,9 +15,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.mixandmealapp.ui.components.PrimaryButton
 
 @OptIn(ExperimentalMaterial3Api::class)
-git pu,
+@Composable
+fun AccountScreen(
+    onLogout: () -> Unit = {},
+    onEditProfile: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
+    onHomeClick: () -> Unit = {},
 ) {
 
     Scaffold(
@@ -37,6 +43,12 @@ git pu,
             Button(onClick = onEditProfile, modifier = Modifier.fillMaxWidth()) {
                 Text("Edit Profile")
             }
+
+            PrimaryButton(
+                text = "Login",
+                modifier = Modifier,
+                onClick = { }
+            )
 
             Button(
                 onClick = onSettingsClick,

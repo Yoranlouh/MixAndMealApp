@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.ui.screens.auth
 
+import android.R.attr.text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.mixandmealapp.ui.components.PrimaryButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,12 +68,11 @@ fun LoginScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            Button(
+            PrimaryButton(
+                text = "Login",
+                modifier = Modifier,
                 onClick = { onLogin(email, password) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Login")
-            }
+            )
 
             TextButton(
                 onClick = onGoToRegister,
