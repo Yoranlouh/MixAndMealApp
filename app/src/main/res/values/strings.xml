@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">MixAndMealApp</string>
+
+    <string name="my_account" >My Account</string>
+    <string name="my_account_support" >Settings</string>
+
+    <string name="favourites" >Favourites</string>
+    <string name="fav_msg_1">I see you found your taste!</string>
+    <string name="fav_msg_2">Hungry again? Lets go!</string>
+    <string name="fav_msg_3">Your saved meals are right here.</string>
+    <string name="fav_msg_4">Looks like you love good food!</string>
+    <string name="fav_msg_5">Your favourites are waiting!</string>
+    <string name="fav_msg_6">What about a second round?</string>
+
+    <string name="allergies" >My Allergies</string>
+    <string name="allergies_support" >Anything you cannot eat?</string>
+
+    <string name="language_choice" >Choose Language</string>
+    <string name="language_choice_support" >Current language: </string>
+    <string name="p_and_s" >Privacy And Support: </string>
 </resources>
