@@ -1,14 +1,13 @@
 package com.example.mixandmealapp.ui.components
 
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
@@ -43,10 +42,9 @@ fun BottomNavBar(navController: NavHostController, currentDestination: NavDestin
         BottomNavItem("Profile", Icons.Filled.Person, "profile")
     )
 
-    BottomAppBar(
+    NavigationBar(
         containerColor = Color.White,
-        tonalElevation = 8.dp,
-        cutoutShape = CircleShape
+        tonalElevation = 8.dp
     ) {
         items.forEach { item ->
             val isScanItem = item.route == "scan"
