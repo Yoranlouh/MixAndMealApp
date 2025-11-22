@@ -2,10 +2,13 @@ package com.example.mixandmealapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Primary Brand Colors from the new design
+val BrandGreen = Color(0xFF19772F)
+val BrandOrange = Color(0xFFF17D22)
+val BrandYellow = Color(0xFFF7AF10)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Supporting Colors
+val BrandGrey = Color(0xFFC4C4C4)
+val LightBackground = Color(0xFFF8F8F8)
+val DarkText = Color(0xFF333333)
+val OffWhite = Color(0xFFFFFFFF)

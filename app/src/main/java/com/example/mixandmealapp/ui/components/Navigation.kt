@@ -1,10 +1,3 @@
 package com.example.mixandmealapp.ui.components
 
-object Navigation {
-    const val HOME = "HomeScreen"
-    const val SETTINGS = "SettingsScreen"
-    const val ACCOUNT = "AccountScreen"
-    const val LOGIN = "LoginScreen"
-    const val REGISTER = "RegisterScreen"
-    const val FAVOURITES = "FavouritesScreen"
-}
+// This file is intentionally left empty. The Navigation object has been moved to the ui.navigation package.

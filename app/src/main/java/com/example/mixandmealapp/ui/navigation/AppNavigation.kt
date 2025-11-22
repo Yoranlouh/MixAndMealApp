@@ -1,55 +1,100 @@
 package com.example.mixandmealapp.ui.navigation
 
-import HomeScreen
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DocumentScanner
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mixandmealapp.ui.components.Navigation
+import com.example.mixandmealapp.ui.components.BottomNavBar
 import com.example.mixandmealapp.ui.screens.account.AccountScreen
 import com.example.mixandmealapp.ui.screens.auth.LoginScreen
 import com.example.mixandmealapp.ui.screens.auth.RegisterScreen
 import com.example.mixandmealapp.ui.screens.favorites.FavouritesScreen
-import com.example.mixandmealtest.SettingsScreen
+import com.example.mixandmealapp.ui.screens.home.HomeScreen
+import com.example.mixandmealapp.ui.screens.search.SearchResultScreen
+import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
+import com.example.mixandmealapp.ui.theme.BrandGreen
 
+private val noBottomBarRoutes = listOf(
+    Navigation.LOGIN,
+    Navigation.REGISTER,
+    Navigation.SETTINGS,
+    Navigation.SEARCH_RESULT
+)
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = Navigation.HOME
-    ) {
+    // observe huidige route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
-        composable(Navigation.HOME) {
-            HomeScreen(
-                onSettingsClick = {navController.navigate(Navigation.SETTINGS)},
-                onAccountClick = {navController.navigate(Navigation.ACCOUNT)},
-                onLoginClick = {navController.navigate(Navigation.LOGIN)},
-                onRegisterClick = {navController.navigate(Navigation.REGISTER)},
-                onFavouritesClick = {navController.navigate(Navigation.FAVOURITES)},
-            )
+    val showBottomBar = navBackStackEntry?.destination?.route !in noBottomBarRoutes
 
-        }
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                BottomNavBar(navController = navController, currentDestination = currentDestination)
+            }
+        },
+        floatingActionButton = {
+            if (showBottomBar) {
+                FloatingActionButton(
+                    onClick = { navController.navigate("scan") },
+                    shape = CircleShape,
+                    containerColor = BrandGreen,
+                    contentColor = Color.White
+                ) {
+                    Icon(Icons.Filled.DocumentScanner, "Scan a recipe")
+                }
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center
+    ) { paddingValues ->
+        NavHost(
+            navController = navController,
+            startDestination = Navigation.HOME,
+            modifier = Modifier.padding(paddingValues)
+        ) {
 
-        composable(Navigation.SETTINGS) {
-            SettingsScreen()
-        }
-        composable(Navigation.ACCOUNT) {
-            AccountScreen(
-                onHomeClick = {navController.navigate(Navigation.HOME)},
-                onSettingsClick = {navController.navigate(Navigation.SETTINGS)}
-            )
-        }
-        composable(Navigation.LOGIN) {
-            LoginScreen()
-        }
-        composable(Navigation.REGISTER) {
-            RegisterScreen()
-        }
-        composable(Navigation.FAVOURITES) {
-            FavouritesScreen()
+            composable(Navigation.HOME) {
+                HomeScreen(navController = navController)
+            }
+
+            composable(Navigation.SETTINGS) {
+                SettingsScreen()
+            }
+            composable(Navigation.ACCOUNT) {
+                AccountScreen(
+                    onHomeClick = {navController.navigate(Navigation.HOME)},
+                    onSettingsClick = {navController.navigate(Navigation.SETTINGS)}
+                )
+            }
+            composable(Navigation.LOGIN) {
+                LoginScreen(navController = navController)
+            }
+            composable(Navigation.REGISTER) {
+                RegisterScreen(navController = navController)
+            }
+            composable(Navigation.FAVOURITES) {
+                FavouritesScreen()
+            }
+            composable(Navigation.SEARCH_RESULT) {
+                SearchResultScreen()
+            }
+             // TODO: Add composable for "scan", "upload", "search", "profile"
         }
     }
 }

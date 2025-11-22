@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChatHistoryState">
+    <option name="chatSessions" value="{&quot;7969b2fc-b48e-4960-9772-b28cf2d9bf69&quot;:{&quot;id&quot;:&quot;7969b2fc-b48e-4960-9772-b28cf2d9bf69&quot;,&quot;name&quot;:&quot;Converting a Figma Design to Jetpack Compose Code&quot;,&quot;timestamp&quot;:1763768943278,&quot;messages&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;\n\u003cadditional_data\u003e\nBelow are some potentially helpful/relevant pieces of information for figuring out to respond\n\u003cfigma_content\u003e\nFigma URL: https://www.figma.com/design/jZpZX7V3ZlVtz0p0hf4cq8/Mix-and-Meal-App?node-id\u003d1-2\u0026m\u003ddev\u0026t\u003dcOBbGLsWJh6kUMsC-1\nContent:\n❌ Error loading Figma content: HTTP 429 \n\&quot;Get access to Composer at https://firebender.com/pricing.\&quot;\n\n\u003c/figma_content\u003e\n\u003c/additional_data\u003e\n\u003cuser_query\u003e\n@Figma #1-2   \nKun je dit figma design omzetten in compose code?\n\u003c/user_query\u003e&quot;}]},{&quot;role&quot;:&quot;assistant&quot;,&quot;content&quot;:[]}],&quot;draft_message&quot;:&quot;@Figma #1-2   \nKun je dit figma design omzetten in compose code?@Figma #701-871 &quot;}}" />
+  </component>
+</project>

@@ -1,4 +1,4 @@
-package com.example.mixandmealtest
+package com.example.mixandmealapp.ui.screens.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
