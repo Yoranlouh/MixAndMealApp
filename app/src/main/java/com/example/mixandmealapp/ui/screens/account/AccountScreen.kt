@@ -71,7 +71,7 @@ fun AccountScreen(
                 text = "Logout",
                 modifier = Modifier,
                 backgroundColor = Color.Red,
-                onClick = { }
+                onClick = onLoginClick
             )
 
 
