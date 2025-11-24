@@ -34,7 +34,7 @@ private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
     Navigation.REGISTER,
     Navigation.SETTINGS,
-    Navigation.SEARCH_RESULT
+//    Navigation.SEARCH_RESULT
 )
 
 @Composable
@@ -65,7 +65,7 @@ fun AppNavigation() {
             }
 
             composable(Navigation.SETTINGS) {
-                SettingsScreen()
+                SettingsScreen(navController = navController)
             }
             composable(Navigation.ACCOUNT) {
                 AccountScreen(

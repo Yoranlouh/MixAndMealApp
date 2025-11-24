@@ -1,27 +1,49 @@
 package com.example.mixandmealapp.ui.screens.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.mixandmealapp.R
+import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier) {
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
     var notificationsEnabled by remember { mutableStateOf(true) }
 
     androidx.compose.foundation.layout.Column(modifier = modifier.padding(16.dp)) {
 
-        Text(
-            text = "Settings",
-            style = MaterialTheme.typography.headlineSmall
+//TopAppBar is experimental
+        TopAppBar(
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    BackButton(
+                        navController = navController,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+
+                    Text(
+                        text = "Settings",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+            }
         )
 
         Spacer(modifier = Modifier.padding(8.dp))
@@ -139,12 +161,12 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SettingsPreview() {
-    MixAndMealAppTheme {
-        SettingsScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun SettingsPreview() {
+//    MixAndMealAppTheme {
+//        SettingsScreen()
+//    }
+//}
 
 
