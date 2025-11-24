@@ -93,7 +93,7 @@ fun AppNavigation() {
             composable(Navigation.FAVOURITES) {
                 FavouritesScreen()
             }
-            composable(Navigation.SEARCH_RESULT) {
+            composable(Navigation.SEARCH) {
                 SearchResultScreen()
             }
 
