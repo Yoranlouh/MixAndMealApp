@@ -14,7 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.mixandmealapp.ui.components.MixAndMealColours
 import com.example.mixandmealapp.ui.components.PrimaryButton
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,9 +42,17 @@ fun AccountScreen(
         ) {
             Text("Welcome, User!", style = MaterialTheme.typography.headlineMedium)
 
-            Button(onClick = onEditProfile, modifier = Modifier.fillMaxWidth()) {
-                Text("Edit Profile")
-            }
+            PrimaryButton(
+                text = "Home",
+                modifier = Modifier,
+                onClick = onHomeClick
+            )
+
+            PrimaryButton(
+                text = "Edit Profile",
+                modifier = Modifier,
+                onClick = { }
+            )
 
             PrimaryButton(
                 text = "Login",
@@ -50,27 +60,20 @@ fun AccountScreen(
                 onClick = { }
             )
 
-            Button(
-                onClick = onSettingsClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Go to Settings")
-            }
+            PrimaryButton(
+                text = "Settings",
+                modifier = Modifier,
+                onClick = onSettingsClick
+            )
 
-            Button(
-                onClick = onLogout,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
-            ) {
-                Text("Logout")
-            }
+            PrimaryButton(
+                text = "Logout",
+                modifier = Modifier,
+                backgroundColor = Color.Red,
+                onClick = { }
+            )
 
-            Button(
-                onClick = onHomeClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Home")
-            }
+
         }
     }
 }

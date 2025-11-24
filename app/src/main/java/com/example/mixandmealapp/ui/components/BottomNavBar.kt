@@ -38,8 +38,8 @@ fun BottomNavBar(navController: NavHostController, currentDestination: NavDestin
         BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
         BottomNavItem("Upload", Icons.Filled.Edit, "upload"),
         BottomNavItem("Scan", Icons.Filled.DocumentScanner, "scan"),
-        BottomNavItem("Search", Icons.Filled.Search, "search"),
-        BottomNavItem("Profile", Icons.Filled.Person, "profile")
+        BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
+        BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
     )
 
     NavigationBar(

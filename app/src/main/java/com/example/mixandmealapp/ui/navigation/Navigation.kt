@@ -7,5 +7,5 @@ object Navigation {
     const val LOGIN = "LoginScreen"
     const val REGISTER = "RegisterScreen"
     const val FAVOURITES = "FavouritesScreen"
-    const val SEARCH_RESULT = "SearchResultScreen"
+    const val SEARCH = "SearchResultScreen"
 }
