@@ -1,4 +1,4 @@
-package com.example.mixandmealapp.ui.screens.search
+package com.example.mixandmealapp.ui.screens.scan
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,9 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun SearchScreen() {
+fun ScanScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Search", style = MaterialTheme.typography.headlineSmall)
+        Text("Scan", style = MaterialTheme.typography.headlineSmall)
     }
 }
-

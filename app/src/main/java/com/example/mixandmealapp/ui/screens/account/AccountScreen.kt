@@ -24,6 +24,7 @@ fun AccountScreen(
     onEditProfile: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onHomeClick: () -> Unit = {},
+    onLoginClick: () -> Unit = {},
 ) {
 
     Scaffold(
@@ -47,7 +48,7 @@ fun AccountScreen(
             PrimaryButton(
                 text = "Login",
                 modifier = Modifier,
-                onClick = { }
+                onClick = onLoginClick
             )
 
             Button(

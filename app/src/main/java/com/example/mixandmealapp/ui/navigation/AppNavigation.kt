@@ -24,6 +24,10 @@ import com.example.mixandmealapp.ui.screens.favorites.FavouritesScreen
 import com.example.mixandmealapp.ui.screens.home.HomeScreen
 import com.example.mixandmealapp.ui.screens.search.SearchResultScreen
 import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
+import com.example.mixandmealapp.ui.screens.search.SearchScreen
+import com.example.mixandmealapp.ui.screens.upload.UploadScreen
+import com.example.mixandmealapp.ui.screens.scan.ScanScreen
+import com.example.mixandmealapp.ui.navigation.Routes
 import com.example.mixandmealapp.ui.theme.BrandGreen
 
 private val noBottomBarRoutes = listOf(
@@ -48,20 +52,7 @@ fun AppNavigation() {
             if (showBottomBar) {
                 BottomNavBar(navController = navController, currentDestination = currentDestination)
             }
-        },
-        floatingActionButton = {
-            if (showBottomBar) {
-                FloatingActionButton(
-                    onClick = { navController.navigate("scan") },
-                    shape = CircleShape,
-                    containerColor = BrandGreen,
-                    contentColor = Color.White
-                ) {
-                    Icon(Icons.Filled.DocumentScanner, "Scan a recipe")
-                }
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Center
+        }
     ) { paddingValues ->
         NavHost(
             navController = navController,
@@ -78,8 +69,19 @@ fun AppNavigation() {
             }
             composable(Navigation.ACCOUNT) {
                 AccountScreen(
-                    onHomeClick = {navController.navigate(Navigation.HOME)},
-                    onSettingsClick = {navController.navigate(Navigation.SETTINGS)}
+                    onLoginClick = {
+                        navController.navigate(Navigation.LOGIN) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onLogout = {
+                        navController.navigate(Navigation.LOGIN) {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onSettingsClick = { navController.navigate(Navigation.SETTINGS) },
+                    onHomeClick = { navController.navigate(Navigation.HOME) }
                 )
             }
             composable(Navigation.LOGIN) {
@@ -94,7 +96,38 @@ fun AppNavigation() {
             composable(Navigation.SEARCH_RESULT) {
                 SearchResultScreen()
             }
-             // TODO: Add composable for "scan", "upload", "search", "profile"
+
+            // Bottom bar bestemmingen
+            composable(Routes.UPLOAD) { UploadScreen() }
+            composable(Routes.SCAN) { ScanScreen() }
+            composable(Routes.SEARCH) { SearchScreen() }
+            composable(Routes.PROFILE) {
+                AccountScreen(
+                    onLoginClick = {
+                        navController.navigate(Navigation.LOGIN) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onLogout = {
+                        navController.navigate(Navigation.LOGIN) {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onSettingsClick = {
+                        navController.navigate(Navigation.SETTINGS) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onHomeClick = {
+                        navController.navigate(Navigation.HOME) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+            }
         }
     }
 }
