@@ -22,7 +22,6 @@ import com.example.mixandmealapp.ui.screens.auth.LoginScreen
 import com.example.mixandmealapp.ui.screens.auth.RegisterScreen
 import com.example.mixandmealapp.ui.screens.favorites.FavouritesScreen
 import com.example.mixandmealapp.ui.screens.home.HomeScreen
-import com.example.mixandmealapp.ui.screens.search.SearchResultScreen
 import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
 import com.example.mixandmealapp.ui.theme.BrandGreen
 
@@ -79,7 +78,8 @@ fun AppNavigation() {
             composable(Navigation.ACCOUNT) {
                 AccountScreen(
                     onHomeClick = {navController.navigate(Navigation.HOME)},
-                    onSettingsClick = {navController.navigate(Navigation.SETTINGS)}
+                    onSettingsClick = {navController.navigate(Navigation.SETTINGS)},
+                    navController = navController
                 )
             }
             composable(Navigation.LOGIN) {
