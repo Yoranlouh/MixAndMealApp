@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -48,6 +49,26 @@ fun PrimaryButton(
             text = text,
             fontSize = MixAndMealColours.buttonFontSize
         )
+    }
+}
+
+@Composable
+fun TextOnlyButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.primary
+) {
+    androidx.compose.material3.Button(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = color
+        ),
+        elevation = ButtonDefaults.buttonElevation(0.dp)
+    ) {
+        Text(text)
     }
 }
 

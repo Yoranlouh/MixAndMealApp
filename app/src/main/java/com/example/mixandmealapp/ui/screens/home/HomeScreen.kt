@@ -184,17 +184,21 @@ fun PopularRecipeCard(recipe: String) {
         modifier = Modifier.size(160.dp, 240.dp)
     ) {
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.SpaceBetween // Use arrangement to push items apart
         ) {
-            Box(
-                modifier = Modifier
-                    .height(120.dp)
-                    .fillMaxWidth()
-                    .background(Color.Gray)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = recipe, style = MaterialTheme.typography.titleMedium, maxLines = 2)
-            Spacer(modifier = Modifier.weight(1f))
+            Column {
+                Box(
+                    modifier = Modifier
+                        .height(120.dp)
+                        .fillMaxWidth()
+                        .background(Color.Gray)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = recipe, style = MaterialTheme.typography.titleMedium, maxLines = 2)
+            }
             Text("120 Kcal | 20 Min", style = MaterialTheme.typography.bodySmall)
         }
     }
@@ -205,29 +209,6 @@ fun PopularRecipeCard(recipe: String) {
 @Composable
 fun HomeScreenPreview() {
     MixAndMealAppTheme {
-        val navController = rememberNavController()
-        Scaffold(
-            bottomBar = {
-                BottomNavBar(
-                    navController = navController,
-                    currentDestination = navController.currentDestination
-                )
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { /* Does nothing in preview */ },
-                    shape = CircleShape,
-                    containerColor = BrandGreen,
-                    contentColor = Color.White
-                ) {
-                    Icon(Icons.Filled.DocumentScanner, "Scan a recipe")
-                }
-            },
-            floatingActionButtonPosition = FabPosition.Center
-        ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                HomeScreen(navController = navController)
-            }
-        }
+        com.example.mixandmealapp.ui.navigation.AppNavigation()
     }
 }

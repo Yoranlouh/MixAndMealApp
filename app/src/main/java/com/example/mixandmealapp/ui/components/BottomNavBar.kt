@@ -1,5 +1,12 @@
 package com.example.mixandmealapp.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Edit
@@ -12,6 +19,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,49 +46,69 @@ fun BottomNavBar(navController: NavHostController, currentDestination: NavDestin
 
     val items = listOf(
         BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
-        BottomNavItem("Upload", Icons.Filled.Edit, "upload"),
-        BottomNavItem("Scan", Icons.Filled.DocumentScanner, "scan"),
+        BottomNavItem("Upload", Icons.Filled.Edit, Navigation.UPLOAD),
+        BottomNavItem("Scan", Icons.Filled.DocumentScanner, Navigation.SCAN),
         BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
         BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
     )
 
     NavigationBar(
+        modifier = Modifier.height(120.dp), // hoogte zodat de Scan-knop netjes binnen de bar valt
         containerColor = Color.White,
         tonalElevation = 8.dp
     ) {
         items.forEach { item ->
             val isScanItem = item.route == "scan"
             val selected =
-                currentDestination?.hierarchy?.any { it.route == item.route } == true && !isScanItem
+                currentDestination?.hierarchy?.any { it.route == item.route } == true
 
             NavigationBarItem(
                 selected = selected,
-                enabled = !isScanItem, // The Scan item is not clickable here
+                enabled = true,
+                alwaysShowLabel = true,
                 onClick = {
                     navController.navigate(item.route) {
                         launchSingleTop = true
                         restoreState = true
-                        popUpTo(Navigation.HOME) { saveState = true }
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
                     }
                 },
                 icon = {
-                     // The icon for the scan item is handled by the FAB
-                    if (!isScanItem) {
+                    if (isScanItem) {
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 8.dp) // minder ruimte nodig
+                                .size(64.dp) // groot en prominent, maar passend
+                                .offset(y = (-8).dp) // licht omhoog, blijft binnen de bar
+                                .shadow(elevation = 8.dp, shape = CircleShape)
+                                .background(color = BrandGreen, shape = CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.DocumentScanner,
+                                contentDescription = item.title,
+                                tint = Color.White
+                            )
+                        }
+                    } else {
                         Icon(
                             imageVector = item.icon,
                             contentDescription = item.title
                         )
                     }
                 },
-                label = { Text(item.title) },
+                label = {
+                    if (isScanItem) {
+                        Text(item.title, modifier = Modifier.offset(y = (-2).dp)) // label iets dichter naar het icoon
+                    } else {
+                        Text(item.title)
+                    }
+                },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = BrandGreen,
                     selectedTextColor = BrandGreen,
                     unselectedIconColor = BrandGrey,
                     unselectedTextColor = BrandGrey,
-                    // Style the disabled "Scan" item to only show its label
-                    disabledTextColor = BrandGrey,
-                    disabledIconColor = Color.Transparent,
                     indicatorColor = Color.Transparent
                 )
             )
@@ -90,9 +120,14 @@ fun BottomNavBar(navController: NavHostController, currentDestination: NavDestin
 @Composable
 fun BottomNavBarPreview() {
     MixAndMealAppTheme {
+        val navController = rememberNavController()
+        // Preview with "Home" selected to show the active state correctly
+        val navDestination = NavDestination(Navigation.HOME).apply {
+            this.route = Navigation.HOME
+        }
         BottomNavBar(
-            navController = rememberNavController(),
-            currentDestination = null
+            navController = navController,
+            currentDestination = navDestination
         )
     }
 }

@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -26,6 +29,7 @@ fun AccountScreen(
     onEditProfile: () -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onHomeClick: () -> Unit = {},
+    onLoginClick: () -> Unit = {},
     navController: NavHostController,
 ) {
 
@@ -77,7 +81,7 @@ fun AccountScreen(
             PrimaryButton(
                 text = "Login",
                 modifier = Modifier,
-                onClick = { }
+                onClick = onLoginClick
             )
 
             PrimaryButton(
@@ -90,7 +94,7 @@ fun AccountScreen(
                 text = "Logout",
                 modifier = Modifier,
                 backgroundColor = Color.Red,
-                onClick = { }
+                onClick = onLoginClick
             )
 
 

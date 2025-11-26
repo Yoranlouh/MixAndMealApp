@@ -1,6 +1,7 @@
 package com.example.mixandmealapp.ui.screens.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -25,7 +26,7 @@ fun SettingsScreen(
 ) {
     var notificationsEnabled by remember { mutableStateOf(true) }
 
-    androidx.compose.foundation.layout.Column(modifier = modifier.padding(16.dp)) {
+    Column(modifier = modifier) {
 
 //TopAppBar is experimental
         TopAppBar(

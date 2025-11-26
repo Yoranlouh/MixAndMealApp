@@ -2,6 +2,7 @@ package com.example.mixandmealapp.ui.screens.favorites
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,18 +15,39 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.mixandmealapp.ui.components.BackButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavouritesScreen(
     favourites: List<String> = listOf("Item 1", "Item 2"),
-    onItemClick: (String) -> Unit = {}
+    onItemClick: (String) -> Unit = {},
+    navController: NavHostController
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Favourites") })
+//TopAppBar is experimental
+            TopAppBar(
+                title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        BackButton(
+                            navController = navController,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+
+                        Text(
+                            text = "Favourites",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
+                }
+            )
         }
     ) { padding ->
         LazyColumn(

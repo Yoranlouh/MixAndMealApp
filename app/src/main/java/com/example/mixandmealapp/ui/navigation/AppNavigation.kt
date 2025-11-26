@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -22,7 +23,13 @@ import com.example.mixandmealapp.ui.screens.auth.LoginScreen
 import com.example.mixandmealapp.ui.screens.auth.RegisterScreen
 import com.example.mixandmealapp.ui.screens.favorites.FavouritesScreen
 import com.example.mixandmealapp.ui.screens.home.HomeScreen
+import com.example.mixandmealapp.ui.screens.search.SearchResultScreen
 import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
+import com.example.mixandmealapp.ui.screens.search.SearchScreen
+import com.example.mixandmealapp.ui.screens.upload.UploadScreen
+import com.example.mixandmealapp.ui.screens.scan.ScanScreen
+import com.example.mixandmealapp.ui.navigation.Routes
+import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
 import com.example.mixandmealapp.ui.theme.BrandGreen
 
 private val noBottomBarRoutes = listOf(
@@ -64,23 +71,17 @@ fun AppNavigation() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Navigation.HOME,
+            startDestination = Navigation.SPLASHHOME,
             modifier = Modifier.padding(paddingValues)
         ) {
-
+            composable(Navigation.SPLASHHOME) {
+                LoginSplashScreen(navController = navController)
+            }
             composable(Navigation.HOME) {
                 HomeScreen(navController = navController)
             }
-
             composable(Navigation.SETTINGS) {
                 SettingsScreen(navController = navController)
-            }
-            composable(Navigation.ACCOUNT) {
-                AccountScreen(
-                    onHomeClick = {navController.navigate(Navigation.HOME)},
-                    onSettingsClick = {navController.navigate(Navigation.SETTINGS)},
-                    navController = navController
-                )
             }
             composable(Navigation.LOGIN) {
                 LoginScreen(navController = navController)
@@ -89,12 +90,45 @@ fun AppNavigation() {
                 RegisterScreen(navController = navController)
             }
             composable(Navigation.FAVOURITES) {
-                FavouritesScreen()
+                FavouritesScreen(navController = navController)
             }
-//            composable(Navigation.SEARCH_RESULT) {
-//                SearchResultScreen()
-//            }
-             // TODO: Add composable for "scan", "upload", "search", "profile"
+            composable(Navigation.SEARCH) {
+                SearchResultScreen()
+            }
+
+            // Bottom bar bestemmingen
+            composable(Navigation.UPLOAD) { UploadScreen() }
+            composable(Navigation.SCAN) { ScanScreen() }
+            composable(Navigation.SEARCH) { SearchScreen() }
+            composable(Navigation.ACCOUNT) {
+                AccountScreen(
+                    onLoginClick = {
+                        navController.navigate(Navigation.LOGIN) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onLogout = {
+                        navController.navigate(Navigation.LOGIN) {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onSettingsClick = {
+                        navController.navigate(Navigation.SETTINGS) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onHomeClick = {
+                        navController.navigate(Navigation.HOME) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onEditProfile = {navController.navigate(Navigation.EDIT_PROFILE)},
+                    navController = navController
+                )
+            }
         }
     }
 }

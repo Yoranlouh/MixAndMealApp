@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
