@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -28,7 +27,6 @@ import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
 import com.example.mixandmealapp.ui.screens.search.SearchScreen
 import com.example.mixandmealapp.ui.screens.upload.UploadScreen
 import com.example.mixandmealapp.ui.screens.scan.ScanScreen
-import com.example.mixandmealapp.ui.navigation.Routes
 import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
 import com.example.mixandmealapp.ui.theme.BrandGreen
 
@@ -97,9 +95,9 @@ fun AppNavigation() {
             }
 
             // Bottom bar bestemmingen
-            composable(Navigation.UPLOAD) { UploadScreen() }
+            composable(Navigation.UPLOAD) { UploadScreen(navController = navController) }
             composable(Navigation.SCAN) { ScanScreen() }
-            composable(Navigation.SEARCH) { SearchScreen() }
+            composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
             composable(Navigation.ACCOUNT) {
                 AccountScreen(
                     onLoginClick = {
