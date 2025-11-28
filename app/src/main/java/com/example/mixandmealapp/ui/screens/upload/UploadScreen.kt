@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,52 +24,67 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mixandmealapp.ui.theme.BrandGreen
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
+import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
 data class Ingredient(
     val name: String,
-    var quantity: String = "",
-    var unit: String = ""
+    var amount: String = "",
+    var isConfirmed: Boolean = false
 )
 
 @Composable
 fun UploadScreen(navController: NavHostController) {
     var recipeName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var selectedDifficulty by remember { mutableStateOf("Easy") }
-    var cookingDuration by remember { mutableFloatStateOf(30f) }
+    var selectedDifficulty by remember { mutableStateOf("") }
+    // Discrete cooking time options (in minutes) for slider steps
+    // index 0 represents "<10"; show labels only for first, middle (30), and last
+    val durationOptions = listOf(9, 15, 30, 45, 60)
+    var cookingDurationIndex by remember { mutableIntStateOf(2) } // default 30 min
     val ingredients = remember { mutableStateListOf<Ingredient>() }
     var newIngredientName by remember { mutableStateOf("") }
     
     // Kitchen Style states
     var selectedKitchenStyles by remember { mutableStateOf(setOf<String>()) }
-    
+
     // Meal Type states
     var selectedMealTypes by remember { mutableStateOf(setOf<String>()) }
-    
+
     // Allergens states
     var selectedAllergens by remember { mutableStateOf(setOf<String>()) }
-    
+
     // Diet states
     var selectedDiets by remember { mutableStateOf(setOf<String>()) }
+
+    // Expand/collapse states for filter sections
+    var kitchenExpanded by remember { mutableStateOf(true) }
+    var mealTypeExpanded by remember { mutableStateOf(true) }
+    var allergensExpanded by remember { mutableStateOf(true) }
+    var dietExpanded by remember { mutableStateOf(true) }
+
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = Modifier
@@ -156,21 +170,26 @@ fun UploadScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
         
         // Cooking Duration
-        Text(
-            text = "Cooking Duration",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = DarkText
-        )
-        Text(
-            text = "(in minutes)",
-            style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Cooking Duration",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = DarkText
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            val durationText = if (cookingDurationIndex == 0) "(<10 minutes)" else "(${durationOptions[cookingDurationIndex]} minutes)"
+            Text(
+                text = durationText,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
         Spacer(modifier = Modifier.height(12.dp))
         CookingDurationSlider(
-            duration = cookingDuration,
-            onDurationChange = { cookingDuration = it }
+            index = cookingDurationIndex,
+            onIndexChange = { cookingDurationIndex = it },
+            options = durationOptions
         )
         
         Spacer(modifier = Modifier.height(24.dp))
@@ -186,18 +205,34 @@ fun UploadScreen(navController: NavHostController) {
         
         // Ingredient List
         ingredients.forEach { ingredient ->
-            IngredientItem(
+            SimpleIngredientItem(
                 ingredient = ingredient,
-                onQuantityChange = { newQuantity -> 
+                onNameChange = { newName -> 
                     val index = ingredients.indexOf(ingredient)
                     if (index != -1) {
-                        ingredients[index] = ingredient.copy(quantity = newQuantity)
+                        ingredients[index] = ingredient.copy(name = newName)
                     }
                 },
-                onUnitChange = { newUnit -> 
+                onAmountChange = { newAmount -> 
                     val index = ingredients.indexOf(ingredient)
                     if (index != -1) {
-                        ingredients[index] = ingredient.copy(unit = newUnit)
+                        ingredients[index] = ingredient.copy(amount = newAmount)
+                    }
+                },
+                onConfirm = {
+                    // Bevestig alleen als er een hoeveelheid is ingevuld
+                    val idx = ingredients.indexOf(ingredient)
+                    if (idx != -1 && ingredients[idx].amount.isNotBlank()) {
+                        ingredients[idx] = ingredient.copy(isConfirmed = true)
+                        // Verwijder focus zodat de cursor verdwijnt en het veld niet actief blijft
+                        focusManager.clearFocus(force = true)
+                    }
+                },
+                onUnlock = {
+                    // Maak deze rij opnieuw bewerkbaar
+                    val idx = ingredients.indexOf(ingredient)
+                    if (idx != -1) {
+                        ingredients[idx] = ingredient.copy(isConfirmed = false)
                     }
                 },
                 onRemove = { ingredients.remove(ingredient) }
@@ -205,7 +240,7 @@ fun UploadScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(12.dp))
         }
         
-        // Add new ingredient field
+        // Typen van ingrediëntnaam -> daarna via "+ toevoegen" om te bevestigen
         OutlinedTextField(
             value = newIngredientName,
             onValueChange = { newIngredientName = it },
@@ -213,31 +248,61 @@ fun UploadScreen(navController: NavHostController) {
             placeholder = { Text("Enter ingredient") },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = BrandGrey,
-                focusedBorderColor = BrandOrange
+                focusedBorderColor = BrandOrange,
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
             ),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(24.dp),
+            singleLine = true
         )
         
         Spacer(modifier = Modifier.height(12.dp))
         
-        // Add Ingredient Button
-        OutlinedButton(
-            onClick = {
-                if (newIngredientName.isNotBlank()) {
-                    ingredients.add(Ingredient(newIngredientName))
+        // Duidelijke optie om het getypte ingrediënt toe te voegen als label + amount
+        if (newIngredientName.isNotBlank()) {
+            OutlinedButton(
+                onClick = {
+                    ingredients.add(Ingredient(name = newIngredientName.trim(), amount = "", isConfirmed = false))
                     newIngredientName = ""
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = BrandOrange
-            ),
-            shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, BrandOrange)
-        ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add")
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Ingredient")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = DarkText
+                ),
+                shape = RoundedCornerShape(24.dp),
+                border = BorderStroke(1.dp, BrandGrey)
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Add", tint = DarkText)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Add ingredient")
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+        
+        // Add Ingredient Button (toon alleen als er geen leeg veld bestaat én er geen naam getypt is)
+        val hasEmptyRow = ingredients.any { it.name.isBlank() && it.amount.isBlank() }
+        if (!hasEmptyRow && newIngredientName.isBlank()) {
+            OutlinedButton(
+                onClick = {
+                    // Voeg een leeg ingrediëntveld toe
+                    ingredients.add(Ingredient(name = "", amount = "", isConfirmed = false))
+                    newIngredientName = ""
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = DarkText
+                ),
+                shape = RoundedCornerShape(24.dp),
+                border = BorderStroke(1.dp, BrandGrey)
+            ) {
+                Icon(
+                    Icons.Filled.Add, 
+                    contentDescription = "Add",
+                    tint = DarkText
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("New ingrediënt")
+            }
         }
         
         Spacer(modifier = Modifier.height(24.dp))
@@ -251,12 +316,11 @@ fun UploadScreen(navController: NavHostController) {
                 "Mexican", "Spanish", "Thai", "Turkish", "Vietnamese"
             ),
             selectedOptions = selectedKitchenStyles,
+            expanded = kitchenExpanded,
+            onHeaderToggle = { kitchenExpanded = !kitchenExpanded },
             onOptionToggle = { option ->
-                selectedKitchenStyles = if (selectedKitchenStyles.contains(option)) {
-                    selectedKitchenStyles - option
-                } else {
-                    selectedKitchenStyles + option
-                }
+                // single-select gedrag
+                selectedKitchenStyles = if (selectedKitchenStyles.contains(option)) emptySet() else setOf(option)
             }
         )
         
@@ -267,12 +331,11 @@ fun UploadScreen(navController: NavHostController) {
             title = "Meal Type",
             options = listOf("Breakfast", "Lunch", "Dinner", "Dessert"),
             selectedOptions = selectedMealTypes,
+            expanded = mealTypeExpanded,
+            onHeaderToggle = { mealTypeExpanded = !mealTypeExpanded },
             onOptionToggle = { option ->
-                selectedMealTypes = if (selectedMealTypes.contains(option)) {
-                    selectedMealTypes - option
-                } else {
-                    selectedMealTypes + option
-                }
+                // single-select gedrag
+                selectedMealTypes = if (selectedMealTypes.contains(option)) emptySet() else setOf(option)
             }
         )
         
@@ -287,6 +350,8 @@ fun UploadScreen(navController: NavHostController) {
                 "Sulphites", "Molluscs"
             ),
             selectedOptions = selectedAllergens,
+            expanded = allergensExpanded,
+            onHeaderToggle = { allergensExpanded = !allergensExpanded },
             onOptionToggle = { option ->
                 selectedAllergens = if (selectedAllergens.contains(option)) {
                     selectedAllergens - option
@@ -307,12 +372,11 @@ fun UploadScreen(navController: NavHostController) {
                 "Kosher", "Paleo", "Flexitarian", "Raw food", "Keto"
             ),
             selectedOptions = selectedDiets,
+            expanded = dietExpanded,
+            onHeaderToggle = { dietExpanded = !dietExpanded },
             onOptionToggle = { option ->
-                selectedDiets = if (selectedDiets.contains(option)) {
-                    selectedDiets - option
-                } else {
-                    selectedDiets + option
-                }
+                // single-select gedrag
+                selectedDiets = if (selectedDiets.contains(option)) emptySet() else setOf(option)
             }
         )
         
@@ -405,173 +469,208 @@ fun DifficultySelector(
     onDifficultySelected: (String) -> Unit
 ) {
     val difficulties = listOf("Easy", "Medium", "Hard")
-    
+
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         difficulties.forEach { difficulty ->
             val isSelected = difficulty == selectedDifficulty
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp)
-                    .border(
-                        width = 2.dp,
-                        color = if (isSelected) BrandGreen else BrandGrey,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(if (isSelected) Color.White else Color.Transparent)
-                    .clickable { onDifficultySelected(difficulty) },
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    if (isSelected) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = null,
-                            tint = BrandGreen,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                    }
-                    Text(
-                        text = difficulty,
-                        color = if (isSelected) BrandGreen else DarkText,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                    )
-                }
+            val selectedColor = when (difficulty) {
+                "Easy" -> BrandGreen
+                "Medium" -> BrandYellow
+                else -> BrandOrange
             }
+            FilterChip(
+                selected = isSelected,
+                onClick = {
+                    if (isSelected) onDifficultySelected("") else onDifficultySelected(difficulty)
+                },
+                label = { Text(difficulty) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = selectedColor,
+                    selectedLabelColor = Color.White,
+                    containerColor = Color.White,
+                    labelColor = DarkText
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = isSelected,
+                    borderColor = BrandGrey,
+                    selectedBorderColor = selectedColor,
+                    borderWidth = 1.dp,
+                    selectedBorderWidth = 1.dp
+                )
+            )
         }
     }
 }
 
 @Composable
 fun CookingDurationSlider(
-    duration: Float,
-    onDurationChange: (Float) -> Unit
+    index: Int,
+    onIndexChange: (Int) -> Unit,
+    options: List<Int>
 ) {
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("<10", color = BrandOrange, fontWeight = FontWeight.Bold)
-            Text("30", color = BrandOrange, fontWeight = FontWeight.Bold)
-            Text(">60", color = BrandOrange, fontWeight = FontWeight.Bold)
+    val min = 0f
+    val max = (options.size - 1).toFloat()
+
+    // Only show labels at <10, 30, and 60
+    val labelRow = List(options.size) { i ->
+        when (i) {
+            0 -> "<10 min"
+            options.indexOf(30) -> "30 min"
+            options.lastIndex -> "60 min"
+            else -> ""
         }
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
+    }
+
+    Column {
+        // Labels row aligned with slider positions
+        Row(modifier = Modifier.fillMaxWidth()) {
+            labelRow.forEach { label ->
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    if (label.isNotEmpty()) {
+                        Text(label, color = BrandOrange, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        // Slider zonder extra tick marks; oranje track en groene thumb
         Slider(
-            value = duration,
-            onValueChange = onDurationChange,
-            valueRange = 10f..60f,
+            value = index.toFloat(),
+            onValueChange = { raw ->
+                val snapped = raw.coerceIn(min, max).toInt()
+                onIndexChange(snapped)
+            },
+            valueRange = min..max,
+            steps = (options.size - 2).coerceAtLeast(0),
             colors = SliderDefaults.colors(
-                thumbColor = BrandOrange,
+                thumbColor = BrandGreen,
                 activeTrackColor = BrandOrange,
-                inactiveTrackColor = BrandGrey
+                inactiveTrackColor = BrandOrange.copy(alpha = 0.25f)
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
         )
     }
 }
 
 @Composable
-fun IngredientItem(
+fun SimpleIngredientItem(
     ingredient: Ingredient,
-    onQuantityChange: (String) -> Unit,
-    onUnitChange: (String) -> Unit,
+    onNameChange: (String) -> Unit,
+    onAmountChange: (String) -> Unit,
+    onConfirm: () -> Unit,
+    onUnlock: () -> Unit,
     onRemove: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = ingredient.name,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f)
-        )
+        // Name: toon label (chip) als er een naam is, anders inputveld
+        if (ingredient.name.isNotBlank()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(BrandOrange)
+                    .clickable { onUnlock() }
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(text = ingredient.name, color = Color.White)
+            }
+        } else {
+            OutlinedTextField(
+                value = ingredient.name,
+                onValueChange = onNameChange,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp),
+                textStyle = MaterialTheme.typography.bodyMedium,
+                placeholder = { Text("Onion", color = Color.Gray) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = BrandGrey,
+                    focusedBorderColor = BrandOrange,
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White
+                ),
+                shape = RoundedCornerShape(24.dp),
+                singleLine = true
+            )
+        }
         
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Quantity input with +/- buttons
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (ingredient.unit.isNotEmpty()) {
-                    Text(
-                        text = ingredient.unit,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(end = 4.dp)
-                    )
-                }
-                
-                IconButton(
-                    onClick = {
-                        val currentQty = ingredient.quantity.toIntOrNull() ?: 0
-                        if (currentQty > 0) {
-                            onQuantityChange((currentQty - 1).toString())
+        // Amount Input
+        Box(modifier = Modifier.weight(0.7f)) {
+            OutlinedTextField(
+                value = ingredient.amount,
+                onValueChange = onAmountChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                textStyle = MaterialTheme.typography.bodyMedium,
+                placeholder = { Text("Amount", color = Color.Gray) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = BrandGrey,
+                    focusedBorderColor = BrandOrange,
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White,
+                    disabledBorderColor = BrandOrange,
+                    disabledContainerColor = BrandOrange,
+                    disabledTextColor = Color.White,
+                    disabledPlaceholderColor = Color.White.copy(alpha = 0.7f)
+                ),
+                shape = RoundedCornerShape(24.dp),
+                singleLine = true,
+                enabled = !ingredient.isConfirmed,
+                trailingIcon = {
+                    if (!ingredient.isConfirmed && ingredient.amount.isNotBlank()) {
+                        IconButton(
+                            onClick = onConfirm,
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = "Confirm",
+                                tint = BrandOrange,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
-                    },
+                    }
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onConfirm() })
+            )
+
+            // Wanneer bevestigd (disabled), laat het hele veld klikbaar om te ontgrendelen
+            if (ingredient.isConfirmed) {
+                Box(
                     modifier = Modifier
-                        .size(32.dp)
-                        .border(1.dp, BrandOrange, CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Remove,
-                        contentDescription = "Decrease",
-                        tint = BrandOrange,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-                
-                Text(
-                    text = ingredient.quantity.ifEmpty { "0" },
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.widthIn(min = 24.dp),
-                    textAlign = TextAlign.Center
-                )
-                
-                IconButton(
-                    onClick = {
-                        val currentQty = ingredient.quantity.toIntOrNull() ?: 0
-                        onQuantityChange((currentQty + 1).toString())
-                    },
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(BrandOrange, CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Increase",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
-            }
-            
-            // Remove button
-            IconButton(
-                onClick = onRemove,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "Remove",
-                    tint = Color.Gray
+                        .matchParentSize()
+                        .clip(RoundedCornerShape(24.dp))
+                        .clickable { onUnlock() }
                 )
             }
+        }
+        
+        // Remove Button
+        IconButton(
+            onClick = onRemove,
+            modifier = Modifier.size(40.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = "Remove",
+                tint = Color.Gray
+            )
         }
     }
 }
@@ -582,11 +681,16 @@ fun FilterSection(
     title: String,
     options: List<String>,
     selectedOptions: Set<String>,
+    expanded: Boolean = true,
+    onHeaderToggle: () -> Unit = {},
     onOptionToggle: (String) -> Unit
 ) {
     Column {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onHeaderToggle() }
         ) {
             Text(
                 text = title,
@@ -596,55 +700,61 @@ fun FilterSection(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "▼",
-                color = BrandOrange,
+                text = if (expanded) "▼" else "▶",
+                color = BrandYellow,
                 fontSize = 12.sp
             )
         }
-        
-        Spacer(modifier = Modifier.height(12.dp))
-        
-        // Create rows with chips
-        val rows = options.chunked(3)
-        rows.forEach { row ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                row.forEach { option ->
-                    val isSelected = selectedOptions.contains(option)
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = { onOptionToggle(option) },
-                        label = { Text(option) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = BrandOrange,
-                            selectedLabelColor = Color.White,
-                            containerColor = Color.White,
-                            labelColor = DarkText
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            enabled = true,
+
+        if (expanded) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Create rows with chips
+            val rows = options.chunked(3)
+            rows.forEach { row ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    row.forEach { option ->
+                        val isSelected = selectedOptions.contains(option)
+                        FilterChip(
                             selected = isSelected,
-                            borderColor = BrandGrey,
-                            selectedBorderColor = BrandOrange,
-                            borderWidth = 1.dp,
-                            selectedBorderWidth = 1.dp
-                        ),
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
+                            onClick = { onOptionToggle(option) },
+                            label = { Text(option) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = BrandOrange,
+                                selectedLabelColor = Color.White,
+                                containerColor = Color.White,
+                                labelColor = DarkText
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = isSelected,
+                                borderColor = BrandGrey,
+                                selectedBorderColor = BrandOrange,
+                                borderWidth = 1.dp,
+                                selectedBorderWidth = 1.dp
+                            )
+                        )
+                    }
                 }
-                // Add empty space for remaining slots in row
-                repeat(3 - row.size) {
-                    Spacer(modifier = Modifier.weight(1f, fill = false))
-                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
 
-@Preview(showBackground = true, heightDp = 2000)
+// ==================== PREVIEWS ====================
+
+@Preview(
+    name = "Upload – Full Screen Scroll Preview",
+    showBackground = true,
+    device = Devices.PIXEL_5,
+    showSystemUi = false,
+    widthDp = 411,   // Pixel 5 width in dp
+    heightDp = 2000  // Large height so the Preview panel becomes scrollable
+)
 @Composable
 fun UploadScreenPreview() {
     MixAndMealAppTheme {
