@@ -47,10 +47,12 @@ import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
+import androidx.compose.ui.text.input.KeyboardType
 
 data class Ingredient(
     val name: String,
-    var amount: String = "",
+    var amount: Double? = null,
+    var unitType: String = "",
     var isConfirmed: Boolean = false
 )
 
@@ -216,13 +218,20 @@ fun UploadScreen(navController: NavHostController) {
                 onAmountChange = { newAmount -> 
                     val index = ingredients.indexOf(ingredient)
                     if (index != -1) {
-                        ingredients[index] = ingredient.copy(amount = newAmount)
+                        val parsed = newAmount.replace(",", ".").toDoubleOrNull()
+                        ingredients[index] = ingredient.copy(amount = parsed)
+                    }
+                },
+                onUnitTypeChange = { newUnit ->
+                    val index = ingredients.indexOf(ingredient)
+                    if (index != -1) {
+                        ingredients[index] = ingredient.copy(unitType = newUnit)
                     }
                 },
                 onConfirm = {
                     // Bevestig alleen als er een hoeveelheid is ingevuld
                     val idx = ingredients.indexOf(ingredient)
-                    if (idx != -1 && ingredients[idx].amount.isNotBlank()) {
+                    if (idx != -1 && ingredients[idx].amount != null) {
                         ingredients[idx] = ingredient.copy(isConfirmed = true)
                         // Verwijder focus zodat de cursor verdwijnt en het veld niet actief blijft
                         focusManager.clearFocus(force = true)
@@ -262,7 +271,7 @@ fun UploadScreen(navController: NavHostController) {
         if (newIngredientName.isNotBlank()) {
             OutlinedButton(
                 onClick = {
-                    ingredients.add(Ingredient(name = newIngredientName.trim(), amount = "", isConfirmed = false))
+                    ingredients.add(Ingredient(name = newIngredientName.trim(), amount = null, unitType = "", isConfirmed = false))
                     newIngredientName = ""
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -280,12 +289,12 @@ fun UploadScreen(navController: NavHostController) {
         }
         
         // Add Ingredient Button (toon alleen als er geen leeg veld bestaat én er geen naam getypt is)
-        val hasEmptyRow = ingredients.any { it.name.isBlank() && it.amount.isBlank() }
+        val hasEmptyRow = ingredients.any { it.name.isBlank() && it.amount == null && it.unitType.isBlank() }
         if (!hasEmptyRow && newIngredientName.isBlank()) {
             OutlinedButton(
                 onClick = {
                     // Voeg een leeg ingrediëntveld toe
-                    ingredients.add(Ingredient(name = "", amount = "", isConfirmed = false))
+                    ingredients.add(Ingredient(name = "", amount = null, unitType = "", isConfirmed = false))
                     newIngredientName = ""
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -565,6 +574,7 @@ fun SimpleIngredientItem(
     ingredient: Ingredient,
     onNameChange: (String) -> Unit,
     onAmountChange: (String) -> Unit,
+    onUnitTypeChange: (String) -> Unit,
     onConfirm: () -> Unit,
     onUnlock: () -> Unit,
     onRemove: () -> Unit
@@ -608,21 +618,25 @@ fun SimpleIngredientItem(
             )
         }
         
-        // Amount Input
-        Box(modifier = Modifier.weight(0.7f)) {
+        // Amount Input (Double) + Unit Type (String)
+        val amountText = ingredient.amount?.toString() ?: ""
+        Box(modifier = Modifier.weight(0.5f)) {
             OutlinedTextField(
-                value = ingredient.amount,
+                value = amountText,
                 onValueChange = onAmountChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text("Amount", color = Color.Gray) },
+                placeholder = { Text("Qty", color = DarkText.copy(alpha = 0.6f)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = BrandGrey,
                     focusedBorderColor = BrandOrange,
                     unfocusedContainerColor = Color.White,
                     focusedContainerColor = Color.White,
+                    unfocusedTextColor = DarkText,
+                    focusedTextColor = DarkText,
+                    cursorColor = BrandOrange,
                     disabledBorderColor = BrandOrange,
                     disabledContainerColor = BrandOrange,
                     disabledTextColor = Color.White,
@@ -631,26 +645,50 @@ fun SimpleIngredientItem(
                 shape = RoundedCornerShape(24.dp),
                 singleLine = true,
                 enabled = !ingredient.isConfirmed,
-                trailingIcon = {
-                    if (!ingredient.isConfirmed && ingredient.amount.isNotBlank()) {
-                        IconButton(
-                            onClick = onConfirm,
-                            modifier = Modifier.size(28.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = "Confirm",
-                                tint = BrandOrange,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
+            )
+
+            // Wanneer bevestigd (disabled), laat het hele veld klikbaar om te ontgrendelen
+            if (ingredient.isConfirmed) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(RoundedCornerShape(24.dp))
+                        .clickable { onUnlock() }
+                )
+            }
+        }
+
+        // Unit type input
+        Box(modifier = Modifier.weight(0.5f)) {
+            OutlinedTextField(
+                value = ingredient.unitType,
+                onValueChange = onUnitTypeChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                textStyle = MaterialTheme.typography.bodyMedium,
+                placeholder = { Text("Unit", color = DarkText.copy(alpha = 0.6f)) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = BrandGrey,
+                    focusedBorderColor = BrandOrange,
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White,
+                    unfocusedTextColor = DarkText,
+                    focusedTextColor = DarkText,
+                    cursorColor = BrandOrange,
+                    disabledBorderColor = BrandOrange,
+                    disabledContainerColor = BrandOrange,
+                    disabledTextColor = Color.White,
+                    disabledPlaceholderColor = Color.White.copy(alpha = 0.7f)
+                ),
+                shape = RoundedCornerShape(24.dp),
+                singleLine = true,
+                enabled = !ingredient.isConfirmed,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onConfirm() })
             )
 
-            // Wanneer bevestigd (disabled), laat het hele veld klikbaar om te ontgrendelen
             if (ingredient.isConfirmed) {
                 Box(
                     modifier = Modifier
@@ -744,8 +782,6 @@ fun FilterSection(
         }
     }
 }
-
-// ==================== PREVIEWS ====================
 
 @Preview(
     name = "Upload – Full Screen Scroll Preview",
