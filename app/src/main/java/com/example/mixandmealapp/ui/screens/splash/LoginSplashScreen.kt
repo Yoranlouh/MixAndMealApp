@@ -41,18 +41,15 @@ fun LoginSplashScreen(
             TopAppBar(
                 title = { },
                 actions = {
-                    TextButton(
+                    TextOnlyButton(
+                        text = "Later",
+                        color = BrandOrange,
                         onClick = onGoToHome,
-                    ) {
-                        Text(
-                            text = "Later",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = BrandOrange,
-                            modifier = Modifier.padding(end = 16.dp)
-                        )
-                    }
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
                 }
             )
+
         }
     ) { padding ->
         Column(

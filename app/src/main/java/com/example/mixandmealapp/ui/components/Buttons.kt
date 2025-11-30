@@ -60,7 +60,8 @@ fun TextOnlyButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary
+    color: Color = MaterialTheme.colorScheme.primary,
+    fontSize: androidx.compose.ui.unit.TextUnit = MaterialTheme.typography.bodyLarge.fontSize
 ) {
     androidx.compose.material3.Button(
         onClick = onClick,
@@ -71,9 +72,15 @@ fun TextOnlyButton(
         ),
         elevation = ButtonDefaults.buttonElevation(0.dp)
     ) {
-        Text(text)
+        Text(
+            text = text,
+            color = color,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = fontSize
+        )
     }
 }
+
 
 
 @Composable

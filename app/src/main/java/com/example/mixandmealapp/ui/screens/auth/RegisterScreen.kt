@@ -39,23 +39,18 @@ fun RegisterScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    // Track errors per field
+    var usernameError by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
-//TopAppBar is experimental
             TopAppBar(
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        BackButton(
-                            navController = navController,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-
-                        Text(
-                            text = "Register",
-                            style = MaterialTheme.typography.headlineSmall
-                        )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        BackButton(navController = navController, modifier = Modifier.padding(end = 8.dp))
+                        Text(text = "Register", style = MaterialTheme.typography.headlineSmall)
                     }
                 }
             )
@@ -68,40 +63,78 @@ fun RegisterScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
+
+            // Username field
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it },
+                onValueChange = {
+                    username = it
+                    usernameError = "" // Clear error while typing
+                },
                 label = { Text("Username") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = usernameError.isNotEmpty()
             )
+            if (usernameError.isNotEmpty()) {
+                Text(usernameError, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
 
             Spacer(Modifier.height(12.dp))
 
+            // Email field
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    emailError = ""
+                },
                 label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = emailError.isNotEmpty()
             )
+            if (emailError.isNotEmpty()) {
+                Text(emailError, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
 
             Spacer(Modifier.height(12.dp))
 
+            // Password field
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    passwordError = ""
+                },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = passwordError.isNotEmpty()
             )
+            if (passwordError.isNotEmpty()) {
+                Text(passwordError, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
 
             Spacer(Modifier.height(24.dp))
 
+            // Submit button
             Button(
-                onClick = { onRegister(username, email, password) },
+                onClick = {
+                    // Reset errors
+                    usernameError = if (username.isBlank()) "Username cannot be empty" else ""
+                    emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) "Invalid email" else ""
+                    passwordError = if (password.length < 6) "Password must be at least 6 characters" else ""
+
+                    // Only submit if all fields are valid
+                    if (usernameError.isEmpty() && emailError.isEmpty() && passwordError.isEmpty()) {
+                        onRegister(username, email, password)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Create Account")
             }
+
+            Spacer(Modifier.height(12.dp))
 
             TextButton(
                 onClick = onGoToLogin,
