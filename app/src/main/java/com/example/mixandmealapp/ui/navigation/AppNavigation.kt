@@ -52,20 +52,7 @@ fun AppNavigation() {
             if (showBottomBar) {
                 BottomNavBar(navController = navController, currentDestination = currentDestination)
             }
-        },
-        floatingActionButton = {
-            if (showBottomBar) {
-                FloatingActionButton(
-                    onClick = { navController.navigate("scan") },
-                    shape = CircleShape,
-                    containerColor = BrandGreen,
-                    contentColor = Color.White
-                ) {
-                    Icon(Icons.Filled.DocumentScanner, "Scan a recipe")
-                }
-            }
-        },
-        floatingActionButtonPosition = FabPosition.Center
+        }
     ) { paddingValues ->
         NavHost(
             navController = navController,
@@ -73,7 +60,18 @@ fun AppNavigation() {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(Navigation.SPLASHHOME) {
-                LoginSplashScreen(navController = navController)
+                LoginSplashScreen(
+                    navController = navController,
+                    onGoToLogin = {
+                        navController.navigate(Navigation.LOGIN)
+                    },
+                    onGoToRegister = {
+                            navController.navigate(Navigation.REGISTER)
+                    },
+                    onGoToHome = {
+                        navController.navigate(Navigation.HOME)
+                    }
+                )
             }
             composable(Navigation.HOME) {
                 HomeScreen(navController = navController)
@@ -85,7 +83,12 @@ fun AppNavigation() {
                 LoginScreen(navController = navController)
             }
             composable(Navigation.REGISTER) {
-                RegisterScreen(navController = navController)
+                RegisterScreen(
+                    navController = navController,
+                    onGoToLogin = {
+                        navController.navigate(Navigation.LOGIN)
+                    }
+                )
             }
             composable(Navigation.FAVOURITES) {
                 FavouritesScreen(navController = navController)
@@ -100,7 +103,7 @@ fun AppNavigation() {
             composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
             composable(Navigation.ACCOUNT) {
                 AccountScreen(
-                    onLoginClick = {
+                    onGoToLogin = {
                         navController.navigate(Navigation.LOGIN) {
                             launchSingleTop = true
                         }
@@ -111,12 +114,12 @@ fun AppNavigation() {
                             launchSingleTop = true
                         }
                     },
-                    onSettingsClick = {
+                    onGoToSettings = {
                         navController.navigate(Navigation.SETTINGS) {
                             launchSingleTop = true
                         }
                     },
-                    onHomeClick = {
+                    onGoToHome = {
                         navController.navigate(Navigation.HOME) {
                             popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
@@ -125,6 +128,16 @@ fun AppNavigation() {
                     },
                     onEditProfile = {navController.navigate(Navigation.EDIT_PROFILE)},
                     navController = navController
+                )
+            }
+
+            // Andere bestemmingen
+            composable(Navigation.LOGIN) {
+                LoginScreen(
+                    navController = navController,
+                    onGoToRegister = {
+                        navController.navigate(Navigation.REGISTER)
+                    }
                 )
             }
         }

@@ -2,6 +2,7 @@ package com.example.mixandmealapp.ui.screens.splash
 
 import com.example.mixandmealapp.R
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,11 +25,15 @@ import androidx.navigation.NavHostController
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.TextOnlyButton
+import com.example.mixandmealapp.ui.theme.BrandOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginSplashScreen(
     navController: NavHostController,
+    onGoToRegister: () -> Unit = {},
+    onGoToLogin: () -> Unit = {},
+    onGoToHome: () -> Unit = {}
 ) {
 
     Scaffold(
@@ -35,10 +41,16 @@ fun LoginSplashScreen(
             TopAppBar(
                 title = { },
                 actions = {
-                    Text(
-                        text = "Later",
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
+                    TextButton(
+                        onClick = onGoToHome,
+                    ) {
+                        Text(
+                            text = "Later",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = BrandOrange,
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
                 }
             )
         }
@@ -68,12 +80,12 @@ fun LoginSplashScreen(
             ) {
                 PrimaryButton(
                     text = "Login",
-                    onClick = { }
+                    onClick = onGoToLogin
                 )
 
                 TextOnlyButton(
                     text = "Don't have an account yet? Register here!",
-                    onClick = { }
+                    onClick = onGoToRegister
                 )
             }
         }

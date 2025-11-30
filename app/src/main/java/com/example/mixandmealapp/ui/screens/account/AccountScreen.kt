@@ -28,9 +28,9 @@ import com.example.mixandmealapp.ui.components.TextLabel
 fun AccountScreen(
     onLogout: () -> Unit = {},
     onEditProfile: () -> Unit = {},
-    onSettingsClick: () -> Unit = {},
-    onHomeClick: () -> Unit = {},
-    onLoginClick: () -> Unit = {},
+    onGoToSettings: () -> Unit = {},
+    onGoToHome: () -> Unit = {},
+    onGoToLogin: () -> Unit = {},
     navController: NavHostController,
 ) {
 
@@ -53,7 +53,7 @@ fun AccountScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onSettingsClick) {
+                    IconButton(onClick = onGoToSettings) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings"
@@ -75,7 +75,7 @@ fun AccountScreen(
             PrimaryButton(
                 text = "Login/Sign up",
                 modifier = Modifier,
-                onClick = onLoginClick
+                onClick = onGoToLogin
             )
 
             TextLabel(

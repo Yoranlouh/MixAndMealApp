@@ -26,7 +26,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mixandmealapp.ui.components.BackButton
+import com.example.mixandmealapp.ui.components.InputTextField
 import com.example.mixandmealapp.ui.components.PrimaryButton
+import com.example.mixandmealapp.ui.navigation.Navigation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,21 +69,19 @@ fun LoginScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
-            OutlinedTextField(
+            InputTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
+                label = "Email"
             )
 
             Spacer(Modifier.height(12.dp))
 
-            OutlinedTextField(
+            InputTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                label = "Password",
+                isPassword = true
             )
 
             Spacer(Modifier.height(24.dp))

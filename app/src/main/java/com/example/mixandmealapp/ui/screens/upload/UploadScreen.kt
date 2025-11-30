@@ -48,6 +48,7 @@ import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.mixandmealapp.ui.components.BackButton
 
 data class Ingredient(
     val name: String,
@@ -95,13 +96,11 @@ fun UploadScreen(navController: NavHostController) {
             .padding(16.dp)
     ) {
         // Cancel button
-        Text(
-            text = "Cancel",
-            style = MaterialTheme.typography.bodyLarge,
-            color = BrandOrange,
-            modifier = Modifier.clickable { /* TODO: Handle cancel */ }
+        BackButton(
+            navController = navController,
+            modifier = Modifier
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
         
         // Add Cover Photo Section
