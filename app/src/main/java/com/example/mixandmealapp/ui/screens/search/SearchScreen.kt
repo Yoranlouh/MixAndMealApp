@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.mixandmealapp.ui.components.BottomNavBar
+import com.example.mixandmealapp.ui.components.truncate
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.DarkText
@@ -152,10 +153,11 @@ fun CategoryFilterSection(selectedCategory: String, onCategorySelected: (String)
 @Composable
 fun PopularRecipesSection() {
     val recipes = listOf(
-        "Egg & Avo...",
-        "Bowl of r...",
-        "Chicken S..."
+        "Egg & Avocado".truncate(10),
+        "Bowl of rice".truncate(10),
+        "Chicken Soup".truncate(10)
     )
+
 
     Column {
         Row(
