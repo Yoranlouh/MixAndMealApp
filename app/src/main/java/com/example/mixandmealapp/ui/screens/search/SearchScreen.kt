@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -23,6 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.mixandmealapp.ui.components.BottomNavBar
 import com.example.mixandmealapp.ui.components.truncate
+import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.DarkText
@@ -30,17 +32,12 @@ import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
 @Composable
 fun SearchScreen(navController: NavHostController) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(navController = navController, currentDestination = currentDestination)
-        }
-    ) { paddingValues ->
+    Scaffold { paddingValues ->
         SearchContent(
             modifier = Modifier.padding(paddingValues),
-            onBackClick = { navController.navigateUp() }
+            onBackClick = { navController.navigateUp() },
+            onPopularViewAll = { navController.navigate(Navigation.POPULAR_RECIPES) },
+            onEditorsViewAll = { navController.navigate(Navigation.EDITORS_CHOICE) }
         )
     }
 }
@@ -48,7 +45,9 @@ fun SearchScreen(navController: NavHostController) {
 @Composable
 fun SearchContent(
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onPopularViewAll: () -> Unit = {},
+    onEditorsViewAll: () -> Unit = {}
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Breakfast") }
@@ -89,12 +88,12 @@ fun SearchContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Popular Recipes Section
-        PopularRecipesSection()
+        PopularRecipesSection(onViewAll = onPopularViewAll)
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Editor's Choice Section
-        EditorsChoiceSection()
+        EditorsChoiceSection(onViewAll = onEditorsViewAll)
     }
 }
 
@@ -151,7 +150,7 @@ fun CategoryFilterSection(selectedCategory: String, onCategorySelected: (String)
 }
 
 @Composable
-fun PopularRecipesSection() {
+fun PopularRecipesSection(onViewAll: () -> Unit = {}) {
     val recipes = listOf(
         "Egg & Avocado".truncate(10),
         "Bowl of rice".truncate(10),
@@ -173,7 +172,8 @@ fun PopularRecipesSection() {
             Text(
                 text = "View All",
                 style = MaterialTheme.typography.bodyMedium,
-                color = BrandOrange
+                color = BrandOrange,
+                modifier = Modifier.clickable { onViewAll() }
             )
         }
 
@@ -219,7 +219,7 @@ fun PopularRecipeCard(recipeName: String) {
 }
 
 @Composable
-fun EditorsChoiceSection() {
+fun EditorsChoiceSection(onViewAll: () -> Unit = {}) {
     val recipes = listOf(
         EditorRecipe("Easy homemade beef burger", "James Spader"),
         EditorRecipe("Blueberry with egg for breakfast", "Alice Fala")
@@ -239,7 +239,8 @@ fun EditorsChoiceSection() {
             Text(
                 text = "View All",
                 style = MaterialTheme.typography.bodyMedium,
-                color = BrandOrange
+                color = BrandOrange,
+                modifier = Modifier.clickable { onViewAll() }
             )
         }
 

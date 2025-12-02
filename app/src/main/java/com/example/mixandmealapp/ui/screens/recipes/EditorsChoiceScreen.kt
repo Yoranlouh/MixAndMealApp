@@ -1,8 +1,7 @@
-package com.example.mixandmealapp.ui.screens.favorites
+package com.example.mixandmealapp.ui.screens.recipes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,19 +29,18 @@ import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.FavoriteIcon
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
+data class EditorsChoiceItem(val title: String, val author: String)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavouritesScreen(
-    favourites: List<String> = listOf(
-        "Sunny Egg & Toast Avocado",
-        "Bowl of noodle with beef",
-        "Easy homemade beef burger",
-        "Half boiled egg sandwich",
-        "Veggie pasta primavera",
-        "Spicy chicken tacos"
-    ),
-    onItemClick: (String) -> Unit = {},
-    navController: NavHostController
+fun EditorsChoiceScreen(
+    navController: NavHostController,
+    items: List<EditorsChoiceItem> = listOf(
+        EditorsChoiceItem("Easy homemade beef burger", "James Spader"),
+        EditorsChoiceItem("Blueberry with egg for breakfast", "Alice Fala"),
+        EditorsChoiceItem("Creamy tomato pasta", "John Doe"),
+        EditorsChoiceItem("Healthy quinoa salad", "Jane Roe")
+    )
 ) {
     Scaffold(
         topBar = {
@@ -54,7 +52,7 @@ fun FavouritesScreen(
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         Text(
-                            text = "Favourites",
+                            text = "Editor's Choice",
                             style = MaterialTheme.typography.headlineSmall
                         )
                     }
@@ -69,21 +67,16 @@ fun FavouritesScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Render items as a two-column grid using rows of two
-            val rows = favourites.chunked(2)
+            val rows = items.chunked(2)
             items(count = rows.size) { rowIndex ->
                 val row = rows[rowIndex]
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    FavoriteRecipeCardItem(title = row[0], modifier = Modifier.weight(1f)) {
-                        onItemClick(row[0])
-                    }
+                    EditorsChoiceCardItem(item = row[0], modifier = Modifier.weight(1f))
                     if (row.size > 1) {
-                        FavoriteRecipeCardItem(title = row[1], modifier = Modifier.weight(1f)) {
-                            onItemClick(row[1])
-                        }
+                        EditorsChoiceCardItem(item = row[1], modifier = Modifier.weight(1f))
                     } else {
                         Box(modifier = Modifier.weight(1f)) {}
                     }
@@ -94,16 +87,17 @@ fun FavouritesScreen(
 }
 
 @Composable
-private fun FavoriteRecipeCardItem(title: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+private fun EditorsChoiceCardItem(item: EditorsChoiceItem, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier.height(180.dp),
         shape = MaterialTheme.shapes.large,
         color = Color.White,
-        shadowElevation = 4.dp,
-        onClick = onClick
+        shadowElevation = 4.dp
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Box(
+        androidx.compose.foundation.layout.Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            androidx.compose.foundation.layout.Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -113,7 +107,7 @@ private fun FavoriteRecipeCardItem(title: String, modifier: Modifier = Modifier,
                     color = Color(0xFFF5F5F5)
                 ) {}
 
-                val fav = remember { mutableStateOf(true) }
+                val fav = remember { mutableStateOf(false) }
                 Row(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -123,14 +117,14 @@ private fun FavoriteRecipeCardItem(title: String, modifier: Modifier = Modifier,
                 }
             }
 
-            Box(
+            androidx.compose.foundation.layout.Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
                     .padding(horizontal = 12.dp, vertical = 12.dp)
             ) {
                 Text(
-                    text = title,
+                    text = item.title,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF0A2533),
@@ -143,8 +137,9 @@ private fun FavoriteRecipeCardItem(title: String, modifier: Modifier = Modifier,
 
 @Preview(showBackground = true)
 @Composable
-fun FavouritesScreenPreview() {
+private fun EditorsChoiceScreenPreview() {
     MixAndMealAppTheme {
-        FavouritesScreen(navController = rememberNavController())
+        EditorsChoiceScreen(navController = rememberNavController())
     }
 }
+

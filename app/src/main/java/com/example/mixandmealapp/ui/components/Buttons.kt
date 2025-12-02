@@ -1,27 +1,39 @@
 package com.example.mixandmealapp.ui.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mixandmealapp.ui.theme.BrandOrange
 
 object MixAndMealColours {
     val backgroundButton = Color(0xFF16752D)
@@ -116,6 +128,74 @@ fun CogwheelButton(onClick: () -> Unit) {
                 contentDescription = "Settings"
             )
         }
+    }
+}
+
+// Fridge label component with an orange trash button on the right.
+@Composable
+fun LabelFridge(
+    label: String,
+    modifier: Modifier = Modifier,
+    autoHideOnRemove: Boolean = true,
+    onRemove: (() -> Unit)? = null
+) {
+    var visible by remember { mutableStateOf(true) }
+    if (!visible) return
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth(),
+        color = Color.White,
+        shape = RoundedCornerShape(16.dp),
+        shadowElevation = 8.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = label,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF0A2533)
+            )
+
+            IconButton(
+                onClick = {
+                    onRemove?.invoke()
+                    if (autoHideOnRemove) visible = false
+                },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = "Remove",
+                    tint = BrandOrange
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun OpenFridgeButton(
+    text: String = "Open fridge",
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = BrandOrange,
+            contentColor = Color.White
+        )
+    ) {
+        Text(text = text, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
     }
 }
 

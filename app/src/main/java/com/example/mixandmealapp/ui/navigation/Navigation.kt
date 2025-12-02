@@ -12,4 +12,7 @@ object Navigation {
     const val UPLOAD = "Upload_Screen"
     const val SCAN = "Scanning_Screen"
     const val EDIT_PROFILE = "Edit_Profile_Screen"
+    const val FRIDGE = "Fridge_Screen"
+    const val POPULAR_RECIPES = "Popular_Recipes_Screen"
+    const val EDITORS_CHOICE = "Editors_Choice_Screen"
 }

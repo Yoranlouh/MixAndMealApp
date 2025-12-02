@@ -27,8 +27,11 @@ import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
 import com.example.mixandmealapp.ui.screens.search.SearchScreen
 import com.example.mixandmealapp.ui.screens.upload.UploadScreen
 import com.example.mixandmealapp.ui.screens.scan.ScanScreen
+import com.example.mixandmealapp.ui.screens.fridge.FridgeScreen
 import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
 import com.example.mixandmealapp.ui.theme.BrandGreen
+import com.example.mixandmealapp.ui.screens.recipes.PopularRecipeScreen
+import com.example.mixandmealapp.ui.screens.recipes.EditorsChoiceScreen
 
 private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
@@ -101,6 +104,9 @@ fun AppNavigation() {
             composable(Navigation.UPLOAD) { UploadScreen(navController = navController) }
             composable(Navigation.SCAN) { ScanScreen() }
             composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
+            composable(Navigation.FRIDGE) { FridgeScreen(navController = navController) }
+            composable(Navigation.POPULAR_RECIPES) { PopularRecipeScreen(navController = navController) }
+            composable(Navigation.EDITORS_CHOICE) { EditorsChoiceScreen(navController = navController) }
             composable(Navigation.ACCOUNT) {
                 AccountScreen(
                     onGoToLogin = {
@@ -119,13 +125,13 @@ fun AppNavigation() {
                             launchSingleTop = true
                         }
                     },
-                    onGoToHome = {
-                        navController.navigate(Navigation.HOME) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
+//                    onGoToHome = {
+//                        navController.navigate(Navigation.HOME) {
+//                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+//                            launchSingleTop = true
+//                            restoreState = true
+//                        }
+//                    },
                     onEditProfile = {navController.navigate(Navigation.EDIT_PROFILE)},
                     navController = navController
                 )

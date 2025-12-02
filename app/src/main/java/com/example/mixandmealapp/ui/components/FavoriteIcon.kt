@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mixandmealapp.ui.theme.BrandOrange
 
 @Composable
 fun FavoriteIcon(
@@ -27,7 +28,8 @@ fun FavoriteIcon(
     Icon(
         imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
         contentDescription = "Favorite",
-        tint = if (isFavorite) Color.Red else Color.Gray,
+        // Use Brand Orange when active as per design
+        tint = if (isFavorite) BrandOrange else Color.Gray,
         modifier = Modifier
             .size((28.dp * sizeAnim))
             .clickable { onToggle() }
