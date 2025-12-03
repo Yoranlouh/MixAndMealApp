@@ -37,7 +37,8 @@ fun SearchScreen(navController: NavHostController) {
             modifier = Modifier.padding(paddingValues),
             onBackClick = { navController.navigateUp() },
             onPopularViewAll = { navController.navigate(Navigation.POPULAR_RECIPES) },
-            onEditorsViewAll = { navController.navigate(Navigation.EDITORS_CHOICE) }
+            onEditorsViewAll = { navController.navigate(Navigation.EDITORS_CHOICE) },
+            onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) }
         )
     }
 }
@@ -47,7 +48,8 @@ fun SearchContent(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onPopularViewAll: () -> Unit = {},
-    onEditorsViewAll: () -> Unit = {}
+    onEditorsViewAll: () -> Unit = {},
+    onRecipeClick: () -> Unit = {}
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Breakfast") }
@@ -88,12 +90,12 @@ fun SearchContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Popular Recipes Section
-        PopularRecipesSection(onViewAll = onPopularViewAll)
+        PopularRecipesSection(onViewAll = onPopularViewAll, onRecipeClick = onRecipeClick)
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Editor's Choice Section
-        EditorsChoiceSection(onViewAll = onEditorsViewAll)
+        EditorsChoiceSection(onViewAll = onEditorsViewAll, onRecipeClick = onRecipeClick)
     }
 }
 
@@ -150,7 +152,7 @@ fun CategoryFilterSection(selectedCategory: String, onCategorySelected: (String)
 }
 
 @Composable
-fun PopularRecipesSection(onViewAll: () -> Unit = {}) {
+fun PopularRecipesSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit = {}) {
     val recipes = listOf(
         "Egg & Avocado".truncate(10),
         "Bowl of rice".truncate(10),
@@ -183,16 +185,18 @@ fun PopularRecipesSection(onViewAll: () -> Unit = {}) {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(recipes) { recipe ->
-                PopularRecipeCard(recipe)
+                PopularRecipeCard(recipe, onClick = onRecipeClick)
             }
         }
     }
 }
 
 @Composable
-fun PopularRecipeCard(recipeName: String) {
+fun PopularRecipeCard(recipeName: String, onClick: () -> Unit = {}) {
     Card(
-        modifier = Modifier.size(120.dp),
+        modifier = Modifier
+            .size(120.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
@@ -219,7 +223,7 @@ fun PopularRecipeCard(recipeName: String) {
 }
 
 @Composable
-fun EditorsChoiceSection(onViewAll: () -> Unit = {}) {
+fun EditorsChoiceSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit = {}) {
     val recipes = listOf(
         EditorRecipe("Easy homemade beef burger", "James Spader"),
         EditorRecipe("Blueberry with egg for breakfast", "Alice Fala")
@@ -247,7 +251,7 @@ fun EditorsChoiceSection(onViewAll: () -> Unit = {}) {
         Spacer(modifier = Modifier.height(16.dp))
 
         recipes.forEach { recipe ->
-            EditorChoiceCard(recipe)
+            EditorChoiceCard(recipe = recipe, onClick = onRecipeClick)
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
@@ -256,9 +260,11 @@ fun EditorsChoiceSection(onViewAll: () -> Unit = {}) {
 data class EditorRecipe(val title: String, val author: String)
 
 @Composable
-fun EditorChoiceCard(recipe: EditorRecipe) {
+fun EditorChoiceCard(recipe: EditorRecipe, onClick: () -> Unit = {}) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(

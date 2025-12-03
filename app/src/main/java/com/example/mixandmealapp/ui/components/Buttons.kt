@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mixandmealapp.ui.theme.BrandOrange
+import com.example.mixandmealapp.ui.theme.BrandGreen
 
 object MixAndMealColours {
     val backgroundButton = Color(0xFF16752D)
@@ -47,22 +48,24 @@ object MixAndMealColours {
 fun PrimaryButton(
     text: String,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MixAndMealColours.backgroundButton,
+    backgroundColor: Color = BrandGreen,
     onClick: () -> Unit
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .size(height = 56.dp, width = 0.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = backgroundColor,
             contentColor = MixAndMealColours.buttonText
-        )
+        ),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Text(
             text = text,
-            fontSize = MixAndMealColours.buttonFontSize
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -185,17 +188,11 @@ fun OpenFridgeButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = BrandOrange,
-            contentColor = Color.White
-        )
-    ) {
-        Text(text = text, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-    }
+    // Delegate to the shared PrimaryButton to keep styling consistent with UploadScreen
+    PrimaryButton(
+        text = text,
+        modifier = modifier,
+        onClick = onClick
+    )
 }
 

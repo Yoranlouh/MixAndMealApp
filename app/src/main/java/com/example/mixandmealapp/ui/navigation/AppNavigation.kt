@@ -32,6 +32,7 @@ import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
 import com.example.mixandmealapp.ui.theme.BrandGreen
 import com.example.mixandmealapp.ui.screens.recipes.PopularRecipeScreen
 import com.example.mixandmealapp.ui.screens.recipes.EditorsChoiceScreen
+import com.example.mixandmealapp.ui.screens.recipes.RecipeDetailScreen
 
 private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
@@ -94,7 +95,10 @@ fun AppNavigation() {
                 )
             }
             composable(Navigation.FAVOURITES) {
-                FavouritesScreen(navController = navController)
+                FavouritesScreen(
+                    navController = navController,
+                    onItemClick = { navController.navigate(Navigation.RECIPE_DETAIL) }
+                )
             }
             composable(Navigation.SEARCH) {
                 SearchResultScreen()
@@ -107,6 +111,11 @@ fun AppNavigation() {
             composable(Navigation.FRIDGE) { FridgeScreen(navController = navController) }
             composable(Navigation.POPULAR_RECIPES) { PopularRecipeScreen(navController = navController) }
             composable(Navigation.EDITORS_CHOICE) { EditorsChoiceScreen(navController = navController) }
+            composable(Navigation.RECIPE_DETAIL) {
+                RecipeDetailScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
             composable(Navigation.ACCOUNT) {
                 AccountScreen(
                     onGoToLogin = {

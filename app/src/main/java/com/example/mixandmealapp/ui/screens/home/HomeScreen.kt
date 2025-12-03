@@ -1,6 +1,7 @@
 package com.example.mixandmealapp.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,11 +63,11 @@ fun HomeScreen(navController: NavController) {
     ) {
         Header()
         Spacer(modifier = Modifier.height(24.dp))
-        FeaturedSection()
+        FeaturedSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
         Spacer(modifier = Modifier.height(24.dp))
         CategorySection()
         Spacer(modifier = Modifier.height(24.dp))
-        PopularRecipesSection()
+        PopularRecipesSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
     }
 }
 
@@ -92,7 +93,7 @@ fun Header() {
 }
 
 @Composable
-fun FeaturedSection() {
+fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
     Column {
         Text(
             text = "Featured",
@@ -105,6 +106,7 @@ fun FeaturedSection() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
+                .clickable { onRecipeClick() }
         ) {
             Box(modifier = Modifier.fillMaxSize().background(BrandYellow.copy(alpha = 0.8f))) {
                 Text("Featured Recipe Card", modifier = Modifier.align(Alignment.Center))
@@ -152,7 +154,7 @@ fun CategorySection() {
 }
 
 @Composable
-fun PopularRecipesSection() {
+fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
     val recipes = listOf("Taco Salad", "Pancakes")
     Column {
         Row(
@@ -172,16 +174,18 @@ fun PopularRecipesSection() {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(recipes) { recipe ->
-                PopularRecipeCard(recipe)
+                PopularRecipeCard(recipe, onClick = onRecipeClick)
             }
         }
     }
 }
 
 @Composable
-fun PopularRecipeCard(recipe: String) {
+fun PopularRecipeCard(recipe: String, onClick: () -> Unit = {}) {
     Card(
-        modifier = Modifier.size(160.dp, 240.dp)
+        modifier = Modifier
+            .size(160.dp, 240.dp)
+            .clickable { onClick() }
     ) {
         Column(
             modifier = Modifier

@@ -2,6 +2,7 @@ package com.example.mixandmealapp.ui.screens.recipes
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.FavoriteIcon
+import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,9 +78,13 @@ fun PopularRecipeScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    PopularCardItem(title = row[0], modifier = Modifier.weight(1f))
+                    PopularCardItem(title = row[0], modifier = Modifier.weight(1f)) {
+                        navController.navigate(Navigation.RECIPE_DETAIL)
+                    }
                     if (row.size > 1) {
-                        PopularCardItem(title = row[1], modifier = Modifier.weight(1f))
+                        PopularCardItem(title = row[1], modifier = Modifier.weight(1f)) {
+                            navController.navigate(Navigation.RECIPE_DETAIL)
+                        }
                     } else {
                         Box(modifier = Modifier.weight(1f)) {}
                     }
@@ -89,9 +95,11 @@ fun PopularRecipeScreen(
 }
 
 @Composable
-private fun PopularCardItem(title: String, modifier: Modifier = Modifier) {
+private fun PopularCardItem(title: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     Surface(
-        modifier = modifier.height(180.dp),
+        modifier = modifier
+            .height(180.dp)
+            .clickable { onClick() },
         shape = MaterialTheme.shapes.large,
         color = Color.White,
         shadowElevation = 4.dp

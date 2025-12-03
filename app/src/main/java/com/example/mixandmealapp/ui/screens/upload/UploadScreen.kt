@@ -48,6 +48,7 @@ import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.BackButton
 
 data class Ingredient(
@@ -390,21 +391,11 @@ fun UploadScreen(navController: NavHostController) {
         
         Spacer(modifier = Modifier.height(32.dp))
         
-        // Upload Button
-        Button(
-            onClick = { /* TODO: Handle upload */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = BrandGreen),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text(
-                text = "Upload",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        // Upload Button (uses app-wide PrimaryButton style)
+        PrimaryButton(
+            text = "Upload",
+            onClick = { /* TODO: Handle upload */ }
+        )
         
         Spacer(modifier = Modifier.height(32.dp))
     }

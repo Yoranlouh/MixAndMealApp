@@ -92,7 +92,8 @@ fun AccountScreen(
                 ProfileCard(name = "Richard Balke", onEditProfile = onEditProfile)
                 Spacer(modifier = Modifier.height(32.dp))
                 MyFavoritesSection(
-                    onNavigateToFavourites = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FAVOURITES) }
+                    onNavigateToFavourites = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FAVOURITES) },
+                    onRecipeClick = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.RECIPE_DETAIL) }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 MyFridgeSection(onNavigateToFridge = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FRIDGE) })
@@ -159,7 +160,8 @@ private fun MyFavoritesSection(
         "Easy homemade beef burger",
         "Half boiled egg sandwich"
     ),
-    onNavigateToFavourites: () -> Unit = {}
+    onNavigateToFavourites: () -> Unit = {},
+    onRecipeClick: (String) -> Unit = {}
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
@@ -180,9 +182,17 @@ private fun MyFavoritesSection(
         // Display in two columns using two rows
         for (row in recipes.chunked(2)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                FavoriteRecipeCard(title = row.getOrNull(0) ?: "", modifier = Modifier.weight(1f))
+                FavoriteRecipeCard(
+                    title = row.getOrNull(0) ?: "",
+                    modifier = Modifier.weight(1f),
+                    onClick = { onRecipeClick(row.getOrNull(0) ?: "") }
+                )
                 if (row.size > 1) {
-                    FavoriteRecipeCard(title = row[1], modifier = Modifier.weight(1f))
+                    FavoriteRecipeCard(
+                        title = row[1],
+                        modifier = Modifier.weight(1f),
+                        onClick = { onRecipeClick(row[1]) }
+                    )
                 } else {
                     Spacer(modifier = Modifier.weight(1f))
                 }
@@ -301,12 +311,13 @@ private fun FridgeItem(name: String, quantity: Int) {
 
 
 @Composable
-private fun FavoriteRecipeCard(title: String, modifier: Modifier = Modifier) {
+private fun FavoriteRecipeCard(title: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     Surface(
         modifier = modifier.height(180.dp),
         shape = MaterialTheme.shapes.large,
         color = Color.White,
-        shadowElevation = 4.dp
+        shadowElevation = 4.dp,
+        onClick = onClick
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Box(
