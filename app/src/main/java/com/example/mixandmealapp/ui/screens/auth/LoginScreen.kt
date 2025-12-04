@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -87,7 +88,7 @@ fun LoginScreen(
             Spacer(Modifier.height(24.dp))
 
             PrimaryButton(
-                text = "Login",
+                text = stringResource(id = com.example.mixandmealapp.R.string.login),
                 onClick = { onLogin(email, password) },
             )
 
@@ -95,7 +96,7 @@ fun LoginScreen(
                 onClick = onGoToRegister,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Don't have an account? Register")
+                Text(stringResource(id = com.example.mixandmealapp.R.string.dont_have_account_register))
             }
         }
     }

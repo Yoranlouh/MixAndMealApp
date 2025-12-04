@@ -17,6 +17,9 @@ import androidx.navigation.NavController
 import com.example.mixandmealapp.R
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
+import com.example.mixandmealapp.ui.navigation.Navigation
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +44,7 @@ fun SettingsScreen(
                     )
 
                     Text(
-                        text = "Settings",
+                        text = stringResource(id = R.string.settings_title),
                         style = MaterialTheme.typography.headlineSmall
                     )
                 }
@@ -98,13 +101,22 @@ fun SettingsScreen(
         Divider()
 
         // Language Selection
-        var currentLanguage by remember { mutableStateOf("English") }
+        val locales = AppCompatDelegate.getApplicationLocales()
+        // Show friendly current language, robust to tags like "nl-NL" or "en-US"
+        val currentLanguage by remember(locales) {
+            mutableStateOf(
+                when (val tag = locales.toLanguageTags()) {
+                    null, "" -> "English"
+                    else -> if (tag.startsWith("nl")) "Dutch" else "English"
+                }
+            )
+        }
         ListItem(
             headlineContent = {Text(stringResource(R.string.language_choice))},
             supportingContent = {Text(stringResource(R.string.language_choice_support) + currentLanguage)},
             modifier = Modifier
                 .clickable {
-                    // TODO: Send to P & S page
+                    navController.navigate(Navigation.LANGUAGE_CHOICE)
                 }
         )
 
@@ -124,8 +136,8 @@ fun SettingsScreen(
 
         // Help/Support
         ListItem(
-            headlineContent = {Text("Help/Support")},
-            supportingContent = {Text("Need some help?")},
+            headlineContent = {Text(stringResource(id = R.string.help_support))},
+            supportingContent = {Text(stringResource(id = R.string.help_support_desc))},
             modifier = Modifier
                 .clickable {
                     // TODO: Send to support page
@@ -137,8 +149,8 @@ fun SettingsScreen(
 
         // Notification Toggle
         ListItem(
-            headlineContent = { Text("Enable notifications") },
-            supportingContent = { Text("Get updates about new recipes") },
+            headlineContent = { Text(stringResource(id = R.string.notifications_enable)) },
+            supportingContent = { Text(stringResource(id = R.string.notifications_desc)) },
             trailingContent = {
                 Switch(
                     checked = notificationsEnabled,
@@ -151,8 +163,8 @@ fun SettingsScreen(
 
         // About button
         ListItem(
-            headlineContent = { Text("About Mix & Meal") },
-            supportingContent = { Text("Version 1.0") },
+            headlineContent = { Text(stringResource(id = R.string.about)) },
+            supportingContent = { Text(stringResource(id = R.string.version)) },
             modifier = Modifier
                 .clickable {
                     // TODO: Navigate to "About" screen
@@ -165,7 +177,7 @@ fun SettingsScreen(
         ListItem(
             headlineContent = {
                 Text(
-                    text = "Logout",
+                    text = stringResource(id = R.string.logout),
                     color = Color.Red
                 )
             },

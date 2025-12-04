@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +53,7 @@ fun EditorsChoiceScreen(
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         Text(
-                            text = "Editor's Choice",
+                            text = stringResource(id = com.example.mixandmealapp.R.string.editors_choice),
                             style = MaterialTheme.typography.headlineSmall
                         )
                     }

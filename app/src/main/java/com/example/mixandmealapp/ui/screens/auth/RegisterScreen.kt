@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.example.mixandmealapp.ui.components.BackButton
 
@@ -50,12 +52,13 @@ fun RegisterScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         BackButton(navController = navController, modifier = Modifier.padding(end = 8.dp))
-                        Text(text = "Register", style = MaterialTheme.typography.headlineSmall)
+                        Text(text = stringResource(id = com.example.mixandmealapp.R.string.register_title), style = MaterialTheme.typography.headlineSmall)
                     }
                 }
             )
         }
     ) { padding ->
+        val ctx = LocalContext.current
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -71,7 +74,7 @@ fun RegisterScreen(
                     username = it
                     usernameError = "" // Clear error while typing
                 },
-                label = { Text("Username") },
+                label = { Text(stringResource(id = com.example.mixandmealapp.R.string.username)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = usernameError.isNotEmpty()
             )
@@ -88,7 +91,7 @@ fun RegisterScreen(
                     email = it
                     emailError = ""
                 },
-                label = { Text("Email") },
+                label = { Text(stringResource(id = com.example.mixandmealapp.R.string.email)) },
                 modifier = Modifier.fillMaxWidth(),
                 isError = emailError.isNotEmpty()
             )
@@ -105,7 +108,7 @@ fun RegisterScreen(
                     password = it
                     passwordError = ""
                 },
-                label = { Text("Password") },
+                label = { Text(stringResource(id = com.example.mixandmealapp.R.string.password)) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 isError = passwordError.isNotEmpty()
@@ -120,9 +123,9 @@ fun RegisterScreen(
             Button(
                 onClick = {
                     // Reset errors
-                    usernameError = if (username.isBlank()) "Username cannot be empty" else ""
-                    emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) "Invalid email" else ""
-                    passwordError = if (password.length < 6) "Password must be at least 6 characters" else ""
+                    usernameError = if (username.isBlank()) ctx.getString(com.example.mixandmealapp.R.string.username_empty_error) else ""
+                    emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) ctx.getString(com.example.mixandmealapp.R.string.invalid_email) else ""
+                    passwordError = if (password.length < 6) ctx.getString(com.example.mixandmealapp.R.string.password_min_error) else ""
 
                     // Only submit if all fields are valid
                     if (usernameError.isEmpty() && emailError.isEmpty() && passwordError.isEmpty()) {
@@ -131,7 +134,7 @@ fun RegisterScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Create Account")
+                Text(stringResource(id = com.example.mixandmealapp.R.string.create_account))
             }
 
             Spacer(Modifier.height(12.dp))
@@ -140,7 +143,7 @@ fun RegisterScreen(
                 onClick = onGoToLogin,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Already have an account? Login")
+                Text(stringResource(id = com.example.mixandmealapp.R.string.already_have_account_login))
             }
         }
     }

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">MixAndMealApp</string>
 
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
     <string name="my_account" >My Account</string>
     <string name="my_account_support" >Settings</string>
 
@@ -17,5 +19,85 @@
 
     <string name="language_choice" >Choose Language</string>
     <string name="language_choice_support" >Current language: </string>
-    <string name="p_and_s" >Privacy And Support: </string>
+    <string name="p_and_s" >Privacy &amp; Security</string>
+
+    <string name="help_support">Help/Support</string>
+    <string name="help_support_desc">Need some help?</string>
+    <string name="notifications_enable">Enable notifications</string>
+    <string name="notifications_desc">Get updates about new recipes</string>
+    <string name="about">About Mix &amp; Meal</string>
+    <string name="version">Version 1.0</string>
+    <string name="logout">Logout</string>
+
+    <!-- Language Choice Screen -->
+    <string name="my_language">My language</string>
+    <string name="english">English</string>
+    <string name="dutch">Dutch</string>
+    <string name="language_changes_applied">Tap Save to apply changes</string>
+    <string name="save">Save</string>
+
+    <!-- Home -->
+    <string name="hello">Hello</string>
+    <string name="featured">Featured</string>
+    <string name="featured_card">Featured Recipe Card</string>
+    <string name="category">Category</string>
+    <string name="see_all">See All</string>
+    <string name="breakfast">Breakfast</string>
+    <string name="lunch">Lunch</string>
+    <string name="dinner">Dinner</string>
+    <string name="dessert">Dessert</string>
+    <string name="popular_recipes">Popular Recipes</string>
+    <string name="kcal_minutes">120 Kcal | 20 Min</string>
+
+    <!-- Search -->
+    <string name="search">Search</string>
+    <string name="search_placeholder">Search</string>
+    <string name="editors_choice">Editor\'s Choice</string>
+    <string name="view_all">View All</string>
+    <string name="go_to_details">Go to details</string>
+    <string name="register_title">Register</string>
+
+    <!-- Upload -->
+    <string name="upload_enter_recipe_name">Enter recipe name</string>
+    <string name="upload_tell_about_recipe">Tell a little about your recipe</string>
+    <string name="upload_enter_ingredient">Enter ingredient</string>
+    <string name="upload_add_ingredient">Add ingredient</string>
+    <string name="upload_new_ingredient">New ingredient</string>
+    <string name="upload_placeholder_onion">Onion</string>
+    <string name="qty">Qty</string>
+    <string name="unit">Unit</string>
+    <string name="upload_description_label">Description</string>
+    <string name="upload_kitchen_style">Kitchen Style</string>
+
+    <!-- Fridge -->
+    <string name="fridge_title">Fridge</string>
+    <string name="my_fridge">My Fridge</string>
+    <string name="items_count">%1$d Item</string>
+    <string name="fridge_enter_ingredient">Enter ingredient</string>
+    <string name="fridge_add_ingredient">Add ingredient</string>
+
+    <!-- Auth / Account -->
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="create_account">Create Account</string>
+    <string name="already_have_account_login">Already have an account? Login</string>
+    <string name="dont_have_account_register">Don\'t have an account? Register</string>
+    <string name="welcome_user">Welcome, User!</string>
+
+    <!-- Recipe Detail -->
+    <string name="ingredients">Ingredients</string>
+    <string name="six_item">6 Item</string>
+    <string name="instructions">Instructions</string>
+    <string name="four_steps">4 Steps</string>
+
+    <!-- Scan -->
+    <string name="scan">Scan</string>
+
+    <!-- Common/Auth buttons and errors -->
+    <string name="login">Login</string>
+    <string name="login_or_signup">Login/Sign up</string>
+    <string name="username_empty_error">Username cannot be empty</string>
+    <string name="invalid_email">Invalid email</string>
+    <string name="password_min_error">Password must be at least 6 characters</string>
 </resources>

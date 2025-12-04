@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,7 +67,7 @@ fun FridgeScreen(navController: NavHostController) {
                             modifier = Modifier.padding(end = 8.dp)
                         )
                         Text(
-                            text = "Fridge",
+                            text = stringResource(id = com.example.mixandmealapp.R.string.fridge_title),
                             style = MaterialTheme.typography.headlineSmall
                         )
                     }
@@ -88,10 +89,10 @@ fun FridgeScreen(navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.Bottom) {
-                    Text(text = "My Fridge", style = MaterialTheme.typography.titleLarge)
+                    Text(text = stringResource(id = com.example.mixandmealapp.R.string.my_fridge), style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                     Text(
-                        text = "${ingredients.size} Item",
+                        text = stringResource(id = com.example.mixandmealapp.R.string.items_count, ingredients.size),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray
                     )
@@ -115,7 +116,7 @@ fun FridgeScreen(navController: NavHostController) {
                 value = newIngredient,
                 onValueChange = { newIngredient = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Enter ingrediënt") },
+                placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.fridge_enter_ingredient)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = BrandGrey,
                     focusedBorderColor = BrandOrange,
@@ -152,7 +153,7 @@ fun FridgeScreen(navController: NavHostController) {
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add", tint = DarkText)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add ingrediënt")
+                Text(stringResource(id = com.example.mixandmealapp.R.string.fridge_add_ingredient))
             }
         }
     }

@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DocumentScanner
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -31,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -82,12 +82,9 @@ fun Header() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Filled.WbSunny, contentDescription = "Sun icon", tint = BrandYellow)
                 Spacer(modifier = Modifier.padding(4.dp))
-                Text(text = "Hello", style = MaterialTheme.typography.bodyLarge)
+                Text(text = stringResource(id = com.example.mixandmealapp.R.string.hello), style = MaterialTheme.typography.bodyLarge)
             }
             Text(text = "Richard", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        }
-        IconButton(onClick = { /* TODO: Handle cart click */ }) {
-            Icon(Icons.Filled.ShoppingCart, contentDescription = "Shopping Cart")
         }
     }
 }
@@ -96,7 +93,7 @@ fun Header() {
 fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
     Column {
         Text(
-            text = "Featured",
+            text = stringResource(id = com.example.mixandmealapp.R.string.featured),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -108,8 +105,10 @@ fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
                 .height(180.dp)
                 .clickable { onRecipeClick() }
         ) {
-            Box(modifier = Modifier.fillMaxSize().background(BrandYellow.copy(alpha = 0.8f))) {
-                Text("Featured Recipe Card", modifier = Modifier.align(Alignment.Center))
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(BrandYellow.copy(alpha = 0.8f))) {
+                Text(stringResource(id = com.example.mixandmealapp.R.string.featured_card), modifier = Modifier.align(Alignment.Center))
             }
         }
     }
@@ -117,8 +116,13 @@ fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
 
 @Composable
 fun CategorySection() {
-    val categories = listOf("Breakfast", "Lunch", "Dinner", "Dessert")
-    var selectedCategory by remember { mutableStateOf("Breakfast") }
+    val categories = listOf(
+        stringResource(id = com.example.mixandmealapp.R.string.breakfast),
+        stringResource(id = com.example.mixandmealapp.R.string.lunch),
+        stringResource(id = com.example.mixandmealapp.R.string.dinner),
+        stringResource(id = com.example.mixandmealapp.R.string.dessert)
+    )
+    var selectedCategory by remember { mutableStateOf(categories.first()) }
 
     Column {
         Row(
@@ -127,11 +131,11 @@ fun CategorySection() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Category",
+                text = stringResource(id = com.example.mixandmealapp.R.string.category),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            Text(text = "See All", style = MaterialTheme.typography.bodyMedium, color = BrandOrange)
+            Text(text = stringResource(id = com.example.mixandmealapp.R.string.see_all), style = MaterialTheme.typography.bodyMedium, color = BrandOrange)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
@@ -163,11 +167,11 @@ fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Popular Recipes",
+                text = stringResource(id = com.example.mixandmealapp.R.string.popular_recipes),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            Text(text = "See All", style = MaterialTheme.typography.bodyMedium, color = BrandOrange)
+            Text(text = stringResource(id = com.example.mixandmealapp.R.string.see_all), style = MaterialTheme.typography.bodyMedium, color = BrandOrange)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
@@ -203,7 +207,7 @@ fun PopularRecipeCard(recipe: String, onClick: () -> Unit = {}) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = recipe, style = MaterialTheme.typography.titleMedium, maxLines = 2)
             }
-            Text("120 Kcal | 20 Min", style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(id = com.example.mixandmealapp.R.string.kcal_minutes), style = MaterialTheme.typography.bodySmall)
         }
     }
 }

@@ -1,17 +1,10 @@
 package com.example.mixandmealapp.ui.navigation
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DocumentScanner
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -29,10 +22,10 @@ import com.example.mixandmealapp.ui.screens.upload.UploadScreen
 import com.example.mixandmealapp.ui.screens.scan.ScanScreen
 import com.example.mixandmealapp.ui.screens.fridge.FridgeScreen
 import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
-import com.example.mixandmealapp.ui.theme.BrandGreen
 import com.example.mixandmealapp.ui.screens.recipes.PopularRecipeScreen
 import com.example.mixandmealapp.ui.screens.recipes.EditorsChoiceScreen
 import com.example.mixandmealapp.ui.screens.recipes.RecipeDetailScreen
+import com.example.mixandmealapp.ui.screens.settings.options.LanguageChoiceScreen
 
 private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
@@ -115,6 +108,9 @@ fun AppNavigation() {
                 RecipeDetailScreen(
                     onBack = { navController.popBackStack() }
                 )
+            }
+            composable(Navigation.LANGUAGE_CHOICE) {
+                LanguageChoiceScreen(navController = navController)
             }
             composable(Navigation.ACCOUNT) {
                 AccountScreen(

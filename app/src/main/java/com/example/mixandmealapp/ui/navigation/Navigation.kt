@@ -16,4 +16,5 @@ object Navigation {
     const val POPULAR_RECIPES = "Popular_Recipes_Screen"
     const val EDITORS_CHOICE = "Editors_Choice_Screen"
     const val RECIPE_DETAIL = "Recipe_Detail_Screen"
+    const val LANGUAGE_CHOICE = "Language_Choice_Screen"
 }

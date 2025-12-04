@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -209,12 +210,12 @@ fun RecipeDetailScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     if (selectedTab == 0) {
-                        Text("Ingredients", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                        Text("6 Item", color = BrandGrey, fontSize = 12.sp)
+                        Text(stringResource(id = com.example.mixandmealapp.R.string.ingredients), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(id = com.example.mixandmealapp.R.string.six_item), color = BrandGrey, fontSize = 12.sp)
                         Spacer(modifier = Modifier.height(8.dp))
                     } else {
-                        Text("Instructions", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                        Text("4 Steps", color = BrandGrey, fontSize = 12.sp)
+                        Text(stringResource(id = com.example.mixandmealapp.R.string.instructions), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(id = com.example.mixandmealapp.R.string.four_steps), color = BrandGrey, fontSize = 12.sp)
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }

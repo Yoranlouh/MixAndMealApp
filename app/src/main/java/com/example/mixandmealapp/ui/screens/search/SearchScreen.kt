@@ -12,11 +12,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -52,7 +54,8 @@ fun SearchContent(
     onRecipeClick: () -> Unit = {}
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("Breakfast") }
+    val breakfast = stringResource(id = com.example.mixandmealapp.R.string.breakfast)
+    var selectedCategory by remember { mutableStateOf(breakfast) }
 
     Column(
         modifier = modifier
@@ -72,7 +75,7 @@ fun SearchContent(
 
         // Title
         Text(
-            text = "Search",
+            text = stringResource(id = com.example.mixandmealapp.R.string.search),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
         )
@@ -107,11 +110,11 @@ fun SearchBarComponent(query: String, onQueryChange: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
-        placeholder = { Text("Search", color = Color.Gray) },
+        placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.search_placeholder), color = Color.Gray) },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Search icon",
+                contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search),
                 tint = Color.Gray
             )
         },
@@ -129,7 +132,11 @@ fun SearchBarComponent(query: String, onQueryChange: (String) -> Unit) {
 
 @Composable
 fun CategoryFilterSection(selectedCategory: String, onCategorySelected: (String) -> Unit) {
-    val categories = listOf("Breakfast", "Lunch", "Dinner")
+    val categories = listOf(
+        stringResource(id = com.example.mixandmealapp.R.string.breakfast),
+        stringResource(id = com.example.mixandmealapp.R.string.lunch),
+        stringResource(id = com.example.mixandmealapp.R.string.dinner)
+    )
 
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -167,12 +174,12 @@ fun PopularRecipesSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit 
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Popular Recipes",
+                text = stringResource(id = com.example.mixandmealapp.R.string.popular_recipes),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "View All",
+                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
                 style = MaterialTheme.typography.bodyMedium,
                 color = BrandOrange,
                 modifier = Modifier.clickable { onViewAll() }
@@ -225,8 +232,8 @@ fun PopularRecipeCard(recipeName: String, onClick: () -> Unit = {}) {
 @Composable
 fun EditorsChoiceSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit = {}) {
     val recipes = listOf(
-        EditorRecipe("Easy homemade beef burger", "James Spader"),
-        EditorRecipe("Blueberry with egg for breakfast", "Alice Fala")
+        EditorRecipe("Easy homemade beef burger"),
+        EditorRecipe("Blueberry with egg for breakfast")
     )
 
     Column {
@@ -236,12 +243,12 @@ fun EditorsChoiceSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit =
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Editor's Choice",
+                text = stringResource(id = com.example.mixandmealapp.R.string.editors_choice),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "View All",
+                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
                 style = MaterialTheme.typography.bodyMedium,
                 color = BrandOrange,
                 modifier = Modifier.clickable { onViewAll() }
@@ -257,7 +264,7 @@ fun EditorsChoiceSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit =
     }
 }
 
-data class EditorRecipe(val title: String, val author: String)
+data class EditorRecipe(val title: String)
 
 @Composable
 fun EditorChoiceCard(recipe: EditorRecipe, onClick: () -> Unit = {}) {
@@ -291,32 +298,21 @@ fun EditorChoiceCard(recipe: EditorRecipe, onClick: () -> Unit = {}) {
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .background(Color.Gray, shape = androidx.compose.foundation.shape.CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = recipe.author,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                }
+                // Removed author avatar placeholder as per design
             }
 
-            // Arrow Button
+            // Small arrow in orange rounded square
             IconButton(
-                onClick = { /* TODO: Navigate to recipe details */ },
+                onClick = onClick,
                 modifier = Modifier
-                    .size(40.dp)
-                    .background(BrandOrange, shape = androidx.compose.foundation.shape.CircleShape)
+                    .size(36.dp)
+                    .background(BrandOrange, shape = RoundedCornerShape(8.dp))
             ) {
-                Text("→", color = Color.White, style = MaterialTheme.typography.bodyLarge)
+                Icon(
+                    imageVector = Icons.Filled.ArrowForward,
+                    contentDescription = stringResource(id = com.example.mixandmealapp.R.string.go_to_details),
+                    tint = Color.White
+                )
             }
         }
     }

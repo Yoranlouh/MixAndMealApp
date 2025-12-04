@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -121,7 +122,7 @@ fun UploadScreen(navController: NavHostController) {
             value = recipeName,
             onValueChange = { recipeName = it },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Enter recipe name") },
+            placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.upload_enter_recipe_name)) },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = BrandGrey,
                 focusedBorderColor = BrandOrange
@@ -133,7 +134,7 @@ fun UploadScreen(navController: NavHostController) {
         
         // Description
         Text(
-            text = "Description",
+            text = stringResource(id = com.example.mixandmealapp.R.string.upload_description_label),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = DarkText
@@ -145,7 +146,7 @@ fun UploadScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp),
-            placeholder = { Text("Tell a little about your recipe") },
+            placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.upload_tell_about_recipe)) },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = BrandGrey,
                 focusedBorderColor = BrandOrange
@@ -254,7 +255,7 @@ fun UploadScreen(navController: NavHostController) {
             value = newIngredientName,
             onValueChange = { newIngredientName = it },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Enter ingredient") },
+            placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.upload_enter_ingredient)) },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = BrandGrey,
                 focusedBorderColor = BrandOrange,
@@ -283,7 +284,7 @@ fun UploadScreen(navController: NavHostController) {
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add", tint = DarkText)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add ingredient")
+                Text(stringResource(id = com.example.mixandmealapp.R.string.upload_add_ingredient))
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -310,7 +311,7 @@ fun UploadScreen(navController: NavHostController) {
                     tint = DarkText
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("New ingrediënt")
+                Text(stringResource(id = com.example.mixandmealapp.R.string.upload_new_ingredient))
             }
         }
         
@@ -318,7 +319,7 @@ fun UploadScreen(navController: NavHostController) {
         
         // Kitchen Style Section
         FilterSection(
-            title = "Kitchen Style",
+            title = stringResource(id = com.example.mixandmealapp.R.string.upload_kitchen_style),
             options = listOf(
                 "Asian", "Chinese", "Dutch", "East-europe", "French", "Greek",
                 "Indian", "Italian", "Japanese", "Korean", "Mediterranean",
@@ -596,7 +597,7 @@ fun SimpleIngredientItem(
                     .weight(1f)
                     .height(56.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text("Onion", color = Color.Gray) },
+                placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.upload_placeholder_onion), color = Color.Gray) },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = BrandGrey,
                     focusedBorderColor = BrandOrange,
@@ -618,7 +619,7 @@ fun SimpleIngredientItem(
                     .fillMaxWidth()
                     .height(56.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text("Qty", color = DarkText.copy(alpha = 0.6f)) },
+                placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.qty), color = DarkText.copy(alpha = 0.6f)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = BrandGrey,
                     focusedBorderColor = BrandOrange,
@@ -658,7 +659,7 @@ fun SimpleIngredientItem(
                     .fillMaxWidth()
                     .height(56.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text("Unit", color = DarkText.copy(alpha = 0.6f)) },
+                placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.unit), color = DarkText.copy(alpha = 0.6f)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = BrandGrey,
                     focusedBorderColor = BrandOrange,

@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -103,10 +104,10 @@ fun AccountScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Welcome, User!", style = MaterialTheme.typography.headlineMedium)
+                    Text(stringResource(id = com.example.mixandmealapp.R.string.welcome_user), style = MaterialTheme.typography.headlineMedium)
                     Spacer(modifier = Modifier.height(16.dp))
                     PrimaryButton(
-                        text = "Login/Sign up",
+                        text = stringResource(id = com.example.mixandmealapp.R.string.login_or_signup),
                         modifier = Modifier.fillMaxWidth(0.8f),
                         onClick = onGoToLogin
                     )
