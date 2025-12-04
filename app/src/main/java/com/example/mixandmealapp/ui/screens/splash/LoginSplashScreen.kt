@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.TextOnlyButton
+import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.BrandOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +45,9 @@ fun LoginSplashScreen(
                     TextOnlyButton(
                         text = "Later",
                         color = BrandOrange,
-                        onClick = onGoToHome,
+                        onClick = {
+                            navController.navigate(Navigation.HOME + "?showPrivacy=true")
+                        },
                         modifier = Modifier.padding(end = 16.dp)
                     )
                 }

@@ -47,6 +47,8 @@
     <string name="dinner">Dinner</string>
     <string name="dessert">Dessert</string>
     <string name="popular_recipes">Popular Recipes</string>
+    <string name="quick_recipes">Quick Recipes</string>
+    <string name="easy_recipes">Easy Recipes</string>
     <string name="kcal_minutes">120 Kcal | 20 Min</string>
 
     <!-- Search -->
