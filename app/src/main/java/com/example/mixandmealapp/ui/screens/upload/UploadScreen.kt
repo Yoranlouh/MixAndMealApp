@@ -479,6 +479,7 @@ fun DifficultySelector(
             val selectedColor = when (difficulty) {
                 "Easy" -> BrandGreen
                 "Medium" -> BrandYellow
+                "Hard" -> Color.Red
                 else -> BrandOrange
             }
             FilterChip(
