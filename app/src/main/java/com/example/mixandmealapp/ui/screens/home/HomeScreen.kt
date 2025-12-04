@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,10 +51,10 @@ import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 @Composable
 fun HomeScreen(
     navController: NavController,
-    showPrivacy: Boolean = false,
+    showPrivacy: Boolean,
     onAcceptPrivacy: () -> Unit = {}
 ) {
-    var openDialog by remember { mutableStateOf(showPrivacy) }
+    var openDialog by rememberSaveable() { mutableStateOf(showPrivacy) }
 
     if (openDialog) {
         PrivacyDialog(
@@ -171,7 +172,7 @@ fun CategorySection() {
 
 @Composable
 fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
-    val recipes = listOf("Taco Salad", "Jodenkoek")
+    val recipes = listOf("Taco Salad", "Ceasar Salad")
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -200,7 +201,7 @@ fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
 
 @Composable
 fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
-    val recipes = listOf("Chocolate", "Negerzoenen")
+    val recipes = listOf("Chocolate", "Spaghetti Bolognese")
     Spacer(Modifier.height(16.dp))
     Column {
         Row(
