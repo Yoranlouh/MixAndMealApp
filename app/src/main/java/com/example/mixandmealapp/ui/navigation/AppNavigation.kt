@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.mixandmealapp.ui.components.BottomNavBar
+import com.example.mixandmealapp.ui.components.UserBottomNavBar
 import com.example.mixandmealapp.ui.screens.account.AccountScreen
 import com.example.mixandmealapp.ui.screens.auth.LoginScreen
 import com.example.mixandmealapp.ui.screens.auth.RegisterScreen
@@ -19,13 +19,13 @@ import com.example.mixandmealapp.ui.screens.search.SearchResultScreen
 import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
 import com.example.mixandmealapp.ui.screens.search.SearchScreen
 import com.example.mixandmealapp.ui.screens.upload.UploadScreen
-import com.example.mixandmealapp.ui.screens.scan.ScanScreen
 import com.example.mixandmealapp.ui.screens.fridge.FridgeScreen
 import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
 import com.example.mixandmealapp.ui.screens.recipes.PopularRecipeScreen
 import com.example.mixandmealapp.ui.screens.recipes.EditorsChoiceScreen
 import com.example.mixandmealapp.ui.screens.recipes.RecipeDetailScreen
 import com.example.mixandmealapp.ui.screens.settings.options.LanguageChoiceScreen
+import com.example.mixandmealapp.ui.screens.admin.AdminAnalyticsScreen
 
 private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
@@ -47,7 +47,7 @@ fun AppNavigation() {
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                BottomNavBar(navController = navController, currentDestination = currentDestination)
+                UserBottomNavBar(navController = navController, currentDestination = currentDestination)
             }
         }
     ) { paddingValues ->
@@ -99,7 +99,6 @@ fun AppNavigation() {
 
             // Bottom bar bestemmingen
             composable(Navigation.UPLOAD) { UploadScreen(navController = navController) }
-            composable(Navigation.SCAN) { ScanScreen() }
             composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
             composable(Navigation.FRIDGE) { FridgeScreen(navController = navController) }
             composable(Navigation.POPULAR_RECIPES) { PopularRecipeScreen(navController = navController) }
@@ -111,6 +110,9 @@ fun AppNavigation() {
             }
             composable(Navigation.LANGUAGE_CHOICE) {
                 LanguageChoiceScreen(navController = navController)
+            }
+            composable(Navigation.ADMIN_ANALYTICS) {
+                AdminAnalyticsScreen()
             }
             composable(Navigation.ACCOUNT) {
                 AccountScreen(

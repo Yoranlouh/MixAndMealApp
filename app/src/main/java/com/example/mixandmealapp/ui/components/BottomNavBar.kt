@@ -2,17 +2,20 @@ package com.example.mixandmealapp.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DocumentScanner
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Kitchen
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -35,6 +38,11 @@ import com.example.mixandmealapp.ui.theme.BrandGreen
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
+enum class UserRole {
+    USER,
+    ADMIN
+}
+
 data class BottomNavItem(
     val title: String,
     val icon: ImageVector,
@@ -42,90 +50,160 @@ data class BottomNavItem(
 )
 
 @Composable
-fun BottomNavBar(navController: NavHostController, currentDestination: NavDestination?) {
-
-    val items = listOf(
+fun BottomNavBar(
+    navController: NavHostController,
+    currentDestination: NavDestination?,
+    userRole: UserRole // Voeg de rol toe als parameter
+) {
+    val isAdmin = userRole == UserRole.ADMIN
+    // Definieer de items voor elke rol
+    val userNavItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
-        BottomNavItem("Upload", Icons.Filled.Edit, Navigation.UPLOAD),
-        BottomNavItem("Scan", Icons.Filled.DocumentScanner, Navigation.SCAN),
+        BottomNavItem("Favourites", Icons.Filled.Favorite, Navigation.FAVOURITES),
         BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
+        BottomNavItem("Fridge", Icons.Filled.Kitchen, Navigation.FRIDGE),
         BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
     )
 
-    NavigationBar(
-        modifier = Modifier.height(120.dp), // hoogte zodat de Scan-knop netjes binnen de bar valt
-        containerColor = Color.White,
-        tonalElevation = 8.dp
-    ) {
-        items.forEach { item ->
-            val isScanItem = item.route == "scan"
-            val selected =
-                currentDestination?.hierarchy?.any { it.route == item.route } == true
+    val adminNavItems = listOf(
+        BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
+        BottomNavItem("Upload", Icons.Filled.Edit, Navigation.UPLOAD),
+        BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
+        BottomNavItem("Analytics", Icons.Filled.Analytics, Navigation.ADMIN_ANALYTICS),
+        BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
+    )
 
-            NavigationBarItem(
-                selected = selected,
-                enabled = true,
-                alwaysShowLabel = true,
-                onClick = {
-                    navController.navigate(item.route) {
-                        launchSingleTop = true
-                        restoreState = true
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                    }
-                },
-                icon = {
-                    if (isScanItem) {
-                        Box(
-                            modifier = Modifier
-                                .padding(top = 8.dp) // minder ruimte nodig
-                                .size(64.dp) // groot en prominent, maar passend
-                                .offset(y = (-8).dp) // licht omhoog, blijft binnen de bar
-                                .shadow(elevation = 8.dp, shape = CircleShape)
-                                .background(color = BrandGreen, shape = CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
+    // Kies de juiste lijst op basis van de rol
+    val items = when (userRole) {
+        UserRole.USER -> userNavItems
+        UserRole.ADMIN -> adminNavItems
+    }
+
+    // Shared palette from screenshot
+    val unselectedGrey = Color(0xFFB0B8BF)
+
+    Box {
+        NavigationBar(
+            modifier = Modifier.height(120.dp),
+            containerColor = Color.White,
+            tonalElevation = 8.dp
+        ) {
+            items.forEach { item ->
+                val selected =
+                    currentDestination?.hierarchy?.any { it.route == item.route } == true
+
+                NavigationBarItem(
+                    selected = selected,
+                    enabled = true,
+                    // Verberg label onder het Search-icoon
+                    alwaysShowLabel = item.route != Navigation.SEARCH,
+                    onClick = {
+                        navController.navigate(item.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        }
+                    },
+                    icon = {
+                        // Search icon should always be the floating green circle as per design
+                        val isSearchFloating = item.route == Navigation.SEARCH
+                        if (isSearchFloating) {
+                            // Floating green circle with white icon, overlapping the bar
+                            Box(
+                                modifier = Modifier
+                                    .offset(y = (-10).dp)
+                                    .size(60.dp)
+                                    .shadow(8.dp, shape = CircleShape)
+                                    .background(BrandGreen, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.title,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        } else {
+                            val iconTint = if (selected) BrandGreen else unselectedGrey
                             Icon(
-                                imageVector = Icons.Filled.DocumentScanner,
+                                imageVector = item.icon,
                                 contentDescription = item.title,
-                                tint = Color.White
+                                tint = iconTint
                             )
                         }
-                    } else {
-                        Icon(
-                            imageVector = item.icon,
-                            contentDescription = item.title
-                        )
-                    }
-                },
-                label = {
-                    if (isScanItem) {
-                        Text(item.title, modifier = Modifier.offset(y = (-2).dp)) // label iets dichter naar het icoon
-                    } else {
-                        Text(item.title)
-                    }
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = BrandGreen,
-                    selectedTextColor = BrandGreen,
-                    unselectedIconColor = BrandGrey,
-                    unselectedTextColor = BrandGrey,
-                    indicatorColor = Color.Transparent
+                    },
+                    label = {
+                        // Geen label tonen voor Search
+                        if (item.route != Navigation.SEARCH) {
+                            val labelColor = if (selected) BrandGreen else unselectedGrey
+                            Text(item.title, color = labelColor)
+                        }
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = BrandGreen,
+                        selectedTextColor = BrandGreen,
+                        unselectedIconColor = unselectedGrey,
+                        unselectedTextColor = unselectedGrey,
+                        indicatorColor = Color.Transparent
+                    )
                 )
-            )
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
+// Losse wrappers zodat je afzonderlijke composables hebt voor user en admin
 @Composable
-fun BottomNavBarPreview() {
+fun UserBottomNavBar(
+    navController: NavHostController,
+    currentDestination: NavDestination?
+) {
+    BottomNavBar(
+        navController = navController,
+        currentDestination = currentDestination,
+        userRole = UserRole.USER
+    )
+}
+
+@Composable
+fun AdminBottomNavBar(
+    navController: NavHostController,
+    currentDestination: NavDestination?
+) {
+    BottomNavBar(
+        navController = navController,
+        currentDestination = currentDestination,
+        userRole = UserRole.ADMIN
+    )
+}
+
+// Preview voor de USER rol
+@Preview(showBackground = true, name = "BottomNavBar - User")
+@Composable
+fun BottomNavBarUserPreview() {
     MixAndMealAppTheme {
         val navController = rememberNavController()
-        // Preview with "Home" selected to show the active state correctly
         val navDestination = NavDestination(Navigation.HOME).apply {
             this.route = Navigation.HOME
         }
-        BottomNavBar(
+        UserBottomNavBar(
+            navController = navController,
+            currentDestination = navDestination
+        )
+    }
+}
+
+// Preview voor de ADMIN rol
+@Preview(showBackground = true, name = "BottomNavBar - Admin")
+@Composable
+fun BottomNavBarAdminPreview() {
+    MixAndMealAppTheme {
+        val navController = rememberNavController()
+        val navDestination = NavDestination(Navigation.HOME).apply {
+            this.route = Navigation.HOME
+        }
+        AdminBottomNavBar(
             navController = navController,
             currentDestination = navDestination
         )

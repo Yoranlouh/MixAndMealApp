@@ -10,11 +10,11 @@ object Navigation {
     const val FAVOURITES = "Favourites_Screen"
     const val SEARCH = "Search_Result_Screen"
     const val UPLOAD = "Upload_Screen"
-    const val SCAN = "Scanning_Screen"
     const val EDIT_PROFILE = "Edit_Profile_Screen"
     const val FRIDGE = "Fridge_Screen"
     const val POPULAR_RECIPES = "Popular_Recipes_Screen"
     const val EDITORS_CHOICE = "Editors_Choice_Screen"
     const val RECIPE_DETAIL = "Recipe_Detail_Screen"
     const val LANGUAGE_CHOICE = "Language_Choice_Screen"
+    const val ADMIN_ANALYTICS = "Admin_Analytics_Screen"
 }

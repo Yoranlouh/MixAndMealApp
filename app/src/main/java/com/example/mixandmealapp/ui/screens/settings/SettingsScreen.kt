@@ -101,15 +101,12 @@ fun SettingsScreen(
         Divider()
 
         // Language Selection
-        val locales = AppCompatDelegate.getApplicationLocales()
-        // Show friendly current language, robust to tags like "nl-NL" or "en-US"
-        val currentLanguage by remember(locales) {
-            mutableStateOf(
-                when (val tag = locales.toLanguageTags()) {
-                    null, "" -> "English"
-                    else -> if (tag.startsWith("nl")) "Dutch" else "English"
-                }
-            )
+        // Compute the current language label every recomposition so it updates immediately after returning
+        val currentTag = AppCompatDelegate.getApplicationLocales().toLanguageTags()
+        val currentLanguage = if (!currentTag.isNullOrBlank() && currentTag.startsWith("nl")) {
+            stringResource(id = R.string.dutch)
+        } else {
+            stringResource(id = R.string.english)
         }
         ListItem(
             headlineContent = {Text(stringResource(R.string.language_choice))},

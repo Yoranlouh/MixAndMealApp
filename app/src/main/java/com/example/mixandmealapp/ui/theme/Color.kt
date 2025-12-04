@@ -9,6 +9,6 @@ val BrandYellow = Color(0xFFF7AF10)
 
 // Supporting Colors
 val BrandGrey = Color(0xFFC4C4C4)
-val LightBackground = Color(0xFFF8F8F8)
+val LightBackground = Color(0xFFFFFFFF)
 val DarkText = Color(0xFF333333)
 val OffWhite = Color(0xFFFFFFFF)
