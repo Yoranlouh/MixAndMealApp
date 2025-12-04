@@ -5,10 +5,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.mixandmealapp.ui.components.BottomNavBar
 import com.example.mixandmealapp.ui.components.UserBottomNavBar
 import com.example.mixandmealapp.ui.screens.account.AccountScreen
 import com.example.mixandmealapp.ui.screens.auth.LoginScreen
@@ -70,8 +73,17 @@ fun AppNavigation() {
                     }
                 )
             }
-            composable(Navigation.HOME) {
-                HomeScreen(navController = navController)
+            composable(
+                route = Navigation.HOME + "?showPrivacy={showPrivacy}",
+                arguments = listOf(
+                    navArgument("showPrivacy") {
+                        type = NavType.BoolType
+                        defaultValue = false
+                    }
+                )
+            ) { entry ->
+                val showPrivacy = entry.arguments?.getBoolean("showPrivacy") ?: false
+                HomeScreen(navController = navController, showPrivacy = showPrivacy)
             }
             composable(Navigation.SETTINGS) {
                 SettingsScreen(navController = navController)

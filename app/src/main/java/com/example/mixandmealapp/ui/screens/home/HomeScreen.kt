@@ -11,29 +11,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,24 +37,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.mixandmealapp.ui.components.BottomNavBar
+import com.example.mixandmealapp.ui.components.PopularRecipeCard
+import com.example.mixandmealapp.ui.components.PrivacyDialog
 import com.example.mixandmealapp.ui.navigation.Navigation
-import com.example.mixandmealapp.ui.theme.BrandGreen
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
+
+
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    showPrivacy: Boolean,
+    onAcceptPrivacy: () -> Unit = {}
+) {
+    var openDialog by rememberSaveable() { mutableStateOf(showPrivacy) }
+
+    if (openDialog) {
+        PrivacyDialog(
+            onAccept = {
+                openDialog = false
+                onAcceptPrivacy()
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
+
         Header()
         Spacer(modifier = Modifier.height(24.dp))
         FeaturedSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
@@ -67,6 +79,8 @@ fun HomeScreen(navController: NavController) {
         CategorySection()
         Spacer(modifier = Modifier.height(24.dp))
         PopularRecipesSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
+        QuickRecipesSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
+        EasyRecipesSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
     }
 }
 
@@ -158,7 +172,7 @@ fun CategorySection() {
 
 @Composable
 fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
-    val recipes = listOf("Taco Salad", "Pancakes")
+    val recipes = listOf("Taco Salad", "Ceasar Salad")
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -183,30 +197,61 @@ fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
     }
 }
 
+
+
 @Composable
-fun PopularRecipeCard(recipe: String, onClick: () -> Unit = {}) {
-    Card(
-        modifier = Modifier
-            .size(160.dp, 240.dp)
-            .clickable { onClick() }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.SpaceBetween // Use arrangement to push items apart
+fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
+    val recipes = listOf("Chocolate", "Spaghetti Bolognese")
+    Spacer(Modifier.height(16.dp))
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
-                Box(
-                    modifier = Modifier
-                        .height(120.dp)
-                        .fillMaxWidth()
-                        .background(Color.Gray)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = recipe, style = MaterialTheme.typography.titleMedium, maxLines = 2)
+            Text(
+                text = stringResource(id = com.example.mixandmealapp.R.string.quick_recipes),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(text = stringResource(id = com.example.mixandmealapp.R.string.see_all), style = MaterialTheme.typography.bodyMedium, color = BrandOrange)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(recipes) { recipe ->
+                PopularRecipeCard(recipe, onClick = onRecipeClick)
             }
-            Text(stringResource(id = com.example.mixandmealapp.R.string.kcal_minutes), style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
+
+@Composable
+fun EasyRecipesSection(onRecipeClick: () -> Unit = {}) {
+    val recipes = listOf("Taco Taco", "Burrito Burrito")
+    Spacer(Modifier.height(16.dp))
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = stringResource(id = com.example.mixandmealapp.R.string.easy_recipes),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(text = stringResource(id = com.example.mixandmealapp.R.string.see_all), style = MaterialTheme.typography.bodyMedium, color = BrandOrange)
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(recipes) { recipe ->
+                PopularRecipeCard(recipe, onClick = onRecipeClick)
+            }
         }
     }
 }
