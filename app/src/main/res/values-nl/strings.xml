@@ -1,0 +1,105 @@
+<resources>
+    <string name="app_name">MixAndMealApp</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Instellingen</string>
+    <string name="my_account">Mijn account</string>
+    <string name="my_account_support">Instellingen</string>
+
+    <string name="favourites">Favorieten</string>
+    <string name="fav_msg_1">Ik zie dat je je smaak hebt gevonden!</string>
+    <string name="fav_msg_2">Weer honger? Gaan we!</string>
+    <string name="fav_msg_3">Je opgeslagen maaltijden staan hier.</string>
+    <string name="fav_msg_4">Ziet ernaar uit dat je van lekker eten houdt!</string>
+    <string name="fav_msg_5">Je favorieten wachten op je!</string>
+    <string name="fav_msg_6">Zin in een tweede ronde?</string>
+
+    <string name="allergies">Mijn allergieën</string>
+    <string name="allergies_support">Iets wat je niet kunt eten?</string>
+
+    <string name="language_choice">Taal kiezen</string>
+    <string name="language_choice_support">Huidige taal: </string>
+    <string name="p_and_s">Privacy &amp; Beveiliging</string>
+
+    <string name="help_support">Help/Support</string>
+    <string name="help_support_desc">Hulp nodig?</string>
+    <string name="notifications_enable">Notificaties inschakelen</string>
+    <string name="notifications_desc">Ontvang updates over nieuwe recepten</string>
+    <string name="about">Over Mix &amp; Meal</string>
+    <string name="version">Versie 1.0</string>
+    <string name="logout">Uitloggen</string>
+
+    <!-- Language Choice Screen -->
+    <string name="my_language">Mijn taal</string>
+    <string name="english">Engels</string>
+    <string name="dutch">Nederlands</string>
+    <string name="language_changes_applied">Druk op Opslaan om wijzigingen toe te passen</string>
+    <string name="save">Opslaan</string>
+
+    <!-- Home -->
+    <string name="hello">Hallo</string>
+    <string name="featured">Uitgelicht</string>
+    <string name="featured_card">Uitgelichte receptkaart</string>
+    <string name="category">Categorie</string>
+    <string name="see_all">Alles bekijken</string>
+    <string name="breakfast">Ontbijt</string>
+    <string name="lunch">Lunch</string>
+    <string name="dinner">Diner</string>
+    <string name="dessert">Dessert</string>
+    <string name="popular_recipes">Populaire recepten</string>
+    <string name="kcal_minutes">120 Kcal | 20 Min</string>
+
+    <!-- Search -->
+    <string name="search">Zoeken</string>
+    <string name="search_placeholder">Zoeken</string>
+    <string name="editors_choice">Keuze van de redactie</string>
+    <string name="view_all">Alles bekijken</string>
+    <string name="go_to_details">Ga naar details</string>
+
+    <!-- Extra (nieuw toegevoegd) -->
+    <string name="register_title">Registreren</string>
+
+    <!-- Upload -->
+    <string name="upload_enter_recipe_name">Voer receptnaam in</string>
+    <string name="upload_tell_about_recipe">Vertel iets over je recept</string>
+    <string name="upload_enter_ingredient">Ingrediënt invoeren</string>
+    <string name="upload_add_ingredient">Ingrediënt toevoegen</string>
+    <string name="upload_new_ingredient">Nieuw ingrediënt</string>
+    <string name="upload_placeholder_onion">Ui</string>
+    <string name="qty">Aantal</string>
+    <string name="unit">Eenheid</string>
+    <string name="upload_description_label">Beschrijving</string>
+    <string name="upload_kitchen_style">Keukenstijl</string>
+
+    <!-- Fridge -->
+    <string name="fridge_title">Koelkast</string>
+    <string name="my_fridge">Mijn koelkast</string>
+    <string name="items_count">%1$d item</string>
+    <string name="fridge_enter_ingredient">Ingrediënt invoeren</string>
+    <string name="fridge_add_ingredient">Ingrediënt toevoegen</string>
+
+    <!-- Auth / Account -->
+    <string name="username">Gebruikersnaam</string>
+    <string name="email">E‑mail</string>
+    <string name="password">Wachtwoord</string>
+    <string name="create_account">Account aanmaken</string>
+    <string name="already_have_account_login">Heb je al een account? Inloggen</string>
+    <string name="dont_have_account_register">Nog geen account? Registreren</string>
+    <string name="welcome_user">Welkom, gebruiker!</string>
+
+    <!-- Recipe Detail -->
+    <string name="ingredients">Ingrediënten</string>
+    <string name="six_item">6 items</string>
+    <string name="instructions">Instructies</string>
+    <string name="four_steps">4 stappen</string>
+
+    <!-- Scan -->
+    <string name="scan">Scannen</string>
+
+    <!-- Common/Auth buttons and errors -->
+    <string name="login">Inloggen</string>
+    <string name="login_or_signup">Inloggen/Registreren</string>
+    <string name="username_empty_error">Gebruikersnaam mag niet leeg zijn</string>
+    <string name="invalid_email">Ongeldig e‑mailadres</string>
+    <string name="password_min_error">Wachtwoord moet minimaal 6 tekens bevatten</string>
+</resources>
