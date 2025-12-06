@@ -11,7 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mixandmealapp.ui.components.BottomNavBar
+import com.example.mixandmealapp.ui.components.BottomNavBarUser
 import com.example.mixandmealapp.ui.screens.account.AccountScreen
 import com.example.mixandmealapp.ui.screens.auth.LoginScreen
 import com.example.mixandmealapp.ui.screens.auth.RegisterScreen
@@ -49,7 +49,7 @@ fun AppNavigation() {
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                BottomNavBar(navController = navController, currentDestination = currentDestination)
+                BottomNavBarUser(navController = navController, currentDestination = currentDestination)
             }
         }
     ) { paddingValues ->

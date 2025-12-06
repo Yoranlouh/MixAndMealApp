@@ -2,6 +2,8 @@ package com.example.mixandmealapp.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -15,6 +17,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -27,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
@@ -43,79 +48,159 @@ data class BottomNavItem(
 )
 
 @Composable
-fun BottomNavBar(navController: NavHostController, currentDestination: NavDestination?) {
-
-    val items = listOf(
-        BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
-        BottomNavItem("Upload", Icons.Filled.Edit, Navigation.UPLOAD),
-        BottomNavItem("Scan", Icons.Filled.DocumentScanner, Navigation.SCAN),
-        BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
-        BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
-    )
-
-    NavigationBar(
-        modifier = Modifier.height(120.dp), // hoogte zodat de Scan-knop netjes binnen de bar valt
-        containerColor = Color.White,
-        tonalElevation = 8.dp
-    ) {
-        items.forEach { item ->
-            val isScanItem = item.route == "scan"
-            val selected =
-                currentDestination?.hierarchy?.any { it.route == item.route } == true
-
-            NavigationBarItem(
-                selected = selected,
-                enabled = true,
-                alwaysShowLabel = true,
-                onClick = {
-                    navController.navigate(item.route) {
-                        launchSingleTop = true
-                        restoreState = true
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                    }
-                },
-                icon = {
-                    if (isScanItem) {
-                        Box(
-                            modifier = Modifier
-                                .padding(top = 8.dp) // minder ruimte nodig
-                                .size(64.dp) // groot en prominent, maar passend
-                                .offset(y = (-8).dp) // licht omhoog, blijft binnen de bar
-                                .shadow(elevation = 8.dp, shape = CircleShape)
-                                .background(color = BrandGreen, shape = CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.DocumentScanner,
-                                contentDescription = item.title,
-                                tint = Color.White
-                            )
-                        }
-                    } else {
-                        Icon(
-                            imageVector = item.icon,
-                            contentDescription = item.title
-                        )
-                    }
-                },
-                label = {
-                    if (isScanItem) {
-                        Text(item.title, modifier = Modifier.offset(y = (-2).dp)) // label iets dichter naar het icoon
-                    } else {
-                        Text(item.title)
-                    }
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = BrandGreen,
-                    selectedTextColor = BrandGreen,
-                    unselectedIconColor = BrandGrey,
-                    unselectedTextColor = BrandGrey,
-                    indicatorColor = Color.Transparent
-                )
+fun BottomNavBarUser(
+    navController: NavHostController,
+    currentDestination: NavDestination?
+) {
+    Box {
+        // 1️⃣ Navigation Bar behind
+        NavigationBar(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .height(80.dp),
+            containerColor = Color.White,
+            tonalElevation = 8.dp
+        ) {
+            val items = listOf(
+                BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
+                BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
             )
+
+            items.forEach { item ->
+                val selected =
+                    currentDestination?.hierarchy?.any { it.route == item.route } == true
+
+                NavigationBarItem(
+                    selected = selected,
+                    onClick = {
+                        navController.navigate(item.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        }
+                    },
+                    icon = { Icon(item.icon, contentDescription = item.title) },
+                    label = { Text(item.title) },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = BrandGreen,
+                        selectedTextColor = BrandGreen,
+                        unselectedIconColor = BrandGrey,
+                        unselectedTextColor = BrandGrey,
+                        indicatorColor = Color.Transparent
+                    )
+                )
+            }
+        }
+
+        // 2️⃣ Floating Search button above the navbar with label
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = (-24).dp), // lift above the navbar
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .shadow(8.dp, CircleShape)
+                        .background(BrandGreen, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = { navController.navigate(Navigation.SEARCH) }) {
+                        Icon(Icons.Filled.Search, contentDescription = "Search", tint = Color.White)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Search",
+                    color = BrandGrey,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
         }
     }
 }
+
+
+
+
+
+//@Composable
+//fun BottomNavBar(navController: NavHostController, currentDestination: NavDestination?) {
+//
+//    val items = listOf(
+//        BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
+//        BottomNavItem("Upload", Icons.Filled.Edit, Navigation.UPLOAD),
+//        BottomNavItem("Scan", Icons.Filled.DocumentScanner, Navigation.SCAN),
+//        BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
+//        BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
+//    )
+//
+//    NavigationBar(
+//        modifier = Modifier.height(120.dp), // hoogte zodat de Scan-knop netjes binnen de bar valt
+//        containerColor = Color.White,
+//        tonalElevation = 8.dp
+//    ) {
+//        items.forEach { item ->
+//            val isScanItem = item.route == "scan"
+//            val selected =
+//                currentDestination?.hierarchy?.any { it.route == item.route } == true
+//
+//            NavigationBarItem(
+//                selected = selected,
+//                enabled = true,
+//                alwaysShowLabel = true,
+//                onClick = {
+//                    navController.navigate(item.route) {
+//                        launchSingleTop = true
+//                        restoreState = true
+//                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+//                    }
+//                },
+//                icon = {
+//                    if (isScanItem) {
+//                        Box(
+//                            modifier = Modifier
+//                                .padding(top = 8.dp) // minder ruimte nodig
+//                                .size(64.dp) // groot en prominent, maar passend
+//                                .offset(y = (-8).dp) // licht omhoog, blijft binnen de bar
+//                                .shadow(elevation = 8.dp, shape = CircleShape)
+//                                .background(color = BrandGreen, shape = CircleShape),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.Filled.DocumentScanner,
+//                                contentDescription = item.title,
+//                                tint = Color.White
+//                            )
+//                        }
+//                    } else {
+//                        Icon(
+//                            imageVector = item.icon,
+//                            contentDescription = item.title
+//                        )
+//                    }
+//                },
+//                label = {
+//                    if (isScanItem) {
+//                        Text(item.title, modifier = Modifier.offset(y = (-2).dp)) // label iets dichter naar het icoon
+//                    } else {
+//                        Text(item.title)
+//                    }
+//                },
+//                colors = NavigationBarItemDefaults.colors(
+//                    selectedIconColor = BrandGreen,
+//                    selectedTextColor = BrandGreen,
+//                    unselectedIconColor = BrandGrey,
+//                    unselectedTextColor = BrandGrey,
+//                    indicatorColor = Color.Transparent
+//                )
+//            )
+//        }
+//    }
+//}
 
 
 @Composable
@@ -218,7 +303,7 @@ fun BottomNavBarPreview() {
         val navDestination = NavDestination(Navigation.HOME).apply {
             this.route = Navigation.HOME
         }
-        BottomNavBar(
+        BottomNavBarUser(
             navController = navController,
             currentDestination = navDestination
         )

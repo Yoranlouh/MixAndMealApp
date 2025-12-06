@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.mixandmealapp.ui.components.BottomNavBar
+import com.example.mixandmealapp.ui.components.BottomNavBarUser
 import com.example.mixandmealapp.ui.components.truncate
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.BrandGrey
