@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -16,8 +17,10 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -194,5 +197,31 @@ fun OpenFridgeButton(
         modifier = modifier,
         onClick = onClick
     )
+}
+
+
+@Composable
+fun SettingsButton(
+    title: String,
+    description: String? = null,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null
+) {
+    ListItem(
+        headlineContent = {
+            Text(text = title)
+        },
+        supportingContent = {
+            if (description != null) {
+                Text(text = description)
+            }
+        },
+        trailingContent = trailingContent,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    )
+    Divider()
 }
 

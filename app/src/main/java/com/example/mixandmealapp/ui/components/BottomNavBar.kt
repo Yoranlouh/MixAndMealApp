@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
@@ -115,6 +116,98 @@ fun BottomNavBar(navController: NavHostController, currentDestination: NavDestin
         }
     }
 }
+
+
+@Composable
+fun BottomNavBarAdmin(
+    navController: NavHostController,
+    currentDestination: NavDestination?
+) {
+
+    val items = listOf(
+        BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME_ADMIN),
+
+        // Upload — only available for admins
+        BottomNavItem("Upload", Icons.Filled.Edit, Navigation.UPLOAD_ADMIN),
+
+        BottomNavItem("Scan", Icons.Filled.DocumentScanner, Navigation.SCAN_ADMIN),
+
+        // Analytics instead of Search
+        BottomNavItem("Analytics", Icons.Filled.BarChart, Navigation.ANALYTICS),
+
+        BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT_ADMIN)
+    )
+
+    NavigationBar(
+        modifier = Modifier.height(120.dp),
+        containerColor = Color.White,
+        tonalElevation = 8.dp
+    ) {
+        items.forEach { item ->
+
+            val isScanItem = item.title == "Scan"
+
+            val selected = currentDestination?.hierarchy?.any {
+                it.route == item.route
+            } == true
+
+            NavigationBarItem(
+                selected = selected,
+                enabled = true,
+                alwaysShowLabel = true,
+                onClick = {
+                    navController.navigate(item.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                    }
+                },
+                icon = {
+                    if (isScanItem) {
+                        // Same big scan button style as user version
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .size(64.dp)
+                                .offset(y = (-8).dp)
+                                .shadow(8.dp, CircleShape)
+                                .background(BrandGreen, CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.DocumentScanner,
+                                contentDescription = item.title,
+                                tint = Color.White
+                            )
+                        }
+                    } else {
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = item.title
+                        )
+                    }
+                },
+                label = {
+                    if (isScanItem) {
+                        Text(item.title, modifier = Modifier.offset(y = (-2).dp))
+                    } else {
+                        Text(item.title)
+                    }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = BrandGreen,
+                    selectedTextColor = BrandGreen,
+                    unselectedIconColor = BrandGrey,
+                    unselectedTextColor = BrandGrey,
+                    indicatorColor = Color.Transparent
+                )
+            )
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

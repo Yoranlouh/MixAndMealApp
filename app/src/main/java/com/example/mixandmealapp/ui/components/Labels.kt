@@ -31,6 +31,7 @@ object GlobalTextLabel {
     val labelButtonWidth = 81.dp
 }
 
+// Label met Plus/Minus knopjes
 @Composable
 fun TextLabel(
     label: String

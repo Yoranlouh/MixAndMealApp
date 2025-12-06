@@ -162,6 +162,50 @@ fun AppNavigation() {
                     }
                 )
             }
+
+            // Admin Only
+            // ADMIN HOME
+            composable(Navigation.HOME_ADMIN) {
+                HomeScreen(navController = navController, showPrivacy = false)
+            }
+
+// ADMIN UPLOAD
+            composable(Navigation.UPLOAD_ADMIN) {
+                UploadScreen(navController = navController)
+            }
+
+// ADMIN SCAN
+            composable(Navigation.SCAN_ADMIN) {
+                ScanScreen()
+            }
+
+// ANALYTICS SCREEN
+            composable(Navigation.ANALYTICS) {
+                AnalyticsScreen() // <-- You create this screen
+            }
+
+// ADMIN ACCOUNT
+            composable(Navigation.ACCOUNT_ADMIN) {
+                AccountScreen(
+                    navController = navController,
+                    onGoToLogin = {
+                        navController.navigate(Navigation.LOGIN)
+                    },
+                    onLogout = {
+                        navController.navigate(Navigation.LOGIN) {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onGoToSettings = { navController.navigate(Navigation.SETTINGS) }
+                )
+            }
+
         }
     }
+}
+
+@Composable
+fun AnalyticsScreen() {
+    TODO("Not yet implemented")
 }

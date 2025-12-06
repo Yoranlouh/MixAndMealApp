@@ -1,6 +1,7 @@
 package com.example.mixandmealapp.ui.navigation
 
 object Navigation {
+    // User routes
     const val SPLASHHOME = "Splash_Home_Screen"
     const val HOME = "Home_Screen"
     const val SETTINGS = "Settings_Screen"
@@ -17,4 +18,11 @@ object Navigation {
     const val EDITORS_CHOICE = "Editors_Choice_Screen"
     const val RECIPE_DETAIL = "Recipe_Detail_Screen"
     const val LANGUAGE_CHOICE = "Language_Choice_Screen"
+
+    // Admin routes
+    const val HOME_ADMIN = "home_admin"
+    const val UPLOAD_ADMIN = "upload_admin"
+    const val SCAN_ADMIN = "scan_admin"
+    const val ANALYTICS = "analytics"
+    const val ACCOUNT_ADMIN = "account_admin"
 }

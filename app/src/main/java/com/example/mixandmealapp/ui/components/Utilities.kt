@@ -20,23 +20,6 @@ fun String.truncate(maxLength: Int): String {
 }
 
 @Composable
-fun InputTextField(
-    modifier: Modifier = Modifier,
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    isPassword: Boolean = false
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        modifier = modifier.fillMaxWidth()
-    )
-}
-
-@Composable
 fun PrivacyDialog(onAccept: () -> Unit) {
     AlertDialog(
         onDismissRequest = { },

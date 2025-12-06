@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.components.PrivacyDialog
+import com.example.mixandmealapp.ui.components.TextLabel
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
@@ -104,6 +105,7 @@ fun Header() {
 
 @Composable
 fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
+
     Column {
         Text(
             text = stringResource(id = com.example.mixandmealapp.R.string.featured),
@@ -196,8 +198,6 @@ fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
         }
     }
 }
-
-
 
 @Composable
 fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
