@@ -8,7 +8,10 @@ object Navigation {
     const val LOGIN = "Login_Screen"
     const val REGISTER = "Register_Screen"
     const val FAVOURITES = "Favourites_Screen"
-    const val SEARCH = "Search_Result_Screen"
+    // Bottom bar Search screen (the minimal search UI)
+    const val SEARCH = "Search_Screen"
+    // Dedicated results screen for searches
+    const val SEARCH_RESULTS = "Search_Results_Screen"
     const val UPLOAD = "Upload_Screen"
     const val EDIT_PROFILE = "Edit_Profile_Screen"
     const val FRIDGE = "Fridge_Screen"

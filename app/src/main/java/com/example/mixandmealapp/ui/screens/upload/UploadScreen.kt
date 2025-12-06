@@ -48,6 +48,7 @@ import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
+import com.example.mixandmealapp.ui.screens.search.FilterOptions
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.BackButton
@@ -320,11 +321,7 @@ fun UploadScreen(navController: NavHostController) {
         // Kitchen Style Section
         FilterSection(
             title = stringResource(id = com.example.mixandmealapp.R.string.upload_kitchen_style),
-            options = listOf(
-                "Asian", "Chinese", "Dutch", "East-europe", "French", "Greek",
-                "Indian", "Italian", "Japanese", "Korean", "Mediterranean",
-                "Mexican", "Spanish", "Thai", "Turkish", "Vietnamese"
-            ),
+            options = FilterOptions.kitchenStyles,
             selectedOptions = selectedKitchenStyles,
             expanded = kitchenExpanded,
             onHeaderToggle = { kitchenExpanded = !kitchenExpanded },
@@ -339,7 +336,7 @@ fun UploadScreen(navController: NavHostController) {
         // Meal Type Section
         FilterSection(
             title = "Meal Type",
-            options = listOf("Breakfast", "Lunch", "Dinner", "Dessert"),
+            options = FilterOptions.mealTypes,
             selectedOptions = selectedMealTypes,
             expanded = mealTypeExpanded,
             onHeaderToggle = { mealTypeExpanded = !mealTypeExpanded },
@@ -354,11 +351,7 @@ fun UploadScreen(navController: NavHostController) {
         // Allergens Section
         FilterSection(
             title = "Allergens",
-            options = listOf(
-                "Gluten", "Shellfish", "Eggs", "Fish", "Peanuts", "Soy",
-                "Milk", "Nuts", "Celery", "Mustard", "Sesame", "Lupin",
-                "Sulphites", "Molluscs"
-            ),
+            options = FilterOptions.allergens,
             selectedOptions = selectedAllergens,
             expanded = allergensExpanded,
             onHeaderToggle = { allergensExpanded = !allergensExpanded },
@@ -376,11 +369,7 @@ fun UploadScreen(navController: NavHostController) {
         // Diet Section
         FilterSection(
             title = "Diet",
-            options = listOf(
-                "Vegan", "Vegetarian", "Gluten free", "Lactose free",
-                "Nut free", "Diary free", "Low sugar", "Low salt", "Halal",
-                "Kosher", "Paleo", "Flexitarian", "Raw food", "Keto"
-            ),
+            options = FilterOptions.diets,
             selectedOptions = selectedDiets,
             expanded = dietExpanded,
             onHeaderToggle = { dietExpanded = !dietExpanded },

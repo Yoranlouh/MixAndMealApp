@@ -105,12 +105,12 @@ fun AppNavigation() {
                     onItemClick = { navController.navigate(Navigation.RECIPE_DETAIL) }
                 )
             }
-            composable(Navigation.SEARCH) {
-                SearchResultScreen()
-            }
+            // Results page (separate from the main Search screen)
+            composable(Navigation.SEARCH_RESULTS) { SearchResultScreen(navController = navController) }
 
             // Bottom bar bestemmingen
             composable(Navigation.UPLOAD) { UploadScreen(navController = navController) }
+            // Bottom bar Search destination
             composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
             composable(Navigation.FRIDGE) { FridgeScreen(navController = navController) }
             composable(Navigation.POPULAR_RECIPES) { PopularRecipeScreen(navController = navController) }

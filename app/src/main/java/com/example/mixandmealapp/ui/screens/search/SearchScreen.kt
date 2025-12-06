@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +14,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,74 +34,192 @@ import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
+import com.example.mixandmealapp.ui.screens.search.CompactFilterSummary
 
 @Composable
 fun SearchScreen(navController: NavHostController) {
     Scaffold { paddingValues ->
-        SearchContent(
+        MinimalSearchContent(
             modifier = Modifier.padding(paddingValues),
-            onBackClick = { navController.navigateUp() },
-            onPopularViewAll = { navController.navigate(Navigation.POPULAR_RECIPES) },
-            onEditorsViewAll = { navController.navigate(Navigation.EDITORS_CHOICE) },
-            onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) }
+            onSearch = { query, kitchens, meals, allergens, diets ->
+                navController.currentBackStackEntry?.savedStateHandle?.apply {
+                    set("query", query)
+                    set("kitchenStyles", kitchens.toList())
+                    set("mealTypes", meals.toList())
+                    set("allergens", allergens.toList())
+                    set("diets", diets.toList())
+                }
+                navController.navigate(Navigation.SEARCH_RESULTS)
+            }
         )
     }
 }
 
 @Composable
-fun SearchContent(
+fun MinimalSearchContent(
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {},
-    onPopularViewAll: () -> Unit = {},
-    onEditorsViewAll: () -> Unit = {},
-    onRecipeClick: () -> Unit = {}
+    onSearch: (
+        query: String,
+        kitchenStyles: Set<String>,
+        mealTypes: Set<String>,
+        allergens: Set<String>,
+        diets: Set<String>
+    ) -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    val breakfast = stringResource(id = com.example.mixandmealapp.R.string.breakfast)
-    var selectedCategory by remember { mutableStateOf(breakfast) }
+    var showFilters by remember { mutableStateOf(false) }
+    var selKitchens by remember { mutableStateOf(setOf<String>()) }
+    var selMeals by remember { mutableStateOf(setOf<String>()) }
+    var selAllergens by remember { mutableStateOf(setOf<String>()) }
+    var selDiets by remember { mutableStateOf(setOf<String>()) }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        // Back button (pijl)
-        IconButton(
-            onClick = onBackClick,
-            modifier = Modifier.size(48.dp)
-        ) {
-            Text("←", style = MaterialTheme.typography.headlineMedium)
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Title
         Text(
-            text = stringResource(id = com.example.mixandmealapp.R.string.search),
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold
+            text = "What are we making today?",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Modern search bar with leading search icon and trailing filter icon with badge when active
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .height(56.dp),
+            placeholder = { Text(text = stringResource(id = com.example.mixandmealapp.R.string.search)) },
+            singleLine = true,
+            leadingIcon = {
+                Icon(imageVector = Icons.Filled.Search, contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search), tint = BrandGrey)
+            },
+            trailingIcon = {
+                val activeCount = selKitchens.size + selMeals.size + selAllergens.size + selDiets.size
+                Box {
+                    IconButton(onClick = { showFilters = true }) {
+                        Icon(imageVector = Icons.Filled.FilterList, contentDescription = "Filters")
+                    }
+                    if (activeCount > 0) {
+                        // tiny orange dot to indicate active filters
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .align(Alignment.TopEnd)
+                                .background(BrandOrange, shape = RoundedCornerShape(50))
+                        )
+                    }
+                }
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = BrandOrange,
+                unfocusedBorderColor = BrandGrey,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            ),
+            shape = RoundedCornerShape(16.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // Suggested quick labels
+        Spacer(modifier = Modifier.height(10.dp))
+        val suggested = listOf("Breakfast", "Lunch", "Dinner", "Dessert")
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(suggested) { label ->
+                FilterChip(
+                    selected = selMeals.contains(label),
+                    onClick = {
+                        selMeals = setOf(label)
+                        // navigate immediately to results for this meal type
+                        onSearch(searchQuery, selKitchens, selMeals, selAllergens, selDiets)
+                    },
+                    label = { Text(label) }
+                )
+            }
+        }
 
-        // Search Bar
-        SearchBarComponent(searchQuery) { searchQuery = it }
+        // Compact filter dropdown summary
+        CompactFilterSummary(
+            selectedKitchenStyles = selKitchens,
+            selectedMealTypes = selMeals,
+            selectedAllergens = selAllergens,
+            selectedDiets = selDiets,
+            onOpenFilters = { showFilters = true },
+            onClearAll = { selKitchens = emptySet(); selMeals = emptySet(); selAllergens = emptySet(); selDiets = emptySet() }
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { onSearch(searchQuery, selKitchens, selMeals, selAllergens, selDiets) }) {
+            Icon(imageVector = Icons.Filled.Search, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Search")
+        }
+    }
 
-        // Category Filters (Breakfast, Lunch, Dinner)
-        CategoryFilterSection(selectedCategory) { selectedCategory = it }
+    // Filters bottom sheet
+    SearchFilterBottomSheet(
+        show = showFilters,
+        selectedKitchenStyles = selKitchens,
+        selectedMealTypes = selMeals,
+        selectedAllergens = selAllergens,
+        selectedDiets = selDiets,
+        onToggleKitchen = { opt -> selKitchens = selKitchens.toggle(opt) },
+        onToggleMealType = { opt -> selMeals = selMeals.toggle(opt) },
+        onToggleAllergen = { opt -> selAllergens = selAllergens.toggle(opt) },
+        onToggleDiet = { opt -> selDiets = selDiets.toggle(opt) },
+        onApply = { showFilters = false },
+        onClearAll = {
+            selKitchens = emptySet(); selMeals = emptySet(); selAllergens = emptySet(); selDiets = emptySet()
+        },
+        onDismiss = { showFilters = false }
+    )
+}
 
-        Spacer(modifier = Modifier.height(24.dp))
+private fun <T> Set<T>.toggle(item: T): Set<T> = if (contains(item)) this - item else this + item
 
-        // Popular Recipes Section
-        PopularRecipesSection(onViewAll = onPopularViewAll, onRecipeClick = onRecipeClick)
+@Composable
+private fun ActiveFilterChips(
+    kitchens: Set<String>,
+    meals: Set<String>,
+    allergens: Set<String>,
+    diets: Set<String>,
+    onRemove: (category: String, value: String) -> Unit,
+    onClearAll: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth(0.95f)) {
+        // Clear all action
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text(text = "Active filters", style = MaterialTheme.typography.labelMedium, color = BrandGrey)
+            TextButton(onClick = onClearAll) { Text("Clear all") }
+        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(4.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(kitchens.toList()) { k -> FilterChipPill(text = k) { onRemove("kitchen", k) } }
+            items(meals.toList()) { m -> FilterChipPill(text = m) { onRemove("meal", m) } }
+            items(allergens.toList()) { a -> FilterChipPill(text = a) { onRemove("allergen", a) } }
+            items(diets.toList()) { d -> FilterChipPill(text = d) { onRemove("diet", d) } }
+        }
+    }
+}
 
-        // Editor's Choice Section
-        EditorsChoiceSection(onViewAll = onEditorsViewAll, onRecipeClick = onRecipeClick)
+@Composable
+private fun FilterChipPill(text: String, onRemove: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(50),
+        color = BrandGrey,
+        contentColor = DarkText
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) {
+            Text(text)
+            Spacer(modifier = Modifier.width(6.dp))
+            IconButton(onClick = onRemove, modifier = Modifier.size(18.dp)) {
+                Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove filter", tint = DarkText)
+            }
+        }
     }
 }
 
@@ -110,12 +231,12 @@ fun SearchBarComponent(query: String, onQueryChange: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
-        placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.search_placeholder), color = Color.Gray) },
+        placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.search_placeholder), color = BrandGrey) },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search),
-                tint = Color.Gray
+                tint = BrandGrey
             )
         },
         colors = TextFieldDefaults.colors(
@@ -215,7 +336,7 @@ fun PopularRecipeCard(recipeName: String, onClick: () -> Unit = {}) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Gray, RoundedCornerShape(12.dp)),
+                    .background(BrandGrey, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 Text(
@@ -284,7 +405,7 @@ fun EditorChoiceCard(recipe: EditorRecipe, onClick: () -> Unit = {}) {
             Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .background(Color.Gray, RoundedCornerShape(12.dp))
+                    .background(BrandGrey, RoundedCornerShape(12.dp))
             )
 
             Spacer(modifier = Modifier.width(16.dp))

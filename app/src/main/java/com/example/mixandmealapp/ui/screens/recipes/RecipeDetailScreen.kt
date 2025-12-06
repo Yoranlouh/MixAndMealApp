@@ -64,7 +64,7 @@ import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.LightBackground
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
-data class Ingredient(val name: String, val qty: String, val emoji: String)
+data class Ingredient(val name: String, val qty: String)
 
 @Composable
 fun RecipeDetailScreen(
@@ -82,11 +82,11 @@ fun RecipeDetailScreen(
 
     val ingredients = remember {
         listOf(
-            Ingredient("Tortilla Chips", "20 gr", "🍿"),
-            Ingredient("Avocado", "1", "🥑"),
-            Ingredient("Red Cabbage", "9", "🥬"),
-            Ingredient("Peanuts", "10 gr", "🥜"),
-            Ingredient("Red Onions", "1", "🧅")
+            Ingredient("Tortilla Chips", "20 gr"),
+            Ingredient("Avocado", "1"),
+            Ingredient("Red Cabbage", "9"),
+            Ingredient("Peanuts", "10 gr"),
+            Ingredient("Red Onions", "1")
         )
     }
 
@@ -400,19 +400,7 @@ private fun IngredientRow(ingredient: Ingredient) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(LightBackground),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(ingredient.emoji, fontSize = 20.sp)
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(ingredient.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-            }
+            Text(ingredient.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
             Text(ingredient.qty, color = BrandGrey)
         }
     }
