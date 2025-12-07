@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,33 +28,34 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
-import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.mixandmealapp.ui.components.BackButton
+import com.example.mixandmealapp.ui.components.PrimaryButton
+import com.example.mixandmealapp.ui.navigation.Navigation
+import com.example.mixandmealapp.ui.screens.search.FilterOptions
 import com.example.mixandmealapp.ui.theme.BrandGreen
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
-import com.example.mixandmealapp.ui.screens.search.FilterOptions
-import androidx.compose.ui.text.input.KeyboardType
-import com.example.mixandmealapp.ui.components.PrimaryButton
-import com.example.mixandmealapp.ui.components.BackButton
 
 data class Ingredient(
     val name: String,
@@ -71,7 +75,7 @@ fun UploadScreen(navController: NavHostController) {
     var cookingDurationIndex by remember { mutableIntStateOf(2) } // default 30 min
     val ingredients = remember { mutableStateListOf<Ingredient>() }
     var newIngredientName by remember { mutableStateOf("") }
-    
+
     // Kitchen Style states
     var selectedKitchenStyles by remember { mutableStateOf(setOf<String>()) }
 
@@ -90,6 +94,22 @@ fun UploadScreen(navController: NavHostController) {
     var allergensExpanded by remember { mutableStateOf(true) }
     var dietExpanded by remember { mutableStateOf(true) }
 
+    var showSuccessDialog by remember { mutableStateOf(false) }
+
+    if (showSuccessDialog) {
+        UploadSuccessDialog(
+            onDismiss = { showSuccessDialog = false },
+            onBackToHome = {
+                showSuccessDialog = false
+                navController.navigate(Navigation.HOME) {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                }
+            }
+        )
+    }
+
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -105,12 +125,12 @@ fun UploadScreen(navController: NavHostController) {
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Add Cover Photo Section
         AddCoverPhotoSection()
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Recipe Name
         Text(
             text = "Recipe Name",
@@ -130,9 +150,9 @@ fun UploadScreen(navController: NavHostController) {
             ),
             shape = RoundedCornerShape(12.dp)
         )
-        
+
         Spacer(modifier = Modifier.height(20.dp))
-        
+
         // Description
         Text(
             text = stringResource(id = com.example.mixandmealapp.R.string.upload_description_label),
@@ -155,9 +175,9 @@ fun UploadScreen(navController: NavHostController) {
             shape = RoundedCornerShape(12.dp),
             maxLines = 5
         )
-        
+
         Spacer(modifier = Modifier.height(20.dp))
-        
+
         // Difficulty
         Text(
             text = "Difficulty",
@@ -170,9 +190,9 @@ fun UploadScreen(navController: NavHostController) {
             selectedDifficulty = selectedDifficulty,
             onDifficultySelected = { selectedDifficulty = it }
         )
-        
+
         Spacer(modifier = Modifier.height(20.dp))
-        
+
         // Cooking Duration
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -195,9 +215,9 @@ fun UploadScreen(navController: NavHostController) {
             onIndexChange = { cookingDurationIndex = it },
             options = durationOptions
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Ingredients Section
         Text(
             text = "Ingredients",
@@ -206,18 +226,18 @@ fun UploadScreen(navController: NavHostController) {
             color = DarkText
         )
         Spacer(modifier = Modifier.height(12.dp))
-        
+
         // Ingredient List
         ingredients.forEach { ingredient ->
             SimpleIngredientItem(
                 ingredient = ingredient,
-                onNameChange = { newName -> 
+                onNameChange = { newName ->
                     val index = ingredients.indexOf(ingredient)
                     if (index != -1) {
                         ingredients[index] = ingredient.copy(name = newName)
                     }
                 },
-                onAmountChange = { newAmount -> 
+                onAmountChange = { newAmount ->
                     val index = ingredients.indexOf(ingredient)
                     if (index != -1) {
                         val parsed = newAmount.replace(",", ".").toDoubleOrNull()
@@ -250,7 +270,7 @@ fun UploadScreen(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
-        
+
         // Typen van ingrediëntnaam -> daarna via "+ toevoegen" om te bevestigen
         OutlinedTextField(
             value = newIngredientName,
@@ -266,9 +286,9 @@ fun UploadScreen(navController: NavHostController) {
             shape = RoundedCornerShape(24.dp),
             singleLine = true
         )
-        
+
         Spacer(modifier = Modifier.height(12.dp))
-        
+
         // Duidelijke optie om het getypte ingrediënt toe te voegen als label + amount
         if (newIngredientName.isNotBlank()) {
             OutlinedButton(
@@ -289,7 +309,7 @@ fun UploadScreen(navController: NavHostController) {
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
-        
+
         // Add Ingredient Button (toon alleen als er geen leeg veld bestaat én er geen naam getypt is)
         val hasEmptyRow = ingredients.any { it.name.isBlank() && it.amount == null && it.unitType.isBlank() }
         if (!hasEmptyRow && newIngredientName.isBlank()) {
@@ -307,7 +327,7 @@ fun UploadScreen(navController: NavHostController) {
                 border = BorderStroke(1.dp, BrandGrey)
             ) {
                 Icon(
-                    Icons.Filled.Add, 
+                    Icons.Filled.Add,
                     contentDescription = "Add",
                     tint = DarkText
                 )
@@ -315,9 +335,9 @@ fun UploadScreen(navController: NavHostController) {
                 Text(stringResource(id = com.example.mixandmealapp.R.string.upload_new_ingredient))
             }
         }
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Kitchen Style Section
         FilterSection(
             title = stringResource(id = com.example.mixandmealapp.R.string.upload_kitchen_style),
@@ -330,9 +350,9 @@ fun UploadScreen(navController: NavHostController) {
                 selectedKitchenStyles = if (selectedKitchenStyles.contains(option)) emptySet() else setOf(option)
             }
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Meal Type Section
         FilterSection(
             title = "Meal Type",
@@ -345,9 +365,9 @@ fun UploadScreen(navController: NavHostController) {
                 selectedMealTypes = if (selectedMealTypes.contains(option)) emptySet() else setOf(option)
             }
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Allergens Section
         FilterSection(
             title = "Allergens",
@@ -363,9 +383,9 @@ fun UploadScreen(navController: NavHostController) {
                 }
             }
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         // Diet Section
         FilterSection(
             title = "Diet",
@@ -378,16 +398,61 @@ fun UploadScreen(navController: NavHostController) {
                 selectedDiets = if (selectedDiets.contains(option)) emptySet() else setOf(option)
             }
         )
-        
+
         Spacer(modifier = Modifier.height(32.dp))
-        
+
         // Upload Button (uses app-wide PrimaryButton style)
         PrimaryButton(
             text = "Upload",
-            onClick = { /* TODO: Handle upload */ }
+            onClick = { showSuccessDialog = true }
         )
-        
+
         Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
+fun UploadSuccessDialog(onDismiss: () -> Unit, onBackToHome: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "🥳",
+                    fontSize = 80.sp
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "Upload Success",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "Your recipe has been uploaded,\nyou can see it on your profile",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    color = DarkText.copy(alpha = 0.8f)
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    onClick = onBackToHome,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = BrandOrange),
+                    contentPadding = PaddingValues(vertical = 12.dp)
+                ) {
+                    Text("Back to Home", color = Color.White)
+                }
+            }
+        }
     }
 }
 
@@ -426,9 +491,9 @@ fun AddCoverPhotoSection() {
             )
         }
     }
-    
+
     Spacer(modifier = Modifier.height(16.dp))
-    
+
     // Camera icon below
     Box(
         modifier = Modifier.fillMaxWidth(),
@@ -598,7 +663,7 @@ fun SimpleIngredientItem(
                 singleLine = true
             )
         }
-        
+
         // Amount Input (Double) + Unit Type (String)
         val amountText = ingredient.amount?.toString() ?: ""
         Box(modifier = Modifier.weight(0.5f)) {
@@ -679,7 +744,7 @@ fun SimpleIngredientItem(
                 )
             }
         }
-        
+
         // Remove Button
         IconButton(
             onClick = onRemove,
@@ -776,5 +841,12 @@ fun FilterSection(
 fun UploadScreenPreview() {
     MixAndMealAppTheme {
         UploadScreen(navController = rememberNavController())
+    }
+}
+@Preview(name = "Upload Success Dialog", showBackground = true)
+@Composable
+fun UploadSuccessDialogPreview() {
+    MixAndMealAppTheme {
+        UploadSuccessDialog(onDismiss = {}, onBackToHome = {})
     }
 }

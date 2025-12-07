@@ -1,13 +1,14 @@
 package com.example.mixandmealapp.ui.screens.search
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -53,59 +54,61 @@ fun SearchFilterBottomSheet(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
-        // Kitchen Styles (multi-select)
-        FilterSection(
-            title = "Kitchen Styles",
-            options = FilterOptions.kitchenStyles,
-            selectedOptions = selectedKitchenStyles,
-            expanded = kitchenExpanded,
-            onHeaderToggle = { kitchenExpanded = !kitchenExpanded },
-            onOptionToggle = { opt ->
-                onToggleKitchen(opt)
-            }
-        )
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            // Kitchen Styles (multi-select)
+            FilterSection(
+                title = "Kitchen Styles",
+                options = FilterOptions.kitchenStyles,
+                selectedOptions = selectedKitchenStyles,
+                expanded = kitchenExpanded,
+                onHeaderToggle = { kitchenExpanded = !kitchenExpanded },
+                onOptionToggle = { opt ->
+                    onToggleKitchen(opt)
+                }
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        // Meal Types (multi-select)
-        FilterSection(
-            title = "Meal Types",
-            options = FilterOptions.mealTypes,
-            selectedOptions = selectedMealTypes,
-            expanded = mealTypeExpanded,
-            onHeaderToggle = { mealTypeExpanded = !mealTypeExpanded },
-            onOptionToggle = { opt ->
-                onToggleMealType(opt)
-            }
-        )
+            // Meal Types (multi-select)
+            FilterSection(
+                title = "Meal Types",
+                options = FilterOptions.mealTypes,
+                selectedOptions = selectedMealTypes,
+                expanded = mealTypeExpanded,
+                onHeaderToggle = { mealTypeExpanded = !mealTypeExpanded },
+                onOptionToggle = { opt ->
+                    onToggleMealType(opt)
+                }
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        // Allergens (multi-select)
-        FilterSection(
-            title = "Allergens",
-            options = FilterOptions.allergens,
-            selectedOptions = selectedAllergens,
-            expanded = allergensExpanded,
-            onHeaderToggle = { allergensExpanded = !allergensExpanded },
-            onOptionToggle = { opt ->
-                onToggleAllergen(opt)
-            }
-        )
+            // Allergens (multi-select)
+            FilterSection(
+                title = "Allergens",
+                options = FilterOptions.allergens,
+                selectedOptions = selectedAllergens,
+                expanded = allergensExpanded,
+                onHeaderToggle = { allergensExpanded = !allergensExpanded },
+                onOptionToggle = { opt ->
+                    onToggleAllergen(opt)
+                }
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        // Diets (multi-select)
-        FilterSection(
-            title = "Diets",
-            options = FilterOptions.diets,
-            selectedOptions = selectedDiets,
-            expanded = dietsExpanded,
-            onHeaderToggle = { dietsExpanded = !dietsExpanded },
-            onOptionToggle = { opt ->
-                onToggleDiet(opt)
-            }
-        )
+            // Diets (multi-select)
+            FilterSection(
+                title = "Diets",
+                options = FilterOptions.diets,
+                selectedOptions = selectedDiets,
+                expanded = dietsExpanded,
+                onHeaderToggle = { dietsExpanded = !dietsExpanded },
+                onOptionToggle = { opt ->
+                    onToggleDiet(opt)
+                }
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
         Divider()
