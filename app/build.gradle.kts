@@ -44,7 +44,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    // ViewModel KTX can be added via version catalog if needed
     implementation(libs.androidx.activity.compose)
+    // ViewModel base APIs
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.4")
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -57,6 +60,8 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
+    // Coroutines for async repository calls and viewModelScope
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
