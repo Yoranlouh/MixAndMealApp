@@ -192,7 +192,12 @@ fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(
+                16.dp,
+                alignment = Alignment.CenterHorizontally
+            ),
+            modifier = Modifier.fillMaxWidth(),
+
         ) {
             items(recipes) { recipe ->
                 PopularRecipeCard(recipe, onClick = onRecipeClick)

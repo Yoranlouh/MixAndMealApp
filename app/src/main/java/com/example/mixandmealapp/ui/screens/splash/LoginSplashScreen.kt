@@ -16,6 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +41,8 @@ fun LoginSplashScreen(
     onGoToHome: () -> Unit = {}
 ) {
 
+    var privacyShown by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -46,15 +52,25 @@ fun LoginSplashScreen(
                         text = "Later",
                         color = BrandOrange,
                         onClick = {
-                            navController.navigate(Navigation.HOME + "?showPrivacy=true")
+
+                            val route = if (!privacyShown) {
+                                privacyShown = true
+                                Navigation.HOME + "?showPrivacy=true"
+                            } else {
+                                Navigation.HOME
+                            }
+                            navController.navigate(route) {
+
+                                popUpTo(Navigation.SPLASHHOME)
+                            }
                         },
                         modifier = Modifier.padding(end = 16.dp)
                     )
                 }
             )
-
         }
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .padding(padding)
