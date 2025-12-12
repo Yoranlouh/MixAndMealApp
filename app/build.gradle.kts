@@ -69,4 +69,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // ktor connection
+    implementation("io.ktor:ktor-client-core:3.3.0")
+    implementation("io.ktor:ktor-client-content-negotiation:3.3.0")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.0")
+    implementation("io.ktor:ktor-client-cio:3.3.0")       // JVM
+    implementation("io.ktor:ktor-client-okhttp:3.3.0")
+    implementation("io.ktor:ktor-client-logging:3.3.0")
+
 }
