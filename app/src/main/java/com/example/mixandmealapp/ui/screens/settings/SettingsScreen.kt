@@ -20,6 +20,7 @@ import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.navigation.Navigation
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import com.example.mixandmealapp.ui.components.SettingsButton
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,17 +33,14 @@ fun SettingsScreen(
 
     Column(modifier = modifier) {
 
-//TopAppBar is experimental
+        // Top App Bar
         TopAppBar(
             title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     BackButton(
                         navController = navController,
                         modifier = Modifier.padding(end = 8.dp)
                     )
-
                     Text(
                         text = stringResource(id = R.string.settings_title),
                         style = MaterialTheme.typography.headlineSmall
@@ -53,17 +51,15 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.padding(8.dp))
 
-        // Account button
-        ListItem(
-            headlineContent = {Text(stringResource(R.string.my_account))},
-            supportingContent = {Text(stringResource(R.string.my_account_support))},
-            modifier = Modifier
-                .clickable {
-                    // TODO: Send to account page
-                }
+        // Account
+        SettingsButton(
+            title = stringResource(R.string.my_account),
+            description = stringResource(R.string.my_account_support),
+            onClick = {
+                // TODO: Send to account page
+            }
         )
 
-        Divider()
 
         // Favorites
         val messages = listOf(
@@ -77,77 +73,77 @@ fun SettingsScreen(
 
         val dynamicMessage = messages.random()
 
-        ListItem(
-            headlineContent = {Text(stringResource(R.string.favourites))},
-            supportingContent = {Text(dynamicMessage)},
-            modifier = Modifier
-                .clickable {
-                    // TODO: Send to Favourites page
-                }
+        SettingsButton(
+            title = stringResource(R.string.favourites),
+            description = dynamicMessage,
+            onClick = {
+                // TODO
+            }
+        )
+        Divider()
+
+        // Allergies
+        SettingsButton(
+            title = stringResource(R.string.allergies),
+            description = stringResource(R.string.allergies_support),
+            onClick = {
+                // TODO
+            }
         )
 
         Divider()
 
-        // My Allergies
-        ListItem(
-            headlineContent = {Text(stringResource(R.string.allergies))},
-            supportingContent = {Text(stringResource(R.string.allergies_support))},
-            modifier = Modifier
-                .clickable {
-                    // TODO: Send to account page
+        // Language
+        val locales = AppCompatDelegate.getApplicationLocales()
+        val currentLanguage by remember(locales) {
+            mutableStateOf(
+                when (val tag = locales.toLanguageTags()) {
+                    null, "" -> "English"
+                    else -> if (tag.startsWith("nl")) "Dutch" else "English"
                 }
-        )
-
-        Divider()
-
-        // Language Selection
-        // Compute the current language label every recomposition so it updates immediately after returning
-        val currentTag = AppCompatDelegate.getApplicationLocales().toLanguageTags()
-        val currentLanguage = if (!currentTag.isNullOrBlank() && currentTag.startsWith("nl")) {
-            stringResource(id = R.string.dutch)
-        } else {
-            stringResource(id = R.string.english)
+            )
         }
-        ListItem(
-            headlineContent = {Text(stringResource(R.string.language_choice))},
-            supportingContent = {Text(stringResource(R.string.language_choice_support) + currentLanguage)},
-            modifier = Modifier
-                .clickable {
-                    navController.navigate(Navigation.LANGUAGE_CHOICE)
-                }
-        )
 
+        Divider()
+
+        SettingsButton(
+            title = stringResource(R.string.language_choice),
+            description = stringResource(R.string.language_choice_support) + currentLanguage,
+            onClick = {
+                navController.navigate(Navigation.LANGUAGE_CHOICE)
+            }
+        )
 
         Divider()
 
         // Privacy & Security
-        ListItem(
-            headlineContent = {Text(stringResource(R.string.p_and_s))},
-            modifier = Modifier
-                .clickable {
-                    // TODO: Send to P & S page
-                }
+        SettingsButton(
+            title = stringResource(R.string.p_and_s),
+            description = "Privacy & Security",
+            onClick = {
+                navController.navigate(Navigation.LANGUAGE_CHOICE)
+            }
         )
 
         Divider()
 
         // Help/Support
-        ListItem(
-            headlineContent = {Text(stringResource(id = R.string.help_support))},
-            supportingContent = {Text(stringResource(id = R.string.help_support_desc))},
-            modifier = Modifier
-                .clickable {
-                    // TODO: Send to support page
-                }
+        SettingsButton(
+            title = stringResource(R.string.help_support),
+            description = stringResource(R.string.help_support_desc),
+            onClick = {
+                // TODO
+            }
         )
 
         Divider()
 
 
-        // Notification Toggle
-        ListItem(
-            headlineContent = { Text(stringResource(id = R.string.notifications_enable)) },
-            supportingContent = { Text(stringResource(id = R.string.notifications_desc)) },
+        // Notifications Toggle
+        SettingsButton(
+            title = stringResource(R.string.notifications_enable),
+            description = stringResource(R.string.notifications_desc),
+            onClick = {},
             trailingContent = {
                 Switch(
                     checked = notificationsEnabled,
@@ -158,42 +154,25 @@ fun SettingsScreen(
 
         Divider()
 
-        // About button
-        ListItem(
-            headlineContent = { Text(stringResource(id = R.string.about)) },
-            supportingContent = { Text(stringResource(id = R.string.version)) },
-            modifier = Modifier
-                .clickable {
-                    // TODO: Navigate to "About" screen
-                }
+        // About
+        SettingsButton(
+            title = stringResource(R.string.about),
+            description = stringResource(R.string.version),
+            onClick = {}
         )
 
         Divider()
 
-        // Logout button
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = stringResource(id = R.string.logout),
-                    color = Color.Red
-                )
+        // Logout
+        SettingsButton(
+            title = stringResource(R.string.logout),
+            description = "",
+            onClick = {
+                // TODO logout
             },
-            modifier = Modifier
-                .clickable {
-                    // TODO: Navigate to "About" screen
-                }
+            trailingContent = null // just a red title
         )
-
-        Divider()
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun SettingsPreview() {
-//    MixAndMealAppTheme {
-//        SettingsScreen()
-//    }
-//}
 
 

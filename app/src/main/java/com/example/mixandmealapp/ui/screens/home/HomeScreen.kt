@@ -197,7 +197,6 @@ fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
                 alignment = Alignment.CenterHorizontally
             ),
             modifier = Modifier.fillMaxWidth(),
-
         ) {
             items(recipes) { recipe ->
                 PopularRecipeCard(recipe, onClick = onRecipeClick)
@@ -225,7 +224,11 @@ fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(
+                16.dp,
+                alignment = Alignment.CenterHorizontally
+            ),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             items(recipes) { recipe ->
                 PopularRecipeCard(recipe, onClick = onRecipeClick)
@@ -253,7 +256,11 @@ fun EasyRecipesSection(onRecipeClick: () -> Unit = {}) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(
+                16.dp,
+                alignment = Alignment.CenterHorizontally
+            ),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             items(recipes) { recipe ->
                 PopularRecipeCard(recipe, onClick = onRecipeClick)
