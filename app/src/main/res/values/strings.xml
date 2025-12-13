@@ -70,6 +70,10 @@
     <string name="unit">Unit</string>
     <string name="upload_description_label">Description</string>
     <string name="upload_kitchen_style">Kitchen Style</string>
+    <string name="add_new_ingredient_option">Add "%1$s" as new ingredient…</string>
+    <string name="ingredient_title">Ingredient title</string>
+    <string name="ingredient_description">Description</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Fridge -->
     <string name="fridge_title">Fridge</string>
@@ -102,4 +106,9 @@
     <string name="username_empty_error">Username cannot be empty</string>
     <string name="invalid_email">Invalid email</string>
     <string name="password_min_error">Password must be at least 6 characters</string>
+
+    <!-- Favourites removal confirmation -->
+    <string name="confirm_remove_favourite_message">Delete recipe from favourites?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

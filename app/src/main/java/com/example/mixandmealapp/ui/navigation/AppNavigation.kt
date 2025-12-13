@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,6 +30,8 @@ import com.example.mixandmealapp.ui.screens.recipes.EditorsChoiceScreen
 import com.example.mixandmealapp.ui.screens.recipes.RecipeDetailScreen
 import com.example.mixandmealapp.ui.screens.settings.options.LanguageChoiceScreen
 import com.example.mixandmealapp.ui.screens.admin.AdminAnalyticsScreen
+import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
+import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 
 private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
@@ -40,6 +43,10 @@ private val noBottomBarRoutes = listOf(
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    // Shared ViewModel instance for fridge across screens
+    val fridgeViewModel = remember { FridgeViewModel() }
+    // Shared ViewModel instance for favourites across screens
+    val favouritesViewModel = remember { FavouritesViewModel() }
 
     // observe huidige route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -102,7 +109,8 @@ fun AppNavigation() {
             composable(Navigation.FAVOURITES) {
                 FavouritesScreen(
                     navController = navController,
-                    onItemClick = { navController.navigate(Navigation.RECIPE_DETAIL) }
+                    onItemClick = { navController.navigate(Navigation.RECIPE_DETAIL) },
+                    viewModel = favouritesViewModel
                 )
             }
             // Results page (separate from the main Search screen)
@@ -112,7 +120,7 @@ fun AppNavigation() {
             composable(Navigation.UPLOAD) { UploadScreen(navController = navController) }
             // Bottom bar Search destination
             composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
-            composable(Navigation.FRIDGE) { FridgeScreen(navController = navController) }
+            composable(Navigation.FRIDGE) { FridgeScreen(navController = navController, viewModel = fridgeViewModel) }
             composable(Navigation.POPULAR_RECIPES) { PopularRecipeScreen(navController = navController) }
             composable(Navigation.EDITORS_CHOICE) { EditorsChoiceScreen(navController = navController) }
             composable(Navigation.RECIPE_DETAIL) {
@@ -128,6 +136,8 @@ fun AppNavigation() {
             }
             composable(Navigation.ACCOUNT) {
                 AccountScreen(
+                    fridgeViewModel = fridgeViewModel,
+                    favouritesViewModel = favouritesViewModel,
                     onGoToLogin = {
                         navController.navigate(Navigation.LOGIN) {
                             launchSingleTop = true

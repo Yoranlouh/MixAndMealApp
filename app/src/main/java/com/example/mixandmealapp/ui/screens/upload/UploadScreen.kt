@@ -50,6 +50,7 @@ import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.InputFieldSmall
 import com.example.mixandmealapp.ui.components.InputFieldTextBox
 import com.example.mixandmealapp.ui.components.PrimaryButton
+import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.screens.search.FilterOptions
 import com.example.mixandmealapp.ui.theme.BrandGreen
@@ -629,22 +630,14 @@ fun SimpleIngredientItem(
                 Text(text = ingredient.name, color = Color.White)
             }
         } else {
-            OutlinedTextField(
+            IngredientAutoCompleteField(
                 value = ingredient.name,
                 onValueChange = onNameChange,
+                onSelected = { selected -> onNameChange(selected) },
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
-                textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.upload_placeholder_onion), color = Color.Gray) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = BrandGrey,
-                    focusedBorderColor = BrandOrange,
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White
-                ),
-                shape = RoundedCornerShape(24.dp),
-                singleLine = true
+                placeholder = stringResource(id = com.example.mixandmealapp.R.string.upload_enter_ingredient)
             )
         }
 
