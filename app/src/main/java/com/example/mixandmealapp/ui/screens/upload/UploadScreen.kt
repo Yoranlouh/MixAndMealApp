@@ -47,7 +47,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mixandmealapp.ui.components.BackButton
+import com.example.mixandmealapp.ui.components.InputFieldSmall
+import com.example.mixandmealapp.ui.components.InputFieldTextBox
 import com.example.mixandmealapp.ui.components.PrimaryButton
+import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.screens.search.FilterOptions
 import com.example.mixandmealapp.ui.theme.BrandGreen
@@ -132,49 +135,31 @@ fun UploadScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // Recipe Name
-        Text(
-            text = "Recipe Name",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = DarkText
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
+        var recipeName by remember { mutableStateOf("") }
+
+        InputFieldSmall(
             value = recipeName,
             onValueChange = { recipeName = it },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.upload_enter_recipe_name)) },
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = BrandGrey,
-                focusedBorderColor = BrandOrange
-            ),
-            shape = RoundedCornerShape(12.dp)
+            label = "Recipe Name",
+            placeholder = "Enter Recipe Name",
+            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+            fontWeight = FontWeight.SemiBold
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
         // Description
-        Text(
-            text = stringResource(id = com.example.mixandmealapp.R.string.upload_description_label),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = DarkText
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
+        InputFieldTextBox(
             value = description,
             onValueChange = { description = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp),
-            placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.upload_tell_about_recipe)) },
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = BrandGrey,
-                focusedBorderColor = BrandOrange
-            ),
-            shape = RoundedCornerShape(12.dp),
-            maxLines = 5
+            modifier = Modifier.fillMaxWidth(),
+            label = "Description",
+            placeholder = "Tell us a little about your recipe",
+            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+            fontWeight = FontWeight.Normal
         )
+
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -645,22 +630,14 @@ fun SimpleIngredientItem(
                 Text(text = ingredient.name, color = Color.White)
             }
         } else {
-            OutlinedTextField(
+            IngredientAutoCompleteField(
                 value = ingredient.name,
                 onValueChange = onNameChange,
+                onSelected = { selected -> onNameChange(selected) },
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
-                textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.upload_placeholder_onion), color = Color.Gray) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = BrandGrey,
-                    focusedBorderColor = BrandOrange,
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White
-                ),
-                shape = RoundedCornerShape(24.dp),
-                singleLine = true
+                placeholder = stringResource(id = com.example.mixandmealapp.R.string.upload_enter_ingredient)
             )
         }
 

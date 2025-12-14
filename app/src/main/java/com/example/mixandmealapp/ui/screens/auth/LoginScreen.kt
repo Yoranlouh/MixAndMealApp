@@ -27,7 +27,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mixandmealapp.ui.components.BackButton
-import com.example.mixandmealapp.ui.components.InputTextField
+import com.example.mixandmealapp.ui.components.InputTextFieldLogin
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.navigation.Navigation
 
@@ -70,7 +70,7 @@ fun LoginScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
-            InputTextField(
+            InputTextFieldLogin(
                 value = email,
                 onValueChange = { email = it },
                 label = "Email"
@@ -78,7 +78,7 @@ fun LoginScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            InputTextField(
+            InputTextFieldLogin(
                 value = password,
                 onValueChange = { password = it },
                 label = "Password",

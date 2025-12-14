@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -16,8 +17,10 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -139,7 +142,9 @@ fun CogwheelButton(onClick: () -> Unit) {
 fun LabelFridge(
     label: String,
     modifier: Modifier = Modifier,
-    autoHideOnRemove: Boolean = true,
+    // Do not auto-hide by default. Let the parent state drive UI removal to avoid
+    // visual double-removal when the backing list also updates after onRemove.
+    autoHideOnRemove: Boolean = false,
     onRemove: (() -> Unit)? = null
 ) {
     var visible by remember { mutableStateOf(true) }
@@ -180,6 +185,31 @@ fun LabelFridge(
             }
         }
     }
+}
+
+@Composable
+fun SettingsButton(
+    title: String,
+    description: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null
+) {
+    ListItem(
+        headlineContent = {
+            Text(text = title)
+        },
+        supportingContent = {
+            if (description != null) {
+                Text(text = description)
+            }
+        },
+        trailingContent = trailingContent,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    )
+    Divider()
 }
 
 @Composable

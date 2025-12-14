@@ -72,6 +72,10 @@
     <string name="unit">Eenheid</string>
     <string name="upload_description_label">Beschrijving</string>
     <string name="upload_kitchen_style">Keukenstijl</string>
+    <string name="add_new_ingredient_option">Voeg "%1$s" toe als nieuw ingrediënt…</string>
+    <string name="ingredient_title">Ingrediënttitel</string>
+    <string name="ingredient_description">Beschrijving</string>
+    <string name="cancel">Annuleren</string>
 
     <!-- Fridge -->
     <string name="fridge_title">Koelkast</string>
@@ -104,4 +108,9 @@
     <string name="username_empty_error">Gebruikersnaam mag niet leeg zijn</string>
     <string name="invalid_email">Ongeldig e‑mailadres</string>
     <string name="password_min_error">Wachtwoord moet minimaal 6 tekens bevatten</string>
+
+    <!-- Favourites removal confirmation -->
+    <string name="confirm_remove_favourite_message">Recept verwijderen uit favorieten?</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nee</string>
 </resources>

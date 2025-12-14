@@ -62,6 +62,14 @@ interface FridgeRepository {
     suspend fun getSuggestions(items: List<FridgeItem>): List<String>
 }
 
+// Ingredient catalog for search/autocomplete and creation
+data class IngredientDef(val id: String, val name: String, val description: String)
+
+interface IngredientCatalogRepository {
+    suspend fun search(prefix: String, limit: Int = 10): List<IngredientDef>
+    suspend fun add(name: String, description: String): IngredientDef
+}
+
 interface AnalyticsRepository {
     suspend fun getMetrics(period: String): Map<String, Number>
 }
@@ -107,6 +115,7 @@ object ServiceLocator {
     val fridgeRepository: FridgeRepository by lazy { InMemoryFridgeRepository() }
     val analyticsRepository: AnalyticsRepository by lazy { FakeAnalyticsRepository() }
     val searchMetadataRepository: SearchMetadataRepository by lazy { FakeSearchMetadataRepository() }
+    val ingredientCatalogRepository: IngredientCatalogRepository by lazy { InMemoryIngredientCatalog() }
 }
 
 /**
@@ -162,7 +171,16 @@ private class FakeRecipesRepository : RecipesRepository {
  * An in-memory favourites repository with a modifiable list.
  */
 private class FakeFavouritesRepository : FavouritesRepository {
-    private val favs = mutableListOf("Pasta Bolognese", "Tomato Soup")
+    // Seed with 6 demo favourites so Account can show up to 4 while the full
+    // Favourites screen can show the complete list and both stay in sync.
+    private val favs = mutableListOf(
+        "Sunny Egg & Toast Avocado",
+        "Bowl of noodle with beef",
+        "Easy homemade beef burger",
+        "Half boiled egg sandwich",
+        "Veggie pasta primavera",
+        "Spicy chicken tacos"
+    )
 
     override suspend fun getFavourites(): List<String> {
         kotlinx.coroutines.delay(120)
@@ -270,7 +288,8 @@ private class InMemoryFridgeRepository : FridgeRepository {
 
     override suspend fun addItem(name: String, quantity: String): FridgeItem {
         kotlinx.coroutines.delay(80)
-        val item = FridgeItem(System.currentTimeMillis().toString(), name, quantity)
+        // Use a UUID to guarantee unique IDs even when adding multiple items within the same millisecond.
+        val item = FridgeItem(java.util.UUID.randomUUID().toString(), name, quantity)
         items.add(item)
         return item
     }
@@ -288,6 +307,40 @@ private class InMemoryFridgeRepository : FridgeRepository {
             items.any { it.name.contains("avocado", true) } -> listOf("Avocado Toast")
             else -> listOf("Vegan Curry")
         }
+    }
+}
+
+/**
+ * Very small in-memory ingredient catalog that supports prefix search and adding new items.
+ */
+private class InMemoryIngredientCatalog : IngredientCatalogRepository {
+    private val items = mutableListOf(
+        IngredientDef("1", "paprika", "Sweet pepper, commonly used in salads and stews"),
+        IngredientDef("2", "potato", "Starchy tuber, versatile for many dishes"),
+        IngredientDef("3", "pepper", "Black pepper spice"),
+        IngredientDef("4", "parsley", "Fresh herb for garnish and flavor"),
+        IngredientDef("5", "pasta", "Durum wheat noodles in many shapes"),
+        IngredientDef("6", "pear", "Sweet fruit"),
+        IngredientDef("7", "peach", "Juicy stone fruit"),
+        IngredientDef("8", "peanut", "Legume often used as nuts"),
+        IngredientDef("9", "onion", "Aromatic bulb used for flavor"),
+        IngredientDef("10", "tomato", "Versatile fruit used as vegetable")
+    )
+
+    override suspend fun search(prefix: String, limit: Int): List<IngredientDef> {
+        kotlinx.coroutines.delay(60)
+        val p = prefix.trim().lowercase()
+        if (p.isBlank()) return emptyList()
+        return items.filter { it.name.lowercase().startsWith(p) }.take(limit)
+    }
+
+    override suspend fun add(name: String, description: String): IngredientDef {
+        kotlinx.coroutines.delay(80)
+        val existing = items.firstOrNull { it.name.equals(name, ignoreCase = true) }
+        if (existing != null) return existing
+        val def = IngredientDef(System.currentTimeMillis().toString(), name.trim(), description.trim())
+        items.add(def)
+        return def
     }
 }
 
