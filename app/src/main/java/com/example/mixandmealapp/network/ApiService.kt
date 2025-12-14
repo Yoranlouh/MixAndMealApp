@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.network
 
+import com.example.mixandmealapp.models.RecipeCardResponse
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -9,10 +10,10 @@ import io.ktor.http.contentType
 
 object ApiService {
     private val client = ApiClient.client
-    private val domain = "http://localhost:8080"
+    private val domain = "http://10.0.2.2:8080"
 
-    suspend fun getExample(): String =
-        client.get("$domain/api/example").body()
+    suspend fun getFeaturedRecipe(): RecipeCardResponse =
+        client.get("$domain/recipes/featured/1").body()
 
     suspend fun postLogin(request: Login): Token =
         client.post("$domain/api/login") {

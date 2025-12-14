@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mixandmealapp.models.RecipeCardResponse
+import com.example.mixandmealapp.repository.RecipeRepository
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.components.PrivacyDialog
 import com.example.mixandmealapp.ui.navigation.Navigation
@@ -103,6 +106,16 @@ fun Header() {
 
 @Composable
 fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
+    val recipeRepository = RecipeRepository()
+    var recipeCard by remember { mutableStateOf<RecipeCardResponse?>(null) }
+    LaunchedEffect(Unit) {
+        try {
+            recipeCard = recipeRepository.getFeaturedRecipeCard()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     Column {
         Text(
             text = stringResource(id = com.example.mixandmealapp.R.string.featured),
@@ -122,7 +135,15 @@ fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
                     .fillMaxSize()
                     .background(BrandYellow.copy(alpha = 0.8f))
             ) {
-                Text(stringResource(id = com.example.mixandmealapp.R.string.featured_card), modifier = Modifier.align(Alignment.Center))
+                if(recipeCard?.title != null) {
+                    Text(recipeCard!!.title, modifier = Modifier.align(Alignment.Center))
+                }
+                else {
+                    Text(
+                        stringResource(id = com.example.mixandmealapp.R.string.featured_card),
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
             }
         }
     }
