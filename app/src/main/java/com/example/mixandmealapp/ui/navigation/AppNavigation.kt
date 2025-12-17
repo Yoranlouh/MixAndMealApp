@@ -76,7 +76,11 @@ fun AppNavigation() {
                             navController.navigate(Navigation.REGISTER)
                     },
                     onGoToHome = {
-                        navController.navigate(Navigation.HOME)
+                        // Verwijder de Splash uit de backstack zodat Home het nieuwe beginpunt is
+                        navController.navigate(Navigation.HOME) {
+                            popUpTo(Navigation.SPLASHHOME) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
