@@ -195,7 +195,7 @@ fun SettingsButton(
 ) {
     ListItem(
         headlineContent = {
-            Text(text = title)
+            Text(text = title, color = titleColor)
         },
         supportingContent = {
             if (description != null) {
