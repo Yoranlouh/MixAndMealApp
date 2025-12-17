@@ -46,7 +46,7 @@ fun PopularRecipeCard(recipe: RecipeCardResponse, onClick: () -> Unit = {}) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = recipe.title, style = MaterialTheme.typography.titleMedium, maxLines = 2)
             }
-            Text("${recipe.cookingTime} min", style = MaterialTheme.typography.bodySmall)
+            Text("cooking time: ${recipe.cookingTime} min", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.network
 
+import com.example.mixandmealapp.models.enums.Difficulty
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import io.ktor.client.call.body
@@ -18,9 +19,14 @@ object ApiService {
 
     suspend fun getFullRecipe(id : Int) : FullRecipeScreenResponse =
         client.get("$domain/fullrecipe/$id").body()
-    suspend fun getPopularRecipes(): List<RecipeCardResponse> =
-        client.get("$domain/popular-recipes").body()
+    suspend fun getPopularRecipes(limit: Int): List<RecipeCardResponse> =
+        client.get("$domain/popular-recipes/$limit").body()
 
+    suspend fun getRecipesByDificulty(limit: Int, difficulty: Difficulty): List<RecipeCardResponse> =
+        client.get("$domain/recipes/$difficulty/$limit").body()
+
+    suspend fun getQuickRecipes(limit: Int): List<RecipeCardResponse> =
+        client.get("$domain/quick-recipes/$limit").body()
     suspend fun postLogin(request: Login): Token =
         client.post("$domain/api/login") {
             contentType(ContentType.Application.Json)
