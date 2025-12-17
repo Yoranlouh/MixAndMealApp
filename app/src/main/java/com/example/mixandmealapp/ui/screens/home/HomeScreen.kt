@@ -50,6 +50,7 @@ import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
+import kotlinx.serialization.Serializable
 
 @Composable
 fun HomeScreen(
@@ -196,6 +197,18 @@ fun CategorySection(navController: NavController) {
     }
 }
 
+
+
+
+
+@Serializable
+data class RecipeCardResponse(
+    val recipeId: Int,
+    val title: String,
+    val description: String,
+    val cookingTime: Int,
+    val imageUrl: List<String>
+)
 @Composable
 fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
     val recipeRepository = RecipeRepository()

@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.ui.screens.settings
 
+import android.app.Activity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.navigation.Navigation
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.os.LocaleListCompat
 import com.example.mixandmealapp.ui.components.SettingsButton
 
@@ -168,11 +170,12 @@ fun SettingsScreen(
             title = stringResource(R.string.logout),
             description = "",
             onClick = {
-                // TODO logout
+                // Logout logic here
+                (LocalContext.current as? Activity)?.finish() // optionally exit app
             },
-            trailingContent = null // just a red title
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error
+            )
         )
     }
 }
-
-
