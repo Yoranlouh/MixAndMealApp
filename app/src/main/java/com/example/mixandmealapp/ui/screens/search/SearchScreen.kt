@@ -166,10 +166,13 @@ fun MinimalSearchContent(
         selectedMealTypes = selMeals,
         selectedAllergens = selAllergens,
         selectedDiets = selDiets,
-        onToggleKitchen = { opt -> selKitchens = selKitchens.toggle(opt) },
-        onToggleMealType = { opt -> selMeals = selMeals.toggle(opt) },
+        // Single-select for kitchen styles: select one or deselect if clicking the same
+        onToggleKitchen = { opt -> selKitchens = if (selKitchens.contains(opt)) emptySet() else setOf(opt) },
+        // Single-select for meal types
+        onToggleMealType = { opt -> selMeals = if (selMeals.contains(opt)) emptySet() else setOf(opt) },
         onToggleAllergen = { opt -> selAllergens = selAllergens.toggle(opt) },
-        onToggleDiet = { opt -> selDiets = selDiets.toggle(opt) },
+        // Single-select for diets
+        onToggleDiet = { opt -> selDiets = if (selDiets.contains(opt)) emptySet() else setOf(opt) },
         onApply = { showFilters = false },
         onClearAll = {
             selKitchens = emptySet(); selMeals = emptySet(); selAllergens = emptySet(); selDiets = emptySet()

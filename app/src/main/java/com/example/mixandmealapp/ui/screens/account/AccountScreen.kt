@@ -50,6 +50,7 @@ import com.example.mixandmealapp.ui.components.LabelFridge
 import com.example.mixandmealapp.ui.components.OpenFridgeButton
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.theme.BrandOrange
+import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
@@ -360,58 +361,18 @@ private fun FavoriteRecipeCard(
     onClick: () -> Unit = {},
     onUnfavoriteRequested: () -> Unit = {}
 ) {
-    Surface(
-        modifier = modifier.height(180.dp),
-        shape = MaterialTheme.shapes.large,
-        color = Color.White,
-        shadowElevation = 4.dp,
-        onClick = onClick
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFFF5F5F5)
-                ) {}
-
-                val fav = remember { mutableStateOf(true) }
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                ) {
-                    FavoriteIcon(isFavorite = fav.value) {
-                        // Use the same UX as FavouritesScreen: ask confirmation via parent
-                        onUnfavoriteRequested()
-                    }
-                }
-            }
-
-            // Fixed-height title bar so that short titles reserve the
-            // same vertical space as long (2-line) titles. This keeps
-            // all favorite cards with identical proportions.
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp) // fits up to 2 lines of bodyMedium comfortably
-                    .padding(horizontal = 12.dp, vertical = 12.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF0A2533),
-                    maxLines = 2,
-                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                    modifier = Modifier.align(Alignment.TopStart)
-                )
-            }
-        }
-    }
+    // Delegate to the unified recipe card component
+    PopularRecipeCard(
+        title = title,
+        description = null,
+        cookingTimeMinutes = null,
+        imageUrl = null,
+        onClick = onClick,
+        modifier = modifier
+            .height(240.dp),
+        isFavorite = true,
+        onToggleFavorite = { onUnfavoriteRequested() }
+    )
 }
 
 @Preview(showBackground = true, name = "Account Screen (Logged In)")
