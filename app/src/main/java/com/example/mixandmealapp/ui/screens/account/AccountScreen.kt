@@ -32,7 +32,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +51,9 @@ import com.example.mixandmealapp.ui.components.OpenFridgeButton
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
+import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
+import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
+import androidx.compose.runtime.LaunchedEffect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,9 +62,14 @@ fun AccountScreen(
     onEditProfile: () -> Unit = {},
     onGoToSettings: () -> Unit = {},
     onGoToLogin: () -> Unit = {},
+    fridgeViewModel: FridgeViewModel? = null,
+    favouritesViewModel: FavouritesViewModel? = null,
     navController: NavHostController,
     isLoggedIn: Boolean = true // Default to true to show logged-in state
 ) {
+    val vm = fridgeViewModel ?: remember { FridgeViewModel() }
+    val favVm = favouritesViewModel ?: remember { FavouritesViewModel() }
+    LaunchedEffect(favVm) { favVm.load() }
 
     Scaffold(
         topBar = {
@@ -93,11 +103,21 @@ fun AccountScreen(
                 ProfileCard(name = "Richard Balke", onEditProfile = onEditProfile)
                 Spacer(modifier = Modifier.height(32.dp))
                 MyFavoritesSection(
+                    viewModel = favVm,
                     onNavigateToFavourites = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FAVOURITES) },
                     onRecipeClick = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.RECIPE_DETAIL) }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
-                MyFridgeSection(onNavigateToFridge = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FRIDGE) })
+                MyFridgeSection(
+                    items = vm.uiState.items.map { it.name },
+                    count = vm.uiState.items.size,
+                    onRemove = { name ->
+                        // find by name (demo). In real app use id; here we map first match
+                        val item = vm.uiState.items.firstOrNull { it.name == name }
+                        item?.let { vm.removeItem(it.id) }
+                    },
+                    onNavigateToFridge = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FRIDGE) }
+                )
             } else {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -155,15 +175,14 @@ private fun ProfileCard(name: String, onEditProfile: () -> Unit) {
 
 @Composable
 private fun MyFavoritesSection(
-    recipes: List<String> = listOf(
-        "Sunny Egg & Toast Avocado",
-        "Bowl of noodle with beef",
-        "Easy homemade beef burger",
-        "Half boiled egg sandwich"
-    ),
+    viewModel: FavouritesViewModel,
     onNavigateToFavourites: () -> Unit = {},
     onRecipeClick: (String) -> Unit = {}
 ) {
+    // Observe shared favourites and only show up to 4 on Account
+    val favourites = viewModel.uiState.favourites.take(4)
+    var pendingDeleteTitle by remember { mutableStateOf<String?>(null) }
+
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -180,40 +199,63 @@ private fun MyFavoritesSection(
             )
         }
 
-        // Display in two columns using two rows
-        for (row in recipes.chunked(2)) {
+        // Display in two columns
+        for (row in favourites.chunked(2)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 FavoriteRecipeCard(
                     title = row.getOrNull(0) ?: "",
                     modifier = Modifier.weight(1f),
-                    onClick = { onRecipeClick(row.getOrNull(0) ?: "") }
+                    onClick = { onRecipeClick(row.getOrNull(0) ?: "") },
+                    onUnfavoriteRequested = {
+                        row.getOrNull(0)?.let { pendingDeleteTitle = it }
+                    }
                 )
                 if (row.size > 1) {
                     FavoriteRecipeCard(
                         title = row[1],
                         modifier = Modifier.weight(1f),
-                        onClick = { onRecipeClick(row[1]) }
+                        onClick = { onRecipeClick(row[1]) },
+                        onUnfavoriteRequested = { pendingDeleteTitle = row[1] }
                     )
                 } else {
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
+
+        // Confirmation dialog for removing from favourites (same as FavouritesScreen)
+        val confirmMessage = stringResource(id = com.example.mixandmealapp.R.string.confirm_remove_favourite_message)
+        val yes = stringResource(id = com.example.mixandmealapp.R.string.yes)
+        val no = stringResource(id = com.example.mixandmealapp.R.string.no)
+        if (pendingDeleteTitle != null) {
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { pendingDeleteTitle = null },
+                title = { Text(text = confirmMessage) },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(onClick = {
+                        pendingDeleteTitle?.let { title -> viewModel.remove(title) }
+                        pendingDeleteTitle = null
+                    }) {
+                        Text(text = yes)
+                    }
+                },
+                dismissButton = {
+                    androidx.compose.material3.TextButton(onClick = { pendingDeleteTitle = null }) {
+                        Text(text = no)
+                    }
+                }
+            )
+        }
     }
 }
 
 @Composable
-private fun MyFridgeSection(onNavigateToFridge: () -> Unit = {}) {
-    // Full fridge list (for count). Only the first 4 are shown.
-    val items = listOf(
-        "Potatoes",
-        "Onions",
-        "Paprika",
-        "Rice",
-        "Tomatoes",
-        "Milk",
-        "Eggs"
-    )
+private fun MyFridgeSection(
+    items: List<String>,
+    count: Int,
+    onRemove: (String) -> Unit,
+    onNavigateToFridge: () -> Unit = {}
+) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -221,12 +263,12 @@ private fun MyFridgeSection(onNavigateToFridge: () -> Unit = {}) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.Bottom) {
-                Text(text = "My Fridge", style = MaterialTheme.typography.titleLarge)
+                Text(text = stringResource(id = com.example.mixandmealapp.R.string.my_fridge), style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.width(8.dp))
-                Text(text = "${items.size} Item", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+                Text(text = stringResource(id = com.example.mixandmealapp.R.string.items_count, count), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
             }
             Text(
-                text = "View All",
+                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
                 color = BrandOrange,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
@@ -236,7 +278,7 @@ private fun MyFridgeSection(onNavigateToFridge: () -> Unit = {}) {
 
         // Show maximum 4 items as labels with only a trash icon.
         items.take(4).forEach { name ->
-            LabelFridge(label = name)
+            LabelFridge(label = name, onRemove = { onRemove(name) })
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -312,7 +354,12 @@ private fun FridgeItem(name: String, quantity: Int) {
 
 
 @Composable
-private fun FavoriteRecipeCard(title: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+private fun FavoriteRecipeCard(
+    title: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    onUnfavoriteRequested: () -> Unit = {}
+) {
     Surface(
         modifier = modifier.height(180.dp),
         shape = MaterialTheme.shapes.large,
@@ -337,7 +384,10 @@ private fun FavoriteRecipeCard(title: String, modifier: Modifier = Modifier, onC
                         .align(Alignment.TopEnd)
                         .padding(8.dp)
                 ) {
-                    FavoriteIcon(isFavorite = fav.value) { fav.value = !fav.value }
+                    FavoriteIcon(isFavorite = fav.value) {
+                        // Use the same UX as FavouritesScreen: ask confirmation via parent
+                        onUnfavoriteRequested()
+                    }
                 }
             }
 

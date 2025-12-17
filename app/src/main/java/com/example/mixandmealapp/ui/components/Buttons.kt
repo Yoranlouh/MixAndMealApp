@@ -142,7 +142,9 @@ fun CogwheelButton(onClick: () -> Unit) {
 fun LabelFridge(
     label: String,
     modifier: Modifier = Modifier,
-    autoHideOnRemove: Boolean = true,
+    // Do not auto-hide by default. Let the parent state drive UI removal to avoid
+    // visual double-removal when the backing list also updates after onRemove.
+    autoHideOnRemove: Boolean = false,
     onRemove: (() -> Unit)? = null
 ) {
     var visible by remember { mutableStateOf(true) }

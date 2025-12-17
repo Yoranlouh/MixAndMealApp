@@ -29,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,16 +44,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mixandmealapp.ui.components.LabelFridge
 import com.example.mixandmealapp.ui.components.BackButton
+import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
+import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FridgeScreen(navController: NavHostController) {
-    // Local state for demo purposes. In a real app, this would come from a ViewModel.
-    val ingredients = remember { mutableStateListOf("Potatoes", "Onions", "Paprika") }
+fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? = null) {
+    // Shared repository-backed ViewModel is provided by caller (AppNavigation).
+    // In previews, fall back to a local instance.
+    val vm = viewModel ?: remember { FridgeViewModel() }
+    val uiState = vm.uiState
     var newIngredient by remember { mutableStateOf("") }
 
     Scaffold(
@@ -92,7 +95,7 @@ fun FridgeScreen(navController: NavHostController) {
                     Text(text = stringResource(id = com.example.mixandmealapp.R.string.my_fridge), style = MaterialTheme.typography.titleLarge)
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                     Text(
-                        text = stringResource(id = com.example.mixandmealapp.R.string.items_count, ingredients.size),
+                        text = stringResource(id = com.example.mixandmealapp.R.string.items_count, uiState.items.size),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray
                     )
@@ -101,37 +104,23 @@ fun FridgeScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Ingrediëntenlijst
-            ingredients.forEach { name ->
+            // Ingrediëntenlijst (use items from ViewModel)
+            uiState.items.forEach { item ->
                 LabelFridge(
-                    label = name,
-                    onRemove = { ingredients.remove(name) }
+                    label = item.name,
+                    onRemove = { vm.removeItem(item.id) }
                 )
             }
 
             // Inputveld + knop direct onder de laatste ingrediëntkaart
             Spacer(modifier = Modifier.height(8.dp))
 
-            OutlinedTextField(
+            IngredientAutoCompleteField(
                 value = newIngredient,
                 onValueChange = { newIngredient = it },
+                onSelected = { selected -> newIngredient = selected },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.fridge_enter_ingredient)) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = BrandGrey,
-                    focusedBorderColor = BrandOrange,
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White
-                ),
-                shape = RoundedCornerShape(24.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = {
-                    if (newIngredient.isNotBlank()) {
-                        ingredients.add(newIngredient.trim())
-                        newIngredient = ""
-                    }
-                })
+                placeholder = stringResource(id = com.example.mixandmealapp.R.string.fridge_enter_ingredient)
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -139,7 +128,7 @@ fun FridgeScreen(navController: NavHostController) {
             OutlinedButton(
                 onClick = {
                     if (newIngredient.isNotBlank()) {
-                        ingredients.add(newIngredient.trim())
+                        vm.addItem(newIngredient.trim(), "1")
                         newIngredient = ""
                     }
                 },
@@ -159,6 +148,7 @@ fun FridgeScreen(navController: NavHostController) {
     }
 }
 
+@Suppress("ViewModelLeak")
 @Preview(showBackground = true)
 @Composable
 fun FridgeScreenPreview() {

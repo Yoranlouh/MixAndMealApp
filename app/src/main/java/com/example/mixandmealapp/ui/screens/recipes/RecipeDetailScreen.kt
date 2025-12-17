@@ -40,6 +40,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -56,6 +58,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mixandmealapp.R
+import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
+import com.example.mixandmealapp.models.responses.RecipeCardResponse
+import com.example.mixandmealapp.repository.RecipeRepository
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.theme.BrandGreen
 import com.example.mixandmealapp.ui.theme.BrandGrey
@@ -63,44 +68,62 @@ import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.LightBackground
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
+import models.dto.IngredientUnitEntry
+import coil.compose.AsyncImage
+
 
 data class Ingredient(val name: String, val qty: String)
 
 @Composable
 fun RecipeDetailScreen(
-    title: String = "Healthy Taco Salad",
-    minutes: Int = 15,
-    difficulty: String = "Easy",
-    description: String = "This Healthy Taco Salad is the universal delight of taco night",
     onBack: () -> Unit = {},
     onToggleFavorite: (Boolean) -> Unit = {},
     onSave: () -> Unit = {}
 ) {
+    val recipeRepository = RecipeRepository()
+    var recipe by remember { mutableStateOf<FullRecipeScreenResponse?>(null) }
+    LaunchedEffect(Unit) {
+        try {
+            recipe = recipeRepository.getFullRecipeResponse(1)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+    var title: String = "Not found"
+    var minutes = 0
+    var difficulty = "Not found"
+    var description = "Not found"
+    var instructions = "Not found"
+    var image = "https://dumpvanplaatjes.nl/mix-and-meal/default-image.jpg"
     var isFavorite by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(0) } // 0 = Ingredients, 1 = Instructions
     var descExpanded by remember { mutableStateOf(false) }
-
-    val ingredients = remember {
-        listOf(
-            Ingredient("Tortilla Chips", "20 gr"),
-            Ingredient("Avocado", "1"),
-            Ingredient("Red Cabbage", "9"),
-            Ingredient("Peanuts", "10 gr"),
-            Ingredient("Red Onions", "1")
-        )
+    var ingredients = listOf<IngredientUnitEntry>()
+    if(recipe != null) {
+        title = remember { recipe!!.title }
+        minutes = remember { recipe!!.cookingTime }
+        difficulty = remember { recipe!!.difficulty.name }
+        description = remember { recipe!!.description }
+        instructions = remember { recipe!!.instructions }
+        image = remember { recipe!!.images[0].imageUrl }
+        ingredients = remember {
+            recipe!!.ingredients
+        }
     }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Header image with actions
         Box(modifier = Modifier
             .fillMaxWidth()
             .height(220.dp)) {
-            Image(
-                painter = painterResource(id = R.drawable.mixandmealbanner),
+            AsyncImage(
+                model = image,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -227,11 +250,7 @@ fun RecipeDetailScreen(
                     }
                 } else {
                     // Simple placeholder instruction steps styling
-                    items(listOf(
-                        "Chop all vegetables and prepare toppings.",
-                        "Toast tortilla chips lightly.",
-                        "Combine ingredients in a large bowl.",
-                        "Serve immediately and enjoy!"
+                    items(listOf(instructions
                     )) { step ->
                         Card(
                             shape = RoundedCornerShape(16.dp),
@@ -386,7 +405,7 @@ private fun SegmentTab(text: String, selected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-private fun IngredientRow(ingredient: Ingredient) {
+private fun IngredientRow(ingredient: IngredientUnitEntry) {
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(2.dp),
@@ -400,8 +419,8 @@ private fun IngredientRow(ingredient: Ingredient) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(ingredient.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-            Text(ingredient.qty, color = BrandGrey)
+            Text(ingredient.ingredientName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+            Text("${ingredient.amount} ${ingredient.unitType}", color = BrandGrey)
         }
     }
 }
