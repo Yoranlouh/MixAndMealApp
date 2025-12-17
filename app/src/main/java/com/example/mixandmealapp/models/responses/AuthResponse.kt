@@ -1,8 +1,6 @@
 package responses
 
-import kotlinx.serialization.Serializable
-
-@Serializable
+@kotlinx.serialization.Serializable
 data class AuthResponse(
     val token: String
 )

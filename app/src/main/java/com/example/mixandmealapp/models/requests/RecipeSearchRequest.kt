@@ -1,8 +1,6 @@
 package requests
 
-import kotlinx.serialization.Serializable
-
-@Serializable
+@kotlinx.serialization.Serializable
 data class RecipeSearchRequest(
     val partialTitle: String,
     val difficulty: String,

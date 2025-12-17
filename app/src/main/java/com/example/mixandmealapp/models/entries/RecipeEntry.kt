@@ -1,11 +1,10 @@
 package models.dto
 
-import kotlinx.serialization.Serializable
-import models.enums.Difficulty
-import models.enums.KitchenStyle
-import models.enums.MealType
+import com.example.mixandmealapp.models.enums.Difficulty
+import com.example.mixandmealapp.models.enums.KitchenStyle
+import com.example.mixandmealapp.models.enums.MealType
 
-@Serializable
+@kotlinx.serialization.Serializable
 data class RecipeEntry(
     val id: Int,
     val title: String,

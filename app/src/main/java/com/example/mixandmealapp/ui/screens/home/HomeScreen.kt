@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.mixandmealapp.models.RecipeCardResponse
+import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import com.example.mixandmealapp.repository.RecipeRepository
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.components.PrivacyDialog

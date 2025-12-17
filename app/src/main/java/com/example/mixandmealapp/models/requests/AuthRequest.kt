@@ -1,8 +1,6 @@
 package requests
 
-import kotlinx.serialization.Serializable
-
-@Serializable
+@kotlinx.serialization.Serializable
 data class AuthRequest(
     val username: String,
     val password: String,

@@ -1,11 +1,15 @@
-package com.example.mixandmealapp.models
+package com.example.mixandmealapp.models.responses
 
-import com.example.mixandmealapp.models.enums.Difficulty
-import com.example.mixandmealapp.models.enums.MealType
-import com.example.mixandmealapp.models.enums.KitchenStyle
 import com.example.mixandmealapp.models.entries.RecipeImageEntry
+import com.example.mixandmealapp.models.enums.Difficulty
+import com.example.mixandmealapp.models.enums.KitchenStyle
+import com.example.mixandmealapp.models.enums.MealType
+import kotlinx.serialization.Serializable
+import models.dto.AllergenEntry
+import models.dto.DietEntry
+import models.dto.IngredientUnitEntry
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class FullRecipeScreenResponse(
     val id: Int,
     val title: String,

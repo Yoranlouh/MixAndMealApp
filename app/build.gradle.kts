@@ -81,4 +81,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-gson:3.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
+    // image url uses
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
 }

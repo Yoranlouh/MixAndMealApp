@@ -1,6 +1,8 @@
-package com.example.mixandmealapp.models
+package com.example.mixandmealapp.models.responses
 
-@kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class RecipeCardResponse(
     val recipeId: Int,
     val title: String,

@@ -1,9 +1,8 @@
 package models.dto
 
 import api.models.Role
-import kotlinx.serialization.Serializable
 
-@Serializable
+@kotlinx.serialization.Serializable
 data class UserEntry(
     val name: String,
     val email: String,

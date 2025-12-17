@@ -1,9 +1,9 @@
 package responses
 
-import kotlinx.serialization.Serializable
-import models.dto.RecipeImageEntry
+import com.example.mixandmealapp.models.entries.RecipeImageEntry
 
-@Serializable
+
+@kotlinx.serialization.Serializable
 data class RecipeSearchResult(
     val recipeId: Int,
     val title: String,

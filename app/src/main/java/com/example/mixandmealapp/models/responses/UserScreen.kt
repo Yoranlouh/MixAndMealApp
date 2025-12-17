@@ -1,13 +1,11 @@
 package responses
 
-import kotlinx.serialization.Serializable
 import models.dto.AllergenEntry
 import models.dto.DietEntry
 import models.dto.IngredientEntry
 import models.dto.RecipeEntry
 
-
-@Serializable
+@kotlinx.serialization.Serializable
 class UserScreen (
     val username: String,
     // Recipe should not be all info of a recipe so this should be another response class instead of recipe

@@ -1,6 +1,7 @@
 package com.example.mixandmealapp.network
 
-import com.example.mixandmealapp.models.RecipeCardResponse
+import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
+import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -14,6 +15,9 @@ object ApiService {
 
     suspend fun getFeaturedRecipe(): RecipeCardResponse =
         client.get("$domain/recipes/featured/1").body()
+
+    suspend fun getFullRecipe(id : Int) : FullRecipeScreenResponse =
+        client.get("$domain/fullrecipe/$id").body()
 
     suspend fun postLogin(request: Login): Token =
         client.post("$domain/api/login") {

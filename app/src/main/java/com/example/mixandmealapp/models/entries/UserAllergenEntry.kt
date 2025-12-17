@@ -1,8 +1,6 @@
 package models.dto
 
-import kotlinx.serialization.Serializable
-
-@Serializable
+@kotlinx.serialization.Serializable
 data class UserAllergenEntry(
     val userId: String,
     val allergenId: Int
