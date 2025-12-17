@@ -36,11 +36,18 @@ import com.example.mixandmealapp.ui.components.FavoriteIcon
 
 
 @Composable
-fun PopularRecipeCard(recipe: RecipeCardResponse, onClick: () -> Unit = {}) {
+fun PopularRecipeCard(
+    recipe: RecipeCardResponse,
+    onClick: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    isFavorite: Boolean? = null,
+    onToggleFavorite: (() -> Unit)? = null
+) {
 
     Card(
         modifier = Modifier
             .size(160.dp, 240.dp)
+            .then(modifier)
             .clickable { onClick() },
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -69,14 +76,20 @@ fun PopularRecipeCard(recipe: RecipeCardResponse, onClick: () -> Unit = {}) {
                     )
 
                     // Favorite icon in the top-right corner (same style as favourites screen)
-                    val fav = remember { mutableStateOf(false) }
+                    // If a controlled state is provided, use it; otherwise remember local state
+                    val localFav = remember { mutableStateOf(false) }
+                    val favState = isFavorite ?: localFav.value
                     Row(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(8.dp)
                     ) {
-                        FavoriteIcon(isFavorite = fav.value) {
-                            fav.value = !fav.value
+                        FavoriteIcon(isFavorite = favState) {
+                            if (onToggleFavorite != null) {
+                                onToggleFavorite()
+                            } else {
+                                localFav.value = !localFav.value
+                            }
                         }
                     }
                 }
@@ -98,6 +111,41 @@ fun PopularRecipeCard(recipe: RecipeCardResponse, onClick: () -> Unit = {}) {
             Text("Cooking time: ${recipe.cookingTime} min", style = MaterialTheme.typography.bodySmall)
         }
     }
+}
+
+@Composable
+fun PopularRecipeCard(
+    title: String,
+    description: String? = null,
+    cookingTimeMinutes: Int? = null,
+    imageUrl: String? = null,
+    onClick: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    isFavorite: Boolean? = null,
+    onToggleFavorite: (() -> Unit)? = null
+) {
+    // Build a lightweight RecipeCardResponse to reuse the core UI implementation
+    val recipe = RecipeCardResponse(
+        recipeId = -1,
+        title = title,
+        description = description ?: "",
+        cookingTime = cookingTimeMinutes ?: 0,
+        imageUrl = listOf(
+            RecipeImageEntry(
+                id = -1,
+                recipeId = -1,
+                imageUrl = imageUrl ?: "https://dumpvanplaatjes.nl/mix-and-meal/default-image.jpg"
+            )
+        )
+    )
+
+    PopularRecipeCard(
+        recipe = recipe,
+        onClick = onClick,
+        modifier = modifier,
+        isFavorite = isFavorite,
+        onToggleFavorite = onToggleFavorite
+    )
 }
 
 @Preview(showBackground = true)

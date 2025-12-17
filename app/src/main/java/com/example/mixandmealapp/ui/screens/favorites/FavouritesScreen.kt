@@ -35,6 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.res.stringResource
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.FavoriteIcon
+import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.R
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
@@ -138,53 +139,18 @@ private fun FavoriteRecipeCardItem(
     onClick: () -> Unit = {},
     onUnfavoriteRequested: () -> Unit = {}
 ) {
-    Surface(
-        modifier = modifier.height(180.dp),
-        shape = MaterialTheme.shapes.large,
-        color = Color.White,
-        shadowElevation = 4.dp,
-        onClick = onClick
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color(0xFFF5F5F5)
-                ) {}
-
-                val fav = remember { mutableStateOf(true) }
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                ) {
-                    FavoriteIcon(isFavorite = fav.value) {
-                        // Ask for confirmation before removal
-                        onUnfavoriteRequested()
-                    }
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 12.dp, vertical = 12.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF0A2533),
-                    maxLines = 2
-                )
-            }
-        }
-    }
+    // Delegate to the unified recipe card component so styling stays consistent
+    PopularRecipeCard(
+        title = title,
+        description = null,
+        cookingTimeMinutes = null,
+        imageUrl = null,
+        onClick = onClick,
+        modifier = modifier
+            .height(240.dp),
+        isFavorite = true,
+        onToggleFavorite = { onUnfavoriteRequested() }
+    )
 }
 
 @Preview(showBackground = true)
