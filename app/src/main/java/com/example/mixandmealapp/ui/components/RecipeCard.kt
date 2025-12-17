@@ -19,10 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.mixandmealapp.models.responses.RecipeCardResponse
 
 
 @Composable
-fun PopularRecipeCard(recipe: String, onClick: () -> Unit = {}) {
+fun PopularRecipeCard(recipe: RecipeCardResponse, onClick: () -> Unit = {}) {
 
     Card(
         modifier = Modifier
@@ -43,9 +44,9 @@ fun PopularRecipeCard(recipe: String, onClick: () -> Unit = {}) {
                         .background(Color.Gray)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = recipe, style = MaterialTheme.typography.titleMedium, maxLines = 2)
+                Text(text = recipe.title, style = MaterialTheme.typography.titleMedium, maxLines = 2)
             }
-            Text(stringResource(id = com.example.mixandmealapp.R.string.kcal_minutes), style = MaterialTheme.typography.bodySmall)
+            Text("${recipe.cookingTime} min", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

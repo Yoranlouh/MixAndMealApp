@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import com.example.mixandmealapp.repository.RecipeRepository
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
@@ -197,7 +198,16 @@ fun CategorySection(navController: NavController) {
 
 @Composable
 fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
-    val recipes = listOf("Taco Salad", "Ceasar Salad")
+    val recipeRepository = RecipeRepository()
+    var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
+    LaunchedEffect(Unit) {
+        try {
+            recipes = recipeRepository.getPopularRecipesResponse()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -228,7 +238,16 @@ fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
 
 @Composable
 fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
-    val recipes = listOf("Chocolate", "Spaghetti Bolognese")
+    val recipeRepository = RecipeRepository()
+    var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
+    LaunchedEffect(Unit) {
+        try {
+            recipes = recipeRepository.getQuickRecipesResponse()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     Spacer(Modifier.height(16.dp))
     Column {
         Row(
@@ -260,7 +279,15 @@ fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
 
 @Composable
 fun EasyRecipesSection(onRecipeClick: () -> Unit = {}) {
-    val recipes = listOf("Taco Taco", "Burrito Burrito")
+    val recipeRepository = RecipeRepository()
+    var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
+    LaunchedEffect(Unit) {
+        try {
+            recipes = recipeRepository.getEasyRecipesResponse()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
     Spacer(Modifier.height(16.dp))
     Column {
         Row(

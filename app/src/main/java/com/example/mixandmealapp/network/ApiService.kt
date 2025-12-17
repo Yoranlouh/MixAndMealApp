@@ -18,6 +18,8 @@ object ApiService {
 
     suspend fun getFullRecipe(id : Int) : FullRecipeScreenResponse =
         client.get("$domain/fullrecipe/$id").body()
+    suspend fun getPopularRecipes(): List<RecipeCardResponse> =
+        client.get("$domain/popular-recipes").body()
 
     suspend fun postLogin(request: Login): Token =
         client.post("$domain/api/login") {

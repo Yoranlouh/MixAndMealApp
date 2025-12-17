@@ -12,4 +12,14 @@ class RecipeRepository {
     suspend fun getFullRecipeResponse(id : Int): FullRecipeScreenResponse {
         return ApiService.getFullRecipe(id)
     }
+
+    suspend fun getPopularRecipesResponse(): List<RecipeCardResponse> {
+        return ApiService.getPopularRecipes()
+    }
+    suspend fun getEasyRecipesResponse(): List<RecipeCardResponse> {
+        return ApiService.getPopularRecipes()
+    }
+    suspend fun getQuickRecipesResponse(): List<RecipeCardResponse> {
+        return ApiService.getPopularRecipes()
+    }
 }
