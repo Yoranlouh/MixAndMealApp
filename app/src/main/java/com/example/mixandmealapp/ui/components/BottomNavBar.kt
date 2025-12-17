@@ -98,10 +98,16 @@ fun BottomNavBar(
                     // Verberg label onder het Search-icoon
                     alwaysShowLabel = item.route != Navigation.SEARCH,
                     onClick = {
-                        navController.navigate(item.route) {
+                        // Always pop up to Home so the Home tab reliably returns to Home
+                        val target = if (item.route == Navigation.HOME) {
+                            "${Navigation.HOME}?showPrivacy=false"
+                        } else item.route
+
+                        navController.navigate(target) {
                             launchSingleTop = true
                             restoreState = true
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            // Pop de backstack tot de Home-composable (let op: exacte route met arg-pattern)
+                            popUpTo(Navigation.HOME + "?showPrivacy={showPrivacy}") { saveState = true }
                         }
                     },
                     icon = {

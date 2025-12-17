@@ -118,10 +118,13 @@ fun SearchResultScreen(navController: NavHostController) {
         selectedMealTypes = selMeals,
         selectedAllergens = selAllergens,
         selectedDiets = selDiets,
-        onToggleKitchen = { selKitchens = selKitchens.toggle(it) },
-        onToggleMealType = { selMeals = selMeals.toggle(it) },
+        // Enforce single-select for kitchen styles
+        onToggleKitchen = { opt -> selKitchens = if (selKitchens.contains(opt)) emptySet() else setOf(opt) },
+        // Enforce single-select for meal types
+        onToggleMealType = { opt -> selMeals = if (selMeals.contains(opt)) emptySet() else setOf(opt) },
         onToggleAllergen = { selAllergens = selAllergens.toggle(it) },
-        onToggleDiet = { selDiets = selDiets.toggle(it) },
+        // Enforce single-select for diets
+        onToggleDiet = { opt -> selDiets = if (selDiets.contains(opt)) emptySet() else setOf(opt) },
         onApply = { showFilters = false },
         onClearAll = { selKitchens = emptySet(); selMeals = emptySet(); selAllergens = emptySet(); selDiets = emptySet() },
         onDismiss = { showFilters = false }
