@@ -29,10 +29,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.mixandmealapp.R
+import com.example.mixandmealapp.repository.UserRepository
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.InputTextFieldLogin
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.navigation.Navigation
+import kotlinx.coroutines.launch
 import com.example.mixandmealapp.ui.viewmodel.AuthUiState
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
@@ -91,7 +94,6 @@ fun LoginScreen(
                 label = "Password",
                 isPassword = true
             )
-
             Spacer(Modifier.height(24.dp))
 
             PrimaryButton(
@@ -106,7 +108,7 @@ fun LoginScreen(
                 onClick = onGoToRegister,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(stringResource(id = com.example.mixandmealapp.R.string.dont_have_account_register))
+                Text(stringResource(id = R.string.dont_have_account_register))
             }
         }
     }
