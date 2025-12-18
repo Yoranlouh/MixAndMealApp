@@ -9,6 +9,7 @@ import com.example.mixandmealapp.data.AuthRepository
 import com.example.mixandmealapp.data.ServiceLocator
 import com.example.mixandmealapp.data.SessionRepository
 import com.example.mixandmealapp.data.SettingsRepository
+import com.example.mixandmealapp.repository.UserRepository
 import kotlinx.coroutines.launch
 
 // Login
@@ -19,6 +20,43 @@ data class LoginUiState(
     val error: String? = null,
     val success: Boolean = false
 )
+
+class TestLoginViewModel : ViewModel() {
+
+    var uiState by mutableStateOf(LoginUiState())
+        private set
+
+    fun onEmailChange(v: String) {
+        uiState = uiState.copy(email = v)
+    }
+
+    fun onPasswordChange(v: String) {
+        uiState = uiState.copy(password = v)
+    }
+
+    fun login(email: String, password: String) {
+        uiState = uiState.copy(isLoading = true, error = null)
+
+        viewModelScope.launch {
+            try {
+                // Use your UserRepository directly
+                val userRepository = UserRepository()
+                val token = userRepository.testLogin(email, password)
+
+                if (token != null) {
+                    uiState = uiState.copy(isLoading = false, success = true)
+                } else {
+                    uiState = uiState.copy(isLoading = false, error = "Login failed")
+                }
+            } catch (e: Exception) {
+                uiState = uiState.copy(isLoading = false, error = e.localizedMessage ?: "Network error")
+            }
+        }
+    }
+}
+
+
+
 
 class LoginViewModel(
     private val auth: AuthRepository = ServiceLocator.authRepository,

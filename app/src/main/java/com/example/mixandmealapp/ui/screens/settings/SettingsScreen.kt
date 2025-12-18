@@ -166,16 +166,17 @@ fun SettingsScreen(
         Divider()
 
         // Logout
-        SettingsButton(
-            title = stringResource(R.string.logout),
-            description = "",
-            onClick = {
-                // Logout logic here
-                (LocalContext.current as? Activity)?.finish() // optionally exit app
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error
-            )
-        )
+//        SettingsButton(
+//            title = stringResource(R.string.logout),
+//            description = "",
+//            onClick = {
+//                // Logout logic here
+//                (LocalContext.
+//                current as? Activity)?.finish() // optionally exit app
+//            },
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = MaterialTheme.colorScheme.error
+//            )
+//        )
     }
 }
