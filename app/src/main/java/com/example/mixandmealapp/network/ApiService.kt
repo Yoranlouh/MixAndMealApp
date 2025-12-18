@@ -28,7 +28,7 @@ object ApiService {
     suspend fun getQuickRecipes(limit: Int): List<RecipeCardResponse> =
         client.get("$domain/quick-recipes/$limit").body()
     suspend fun postLogin(request: Login): Token =
-        client.post("$domain/api/login") {
+        client.post("$domain/signin") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()

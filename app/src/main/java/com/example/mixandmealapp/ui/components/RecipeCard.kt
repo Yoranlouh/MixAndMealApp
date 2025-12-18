@@ -168,7 +168,5 @@ fun PopularRecipeCardPreview() {
     MixAndMealAppTheme {
         PopularRecipeCard(recipe = sample)
             }
-            Text("cooking time: ${recipe.cookingTime} min", style = MaterialTheme.typography.bodySmall)
+            Text("cooking time: ${sample.cookingTime} min", style = MaterialTheme.typography.bodySmall)
         }
-    }
-}
