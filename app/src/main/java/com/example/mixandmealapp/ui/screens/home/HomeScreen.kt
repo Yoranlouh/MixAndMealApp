@@ -215,7 +215,7 @@ fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
     var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
     LaunchedEffect(Unit) {
         try {
-            recipes = recipeRepository.getPopularRecipesResponse()
+            recipes = recipeRepository.getPopularRecipesResponse(2)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -255,7 +255,7 @@ fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
     var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
     LaunchedEffect(Unit) {
         try {
-            recipes = recipeRepository.getQuickRecipesResponse()
+            recipes = recipeRepository.getQuickRecipesResponse(4)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -296,7 +296,7 @@ fun EasyRecipesSection(onRecipeClick: () -> Unit = {}) {
     var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
     LaunchedEffect(Unit) {
         try {
-            recipes = recipeRepository.getEasyRecipesResponse()
+            recipes = recipeRepository.getEasyRecipesResponse(2)
         } catch (e: Exception) {
             e.printStackTrace()
         }
