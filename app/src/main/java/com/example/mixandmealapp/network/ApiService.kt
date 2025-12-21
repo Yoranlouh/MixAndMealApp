@@ -9,6 +9,8 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import requests.Login
+import responses.AuthResponse
 
 object ApiService {
     private val client = ApiClient.client
@@ -27,18 +29,10 @@ object ApiService {
 
     suspend fun getQuickRecipes(limit: Int): List<RecipeCardResponse> =
         client.get("$domain/quick-recipes/$limit").body()
-    suspend fun postLogin(request: Login): Token =
+    suspend fun postLogin(request: Login): AuthResponse =
         client.post("$domain/signin") {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
 }
 
-data class Login(
-    val email : String,
-    val password : String
-)
-
-data class Token(
-    val token : String
-)

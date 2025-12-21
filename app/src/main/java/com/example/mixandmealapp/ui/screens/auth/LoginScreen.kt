@@ -17,19 +17,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.InputTextFieldLogin
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.navigation.Navigation
+import com.example.mixandmealapp.ui.viewmodel.AuthUiState
+import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +46,7 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -89,7 +96,10 @@ fun LoginScreen(
 
             PrimaryButton(
                 text = stringResource(id = com.example.mixandmealapp.R.string.login),
-                onClick = { onLogin(email, password) },
+                onClick = {
+                    scope.launch{
+                        onLogin(email, password)
+                    } },
             )
 
             TextButton(
