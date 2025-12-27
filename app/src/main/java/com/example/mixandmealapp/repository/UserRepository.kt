@@ -11,19 +11,9 @@ import responses.AuthResponse
 
 // example of how to use the ApiClient and ApiService
 class UserRepository {
-    suspend fun testLogin(email: String, password: String): AuthResponse {
+    suspend fun testLogin(email: String, password: String): AuthResponse? {
         return ApiService.postLogin(Login(email, password))
     }
 }
 
-
-class AuthRepository(
-    private val api: ApiService
-) {
-    suspend fun login(email: String, password: String): AuthResponse {
-        return api.postLogin(
-            Login(email = email, password = password)
-        )
-    }
-}
 
