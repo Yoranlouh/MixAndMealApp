@@ -10,7 +10,11 @@ import com.example.mixandmealapp.data.ServiceLocator
 import com.example.mixandmealapp.data.SessionRepository
 import com.example.mixandmealapp.data.SettingsRepository
 import com.example.mixandmealapp.repository.UserRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import com.example.mixandmealapp.repository.UserRepository
 import kotlinx.coroutines.launch
+import responses.AuthResponse
 
 // Login
 data class LoginUiState(
@@ -156,4 +160,33 @@ class LoginSplashViewModel(
             }
         }
     }
+}
+
+
+class AuthViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
+    val uiState = _uiState.asStateFlow()
+
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+            Log.d("AuthViewModel", "Login attempt: $email")
+            _uiState.value = AuthUiState.Loading
+
+            try {
+                val response = UserRepository().login(email, password)
+                Log.d("AuthViewModel", "Login SUCCESS: ${response.token}")
+                _uiState.value = AuthUiState.Success(response)
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Login FAILED: ${e.message}")
+                _uiState.value = AuthUiState.Error(e.message ?: "Error")
+            }
+        }
+    }
+}
+
+sealed class AuthUiState {
+    object Idle : AuthUiState()
+    object Loading : AuthUiState()
+    data class Success(val auth: AuthResponse) : AuthUiState()
+    data class Error(val message: String) : AuthUiState()
 }

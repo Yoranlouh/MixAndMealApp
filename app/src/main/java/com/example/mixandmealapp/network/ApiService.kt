@@ -9,6 +9,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import requests.Login
 import responses.AuthResponse
 
 object ApiService {
@@ -34,14 +35,5 @@ object ApiService {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
-
 }
 
-data class Login(
-    val email : String,
-    val password : String
-)
-
-data class Token(
-    val token : String
-)

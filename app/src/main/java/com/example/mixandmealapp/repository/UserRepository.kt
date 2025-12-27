@@ -1,17 +1,14 @@
 package com.example.mixandmealapp.repository
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.mixandmealapp.data.SessionRepository
 import com.example.mixandmealapp.network.ApiService
-import com.example.mixandmealapp.network.Login
-import com.example.mixandmealapp.network.Token
-import com.example.mixandmealapp.ui.viewmodel.TestLoginViewModel
 import responses.AuthResponse
+import requests.Login
 
 // example of how to use the ApiClient and ApiService
 class UserRepository {
     suspend fun testLogin(email: String, password: String): AuthResponse? {
+class UserRepository() {
+    suspend fun login(email: String, password: String): AuthResponse {
         return ApiService.postLogin(Login(email, password))
     }
 }

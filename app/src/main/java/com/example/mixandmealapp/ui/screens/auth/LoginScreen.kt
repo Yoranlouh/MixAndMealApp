@@ -31,10 +31,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -42,12 +38,10 @@ import com.example.mixandmealapp.R
 import com.example.mixandmealapp.repository.UserRepository
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.InputTextFieldLogin
-import com.example.mixandmealapp.ui.components.MixAndMealColours
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.TestPrimaryButtonWithLogin
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.BrandGreen
-import com.example.mixandmealapp.ui.viewmodel.LoginViewModel
 import com.example.mixandmealapp.ui.viewmodel.TestLoginViewModel
 import kotlinx.coroutines.launch
 
@@ -63,6 +57,7 @@ fun LoginScreen(
     val state = viewModel.uiState
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -117,6 +112,12 @@ fun LoginScreen(
                 userRepository = UserRepository(),
                 modifier = Modifier,
                 backgroundColor = BrandGreen
+            PrimaryButton(
+                text = stringResource(id = com.example.mixandmealapp.R.string.login),
+                onClick = {
+                    scope.launch{
+                        onLogin(email, password)
+                    } },
             )
 
 

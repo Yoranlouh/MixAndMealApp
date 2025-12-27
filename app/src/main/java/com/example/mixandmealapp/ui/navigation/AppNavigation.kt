@@ -3,9 +3,12 @@ package com.example.mixandmealapp.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,6 +33,8 @@ import com.example.mixandmealapp.ui.screens.recipes.EditorsChoiceScreen
 import com.example.mixandmealapp.ui.screens.recipes.RecipeDetailScreen
 import com.example.mixandmealapp.ui.screens.settings.options.LanguageChoiceScreen
 import com.example.mixandmealapp.ui.screens.admin.AdminAnalyticsScreen
+import com.example.mixandmealapp.ui.viewmodel.AuthUiState
+import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 
@@ -172,13 +177,36 @@ fun AppNavigation() {
 
             // Andere bestemmingen
             composable(Navigation.LOGIN) {
-                LoginScreen(
-                    navController = navController,
-                    onGoToRegister = {
-                        navController.navigate(Navigation.REGISTER)
+                    val viewModel: AuthViewModel = viewModel()
+                    val state = viewModel.uiState
+
+                    LoginScreen(
+                        navController = navController,
+                        onLogin = { email, password ->
+                            viewModel.login(email, password)
+                        },
+                        onGoToRegister = { navController.navigate(Navigation.REGISTER) }
+                    )
+
+                    // React to state changes (navigation, error snackbar, etc.)
+                    when (state) {
+                        is AuthUiState.Success -> {
+                            // e.g. navigate to home
+                            LaunchedEffect(Unit) {
+                                navController.navigate(Navigation.HOME) {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            }
+                        }
+                        is AuthUiState.Error -> {
+                            // show error UI or Snackbar
+                        }
+                        AuthUiState.Loading -> {
+                            // show progress indicator
+                        }
+                        AuthUiState.Idle -> Unit
                     }
-                )
+                }
             }
         }
     }
-}

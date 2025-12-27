@@ -255,7 +255,7 @@ fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
     var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
     LaunchedEffect(Unit) {
         try {
-            recipes = recipeRepository.getQuickRecipesResponse(4)
+            recipes = recipeRepository.getQuickRecipesResponse(2)
         } catch (e: Exception) {
             e.printStackTrace()
         }
