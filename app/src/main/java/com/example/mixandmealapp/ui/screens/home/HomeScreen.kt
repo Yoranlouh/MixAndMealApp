@@ -41,11 +41,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import com.example.mixandmealapp.repository.RecipeRepository
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
+import com.example.mixandmealapp.ui.components.PrivacyDialog
 import com.example.mixandmealapp.ui.navigation.Navigation
-import com.example.mixandmealapp.ui.screens.legal.PrivacyDialog
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme

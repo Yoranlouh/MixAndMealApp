@@ -85,5 +85,5 @@ dependencies {
 
     // image url uses
     implementation("io.coil-kt:coil-compose:2.7.0")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }

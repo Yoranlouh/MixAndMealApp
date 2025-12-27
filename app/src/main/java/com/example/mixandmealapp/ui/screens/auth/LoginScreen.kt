@@ -26,20 +26,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.mixandmealapp.R
-import com.example.mixandmealapp.repository.UserRepository
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.InputTextFieldLogin
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.navigation.Navigation
-import kotlinx.coroutines.launch
-import com.example.mixandmealapp.ui.viewmodel.AuthUiState
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
+import com.example.mixandmealapp.ui.viewmodel.AuthUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,10 +97,10 @@ fun LoginScreen(
             Spacer(Modifier.height(24.dp))
 
             PrimaryButton(
-                text = "Login",
+                text = stringResource(id = com.example.mixandmealapp.R.string.login),
                 onClick = {
                     scope.launch{
-                        viewModel.login(email, password)
+                        onLogin(email, password)
                     } },
             )
 
@@ -112,8 +108,7 @@ fun LoginScreen(
                 onClick = onGoToRegister,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(stringResource(id = R.string.dont_have_account_register))
-
+                Text(stringResource(id = com.example.mixandmealapp.R.string.dont_have_account_register))
             }
 
             // React to state changes

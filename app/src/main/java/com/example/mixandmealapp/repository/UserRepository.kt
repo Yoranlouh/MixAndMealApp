@@ -13,15 +13,3 @@ class UserRepository() {
         return ApiService.postLogin(Login(email, password))
     }
 }
-
-
-class AuthRepository(
-    private val api: ApiService
-) {
-    suspend fun login(email: String, password: String): AuthResponse {
-        return api.postLogin(
-            Login(email = email, password = password)
-        )
-    }
-}
-
