@@ -18,6 +18,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,11 +46,14 @@ import kotlinx.coroutines.launch
 fun LoginScreen(
     onLogin: (String, String) -> Unit = { _, _ -> },
     onGoToRegister: () -> Unit = {},
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: AuthViewModel = viewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
+    val state by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
 
     Scaffold(
         topBar = {
@@ -97,10 +101,10 @@ fun LoginScreen(
             Spacer(Modifier.height(24.dp))
 
             PrimaryButton(
-                text = stringResource(id = com.example.mixandmealapp.R.string.login),
+                text = "Login",
                 onClick = {
                     scope.launch{
-                        onLogin(email, password)
+                        viewModel.login(email, password)
                     } },
             )
 
@@ -109,6 +113,26 @@ fun LoginScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(stringResource(id = R.string.dont_have_account_register))
+
+            }
+
+            // React to state changes
+            when (state) {
+                is AuthUiState.Error -> {
+                    LaunchedEffect(state) {
+                        snackbarHostState.showSnackbar(
+                            (state as AuthUiState.Error).message
+                        )
+                    }
+                }
+                is AuthUiState.Success -> {
+                    LaunchedEffect(state) {
+                        navController.navigate(Navigation.HOME) {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                }
+                else -> Unit
             }
         }
     }

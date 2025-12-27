@@ -140,11 +140,8 @@ fun UploadScreen(navController: NavHostController) {
         InputFieldSmall(
             value = recipeName,
             onValueChange = { recipeName = it },
-            modifier = Modifier.fillMaxWidth(),
             label = "Recipe Name",
             placeholder = "Enter Recipe Name",
-            fontSize = MaterialTheme.typography.titleMedium.fontSize,
-            fontWeight = FontWeight.SemiBold
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -153,11 +150,8 @@ fun UploadScreen(navController: NavHostController) {
         InputFieldTextBox(
             value = description,
             onValueChange = { description = it },
-            modifier = Modifier.fillMaxWidth(),
             label = "Description",
             placeholder = "Tell us a little about your recipe",
-            fontSize = MaterialTheme.typography.titleMedium.fontSize,
-            fontWeight = FontWeight.Normal
         )
 
 

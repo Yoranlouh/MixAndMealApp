@@ -8,14 +8,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mixandmealapp.ui.components.BottomNavBar
 import com.example.mixandmealapp.ui.components.UserBottomNavBar
 import com.example.mixandmealapp.ui.screens.account.AccountScreen
 import com.example.mixandmealapp.ui.screens.auth.LoginScreen
@@ -28,8 +26,6 @@ import com.example.mixandmealapp.ui.screens.search.SearchScreen
 import com.example.mixandmealapp.ui.screens.upload.UploadScreen
 import com.example.mixandmealapp.ui.screens.fridge.FridgeScreen
 import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
-import com.example.mixandmealapp.ui.screens.recipes.PopularRecipeScreen
-import com.example.mixandmealapp.ui.screens.recipes.EditorsChoiceScreen
 import com.example.mixandmealapp.ui.screens.recipes.RecipeDetailScreen
 import com.example.mixandmealapp.ui.screens.settings.options.LanguageChoiceScreen
 import com.example.mixandmealapp.ui.screens.admin.AdminAnalyticsScreen
@@ -130,8 +126,6 @@ fun AppNavigation() {
             // Bottom bar Search destination
             composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
             composable(Navigation.FRIDGE) { FridgeScreen(navController = navController, viewModel = fridgeViewModel) }
-            composable(Navigation.POPULAR_RECIPES) { PopularRecipeScreen(navController = navController) }
-            composable(Navigation.EDITORS_CHOICE) { EditorsChoiceScreen(navController = navController) }
             composable(Navigation.RECIPE_DETAIL) {
                 RecipeDetailScreen(
                     onBack = { navController.popBackStack() }

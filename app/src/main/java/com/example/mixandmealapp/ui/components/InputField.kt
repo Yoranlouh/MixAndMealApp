@@ -29,19 +29,16 @@ import com.example.mixandmealapp.ui.theme.DarkText
 fun InputFieldSmall(
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
     label: String = "",
     placeholder: String = "",
-    fontSize: TextUnit = MaterialTheme.typography.bodyMedium.fontSize,
-    fontWeight: FontWeight = FontWeight.Normal
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = Modifier) {
 
         // Label above the text field
         Text(
             text = label,
-            fontSize = fontSize,
-            fontWeight = fontWeight
+            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+            fontWeight = FontWeight.Normal
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -67,18 +64,15 @@ fun InputFieldSmall(
 fun InputFieldTextBox(
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
     label: String = "",
     placeholder: String = "",
-    fontSize: TextUnit = MaterialTheme.typography.bodyMedium.fontSize,
-    fontWeight: FontWeight = FontWeight.Normal
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = Modifier) {
 
         Text(
             text = label,
-            fontSize = fontSize,
-            fontWeight = fontWeight
+            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+            fontWeight = FontWeight.Normal
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -101,7 +95,6 @@ fun InputFieldTextBox(
 
 @Composable
 fun InputTextFieldLogin(
-    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -112,7 +105,7 @@ fun InputTextFieldLogin(
         onValueChange = onValueChange,
         label = { Text(label) },
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-        modifier = modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     )
 }
 

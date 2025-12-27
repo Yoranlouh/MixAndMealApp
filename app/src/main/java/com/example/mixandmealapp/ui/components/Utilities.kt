@@ -22,28 +22,3 @@ fun String.truncate(maxLength: Int): String {
         this
     }
 }
-
-@Composable
-fun PrivacyDialog(
-    onAccept: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AlertDialog(
-        onDismissRequest = { },
-        title = { Text("Privacy & Cookie Preferences") },
-        text = {
-            Text("We use cookies to improve your experience. Please accept to continue using the app.")
-        },
-        confirmButton = {
-            Button(onClick = onAccept) {
-                Text("Accept")
-            }
-            Button(onClick = { exitProcess(0) }) {
-                Text("Decline")
-//                modifier = Modifier.background(color.BrandOrange)
-            }
-        }
-
-
-    )
-}

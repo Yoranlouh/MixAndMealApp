@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     // Coroutines for async repository calls and viewModelScope
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation(libs.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -70,6 +71,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // ktor connection
     implementation("io.ktor:ktor-client-core:3.3.0")

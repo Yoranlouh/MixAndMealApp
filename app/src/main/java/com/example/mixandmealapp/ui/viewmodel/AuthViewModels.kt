@@ -11,6 +11,7 @@ import com.example.mixandmealapp.data.ServiceLocator
 import com.example.mixandmealapp.data.SessionRepository
 import com.example.mixandmealapp.data.SettingsRepository
 import com.example.mixandmealapp.repository.UserRepository
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -25,32 +26,32 @@ data class LoginUiState(
     val success: Boolean = false
 )
 
-class LoginViewModel(
-    private val auth: AuthRepository = ServiceLocator.authRepository,
-    private val session: SessionRepository = ServiceLocator.sessionRepository
-) : ViewModel() {
-    var uiState by mutableStateOf(LoginUiState())
-        private set
-
-    fun onEmailChange(v: String) { uiState = uiState.copy(email = v) }
-    fun onPasswordChange(v: String) { uiState = uiState.copy(password = v) }
-    fun login() {
-        uiState = uiState.copy(isLoading = true, error = null, success = false)
-        viewModelScope.launch {
-            try {
-                val result = auth.login(uiState.email, uiState.password)
-                if (result.success && result.token != null) {
-                    session.saveToken(result.token)
-                    uiState = uiState.copy(isLoading = false, success = true)
-                } else {
-                    uiState = uiState.copy(isLoading = false, error = result.error ?: "Login failed")
-                }
-            } catch (t: Throwable) {
-                uiState = uiState.copy(isLoading = false, error = t.message)
-            }
-        }
-    }
-}
+//class LoginViewModel(
+//    private val auth: AuthRepository = ServiceLocator.authRepository,
+//    private val session: SessionRepository = ServiceLocator.sessionRepository
+//) : ViewModel() {
+//    var uiState by mutableStateOf(LoginUiState())
+//        private set
+//
+//    fun onEmailChange(v: String) { uiState = uiState.copy(email = v) }
+//    fun onPasswordChange(v: String) { uiState = uiState.copy(password = v) }
+//    fun login() {
+//        uiState = uiState.copy(isLoading = true, error = null, success = false)
+//        viewModelScope.launch {
+//            try {
+//                val result = auth.login(uiState.email, uiState.password)
+//                if (result.success && result.token != null) {
+//                    session.saveToken(result.token)
+//                    uiState = uiState.copy(isLoading = false, success = true)
+//                } else {
+//                    uiState = uiState.copy(isLoading = false, error = result.error ?: "Login failed")
+//                }
+//            } catch (t: Throwable) {
+//                uiState = uiState.copy(isLoading = false, error = t.message)
+//            }
+//        }
+//    }
+//}
 
 // Register
 data class RegisterUiState(
@@ -63,38 +64,38 @@ data class RegisterUiState(
     val success: Boolean = false
 )
 
-class RegisterViewModel(
-    private val auth: AuthRepository = ServiceLocator.authRepository,
-    private val session: SessionRepository = ServiceLocator.sessionRepository
-) : ViewModel() {
-    var uiState by mutableStateOf(RegisterUiState())
-        private set
-
-    fun onNameChange(v: String) { uiState = uiState.copy(name = v) }
-    fun onEmailChange(v: String) { uiState = uiState.copy(email = v) }
-    fun onPasswordChange(v: String) { uiState = uiState.copy(password = v) }
-    fun onConfirmPasswordChange(v: String) { uiState = uiState.copy(confirmPassword = v) }
-    fun register() {
-        uiState = uiState.copy(isLoading = true, error = null, success = false)
-        viewModelScope.launch {
-            try {
-                if (uiState.password != uiState.confirmPassword) {
-                    uiState = uiState.copy(isLoading = false, error = "Passwords do not match")
-                    return@launch
-                }
-                val result = auth.register(uiState.name, uiState.email, uiState.password)
-                if (result.success && result.token != null) {
-                    session.saveToken(result.token)
-                    uiState = uiState.copy(isLoading = false, success = true)
-                } else {
-                    uiState = uiState.copy(isLoading = false, error = result.error ?: "Registration failed")
-                }
-            } catch (t: Throwable) {
-                uiState = uiState.copy(isLoading = false, error = t.message)
-            }
-        }
-    }
-}
+//class RegisterViewModel(
+//    private val auth: AuthRepository = ServiceLocator.authRepository,
+//    private val session: SessionRepository = ServiceLocator.sessionRepository
+//) : ViewModel() {
+//    var uiState by mutableStateOf(RegisterUiState())
+//        private set
+//
+//    fun onNameChange(v: String) { uiState = uiState.copy(name = v) }
+//    fun onEmailChange(v: String) { uiState = uiState.copy(email = v) }
+//    fun onPasswordChange(v: String) { uiState = uiState.copy(password = v) }
+//    fun onConfirmPasswordChange(v: String) { uiState = uiState.copy(confirmPassword = v) }
+//    fun register() {
+//        uiState = uiState.copy(isLoading = true, error = null, success = false)
+//        viewModelScope.launch {
+//            try {
+//                if (uiState.password != uiState.confirmPassword) {
+//                    uiState = uiState.copy(isLoading = false, error = "Passwords do not match")
+//                    return@launch
+//                }
+//                val result = auth.register(uiState.name, uiState.email, uiState.password)
+//                if (result.success && result.token != null) {
+//                    session.saveToken(result.token)
+//                    uiState = uiState.copy(isLoading = false, success = true)
+//                } else {
+//                    uiState = uiState.copy(isLoading = false, error = result.error ?: "Registration failed")
+//                }
+//            } catch (t: Throwable) {
+//                uiState = uiState.copy(isLoading = false, error = t.message)
+//            }
+//        }
+//    }
+//}
 
 // Splash / session
 data class LoginSplashUiState(
@@ -104,33 +105,44 @@ data class LoginSplashUiState(
     val error: String? = null
 )
 
-class LoginSplashViewModel(
-    private val session: SessionRepository = ServiceLocator.sessionRepository,
-    private val settings: SettingsRepository = ServiceLocator.settingsRepository
-) : ViewModel() {
-    var uiState by mutableStateOf(LoginSplashUiState())
-        private set
-
-    fun checkSession() {
-        uiState = uiState.copy(isChecking = true, error = null)
-        viewModelScope.launch {
-            try {
-                val loggedIn = session.isLoggedIn()
-                val privacy = settings.isPrivacyAccepted()
-                uiState = uiState.copy(isChecking = false, isLoggedIn = loggedIn, requiresPrivacy = !privacy)
-            } catch (t: Throwable) {
-                uiState = uiState.copy(isChecking = false, error = t.message)
-            }
-        }
-    }
-}
-
+//class LoginSplashViewModel(
+//    private val session: SessionRepository = ServiceLocator.sessionRepository,
+//    private val settings: SettingsRepository = ServiceLocator.settingsRepository
+//) : ViewModel() {
+//    var uiState by mutableStateOf(LoginSplashUiState())
+//        private set
+//
+//    fun checkSession() {
+//        uiState = uiState.copy(isChecking = true, error = null)
+//        viewModelScope.launch {
+//            try {
+//                val loggedIn = session.isLoggedIn()
+//                val privacy = settings.isPrivacyAccepted()
+//                uiState = uiState.copy(isChecking = false, isLoggedIn = loggedIn, requiresPrivacy = !privacy)
+//            } catch (t: Throwable) {
+//                uiState = uiState.copy(isChecking = false, error = t.message)
+//            }
+//        }
+//    }
+//}
+//
 
 class AuthViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val uiState = _uiState.asStateFlow()
 
+
     fun login(email: String, password: String) {
+        fun statusMessage(code: Int): String =
+            when (code) {
+                401 -> "Invalid email or password"
+                403 -> "Access denied"
+                404 -> "User not found"
+                500 -> "Server error, try again later"
+                else -> "Login failed (HTTP $code)"
+            }
+
+
         viewModelScope.launch {
             Log.d("AuthViewModel", "Login attempt: $email")
             _uiState.value = AuthUiState.Loading
@@ -139,9 +151,13 @@ class AuthViewModel : ViewModel() {
                 val response = UserRepository().login(email, password)
                 Log.d("AuthViewModel", "Login SUCCESS: ${response.token}")
                 _uiState.value = AuthUiState.Success(response)
-            } catch (e: Exception) {
+            }   catch (e: ResponseException) {
+                val code = e.response.status.value
+                _uiState.value = AuthUiState.Error(statusMessage(code))
+            }   catch (e: Exception) {
                 Log.e("AuthViewModel", "Login FAILED: ${e.message}")
                 _uiState.value = AuthUiState.Error(e.message ?: "Error")
+
             }
         }
     }
