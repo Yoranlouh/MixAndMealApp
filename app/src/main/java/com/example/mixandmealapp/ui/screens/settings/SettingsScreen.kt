@@ -95,22 +95,12 @@ fun SettingsScreen(
 
         Divider()
 
-        // Language
-        val locales = AppCompatDelegate.getApplicationLocales()
-        val currentLanguage by remember(locales) {
-            mutableStateOf(
-                when (val tag = locales.toLanguageTags()) {
-                    null, "" -> "English"
-                    else -> if (tag.startsWith("nl")) "Dutch" else "English"
-                }
-            )
-        }
 
         Divider()
 
         SettingsButton(
             title = stringResource(R.string.language_choice),
-            description = stringResource(R.string.language_choice_support) + currentLanguage,
+            description = stringResource(R.string.language_choice_support),
             onClick = {
                 navController.navigate(Navigation.LANGUAGE_CHOICE)
             }

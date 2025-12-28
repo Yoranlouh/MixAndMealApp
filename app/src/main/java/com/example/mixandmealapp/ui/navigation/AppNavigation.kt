@@ -7,7 +7,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,7 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mixandmealapp.models.entries.UserEntry
+import com.example.mixandmealapp.ui.viewmodel.LocaleViewModel
 import com.example.mixandmealapp.ui.components.AdminBottomNavBar
 import com.example.mixandmealapp.ui.components.GuestBottomNavBar
 import com.example.mixandmealapp.ui.components.UserBottomNavBar
@@ -47,7 +46,7 @@ private val noBottomBarRoutes = listOf(
 )
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(localeViewModel: LocaleViewModel) {
     val navController = rememberNavController()
     // Shared ViewModel instance for fridge across screens
     val fridgeViewModel = remember { FridgeViewModel() }
@@ -55,7 +54,7 @@ fun AppNavigation() {
     val favouritesViewModel = remember { FavouritesViewModel() }
     val homeViewModel = remember { HomeViewModel() }
 
-    var role = TOKEN
+    var role = "USER"
 
     // observe huidige route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -155,7 +154,10 @@ fun AppNavigation() {
                 )
             }
             composable(Navigation.LANGUAGE_CHOICE) {
-                LanguageChoiceScreen(navController = navController)
+                LanguageChoiceScreen(
+                    navController = navController,
+                    localeViewModel = localeViewModel
+                )
             }
             composable(Navigation.ADMIN_ANALYTICS) {
                 AdminAnalyticsScreen()
