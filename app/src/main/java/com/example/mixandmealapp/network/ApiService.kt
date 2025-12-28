@@ -1,16 +1,18 @@
 package com.example.mixandmealapp.network
 
+import com.example.mixandmealapp.models.entries.TokenClaim
 import com.example.mixandmealapp.models.enums.Difficulty
+import com.example.mixandmealapp.models.requests.Login
+import com.example.mixandmealapp.models.responses.AuthResponse
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import requests.Login
-import responses.AuthResponse
 
 object ApiService {
     private val client = ApiClient.client
@@ -36,5 +38,10 @@ object ApiService {
             setBody(request)
         }.body()
 
+    suspend fun checkRole(token: TokenClaim): Boolean =
+        client.post("$domain/authenticate") {
+            contentType(ContentType.Application.Json)
+            header(token.name, token.value)
+        } .body()
 }
 

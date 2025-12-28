@@ -123,24 +123,24 @@ fun BackButton(
 }
 
 
-@Composable
-fun CogwheelButton(onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),   // space from the edges
-    ) {
-        IconButton(
-            onClick = onClick,
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Settings"
-            )
-        }
-    }
-}
+//@Composable
+//fun CogwheelButton(onClick: () -> Unit) {
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(16.dp),   // space from the edges
+//    ) {
+//        IconButton(
+//            onClick = onClick,
+//            modifier = Modifier.align(Alignment.TopEnd)
+//        ) {
+//            Icon(
+//                imageVector = Icons.Default.Settings,
+//                contentDescription = "Settings"
+//            )
+//        }
+//    }
+//}
 
 // Fridge label component with an orange trash button on the right.
 @Composable
@@ -236,50 +236,50 @@ fun OpenFridgeButton(
 
 
 
-
-
-
-@Composable
-fun TestPrimaryButtonWithLogin(
-    text: String,
-    email: String,
-    password: String,
-    userRepository: UserRepository,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = BrandGreen
-) {
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-
-    Button(
-        onClick = {
-            coroutineScope.launch {
-                try {
-                    val token = userRepository.login(email, password)
-                    if (token != null) {
-                        Toast.makeText(context, "Token: $token", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = backgroundColor,
-            contentColor = MixAndMealColours.buttonText
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
+//
+//
+//
+//@Composable
+//fun TestPrimaryButtonWithLogin(
+//    text: String,
+//    email: String,
+//    password: String,
+//    userRepository: UserRepository,
+//    modifier: Modifier = Modifier,
+//    backgroundColor: Color = BrandGreen
+//) {
+//    val context = LocalContext.current
+//    val coroutineScope = rememberCoroutineScope()
+//
+//    Button(
+//        onClick = {
+//            coroutineScope.launch {
+//                try {
+//                    val token = userRepository.login(email, password)
+//                    if (token != null) {
+//                        Toast.makeText(context, "Token: $token", Toast.LENGTH_SHORT).show()
+//                    } else {
+//                        Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
+//                    }
+//                } catch (e: Exception) {
+//                    Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT)
+//                        .show()
+//                }
+//            }
+//        },
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .height(56.dp),
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = backgroundColor,
+//            contentColor = MixAndMealColours.buttonText
+//        ),
+//        shape = RoundedCornerShape(16.dp)
+//    ) {
+//        Text(
+//            text = text,
+//            style = MaterialTheme.typography.titleMedium,
+//            fontWeight = FontWeight.Bold
+//        )
+//    }
+//}

@@ -10,12 +10,12 @@ import com.example.mixandmealapp.data.AuthRepository
 import com.example.mixandmealapp.data.ServiceLocator
 import com.example.mixandmealapp.data.SessionRepository
 import com.example.mixandmealapp.data.SettingsRepository
+import com.example.mixandmealapp.models.responses.AuthResponse
 import com.example.mixandmealapp.repository.UserRepository
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import responses.AuthResponse
 
 // Login
 data class LoginUiState(
@@ -142,7 +142,6 @@ class AuthViewModel : ViewModel() {
                 else -> "Login failed (HTTP $code)"
             }
 
-
         viewModelScope.launch {
             Log.d("AuthViewModel", "Login attempt: $email")
             _uiState.value = AuthUiState.Loading
@@ -151,13 +150,10 @@ class AuthViewModel : ViewModel() {
                 val response = UserRepository().login(email, password)
                 Log.d("AuthViewModel", "Login SUCCESS: ${response.token}")
                 _uiState.value = AuthUiState.Success(response)
-            }   catch (e: ResponseException) {
-                val code = e.response.status.value
-                _uiState.value = AuthUiState.Error(statusMessage(code))
-            }   catch (e: Exception) {
-                Log.e("AuthViewModel", "Login FAILED: ${e.message}")
-                _uiState.value = AuthUiState.Error(e.message ?: "Error")
 
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Login FAILED: ${e.message}")
+                _uiState.value = AuthUiState.Error(e.message ?: "Login failed")
             }
         }
     }

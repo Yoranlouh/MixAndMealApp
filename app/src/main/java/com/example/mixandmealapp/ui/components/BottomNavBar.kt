@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.mixandmealapp.models.enums.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
@@ -38,11 +39,6 @@ import com.example.mixandmealapp.ui.theme.BrandGreen
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
-enum class UserRole {
-    USER,
-    ADMIN
-}
-
 data class BottomNavItem(
     val title: String,
     val icon: ImageVector,
@@ -53,10 +49,11 @@ data class BottomNavItem(
 fun BottomNavBar(
     navController: NavHostController,
     currentDestination: NavDestination?,
-    userRole: UserRole // Voeg de rol toe als parameter
+    Role: Role // Voeg de rol toe als parameter
 ) {
-    val isAdmin = userRole == UserRole.ADMIN
+    val isAdmin = Role.name == "ADMIN"
     // Definieer de items voor elke rol
+
     val userNavItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
         BottomNavItem("Favourites", Icons.Filled.Favorite, Navigation.FAVOURITES),
@@ -73,10 +70,19 @@ fun BottomNavBar(
         BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
     )
 
+    val guestNavItems = listOf(
+        BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
+        BottomNavItem("Favourites", Icons.Filled.Favorite, Navigation.LOGIN),
+        BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
+        BottomNavItem("Fridge", Icons.Filled.Kitchen, Navigation.LOGIN),
+        BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
+    )
+
     // Kies de juiste lijst op basis van de rol
-    val items = when (userRole) {
-        UserRole.USER -> userNavItems
-        UserRole.ADMIN -> adminNavItems
+    val items = when (Role.name) {
+        "USER" -> userNavItems
+        "ADMIN" -> adminNavItems
+        else -> guestNavItems
     }
 
     // Shared palette from screenshot
@@ -168,7 +174,7 @@ fun UserBottomNavBar(
     BottomNavBar(
         navController = navController,
         currentDestination = currentDestination,
-        userRole = UserRole.USER
+        Role = Role.USER
     )
 }
 
@@ -180,7 +186,19 @@ fun AdminBottomNavBar(
     BottomNavBar(
         navController = navController,
         currentDestination = currentDestination,
-        userRole = UserRole.ADMIN
+        Role = Role.ADMIN
+    )
+}
+
+@Composable
+fun GuestBottomNavBar(
+    navController: NavHostController,
+    currentDestination: NavDestination?
+) {
+    BottomNavBar(
+        navController = navController,
+        currentDestination = currentDestination,
+        Role = Role.GUEST
     )
 }
 

@@ -68,8 +68,8 @@ import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.LightBackground
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
-import models.dto.IngredientUnitEntry
 import coil.compose.AsyncImage
+import com.example.mixandmealapp.models.entries.IngredientUnitEntry
 
 
 data class Ingredient(val name: String, val qty: String)

@@ -1,4 +1,4 @@
-package models.dto
+package com.example.mixandmealapp.models.entries
 
 @kotlinx.serialization.Serializable
 data class IngredientEntry(

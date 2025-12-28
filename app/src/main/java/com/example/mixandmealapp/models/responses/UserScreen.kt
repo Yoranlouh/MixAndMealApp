@@ -1,9 +1,9 @@
-package responses
+package com.example.mixandmealapp.models.responses
 
-import models.dto.AllergenEntry
-import models.dto.DietEntry
-import models.dto.IngredientEntry
-import models.dto.RecipeEntry
+import com.example.mixandmealapp.models.entries.AllergenEntry
+import com.example.mixandmealapp.models.entries.DietEntry
+import com.example.mixandmealapp.models.entries.IngredientEntry
+import com.example.mixandmealapp.models.entries.RecipeEntry
 
 @kotlinx.serialization.Serializable
 class UserScreen (

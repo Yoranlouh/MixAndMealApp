@@ -1,4 +1,4 @@
-package responses
+package com.example.mixandmealapp.models.responses
 
 import com.example.mixandmealapp.models.entries.RecipeImageEntry
 

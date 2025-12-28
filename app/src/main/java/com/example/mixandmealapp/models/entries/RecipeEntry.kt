@@ -1,4 +1,4 @@
-package models.dto
+package com.example.mixandmealapp.models.entries
 
 import com.example.mixandmealapp.models.enums.Difficulty
 import com.example.mixandmealapp.models.enums.KitchenStyle

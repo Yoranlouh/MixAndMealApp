@@ -1,6 +1,6 @@
-package models.dto
+package com.example.mixandmealapp.models.entries
 
-import api.models.Role
+import com.example.mixandmealapp.models.enums.Role
 
 @kotlinx.serialization.Serializable
 data class UserEntry(

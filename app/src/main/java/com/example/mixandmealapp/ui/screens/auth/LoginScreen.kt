@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -30,12 +31,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.mixandmealapp.ui.components.BackButton
+import com.example.mixandmealapp.ui.components.ErrorBanner
 import com.example.mixandmealapp.ui.components.InputTextFieldLogin
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
 import com.example.mixandmealapp.ui.viewmodel.AuthUiState
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +53,9 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val state by viewModel.uiState.collectAsState()
-    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
+    var showBanner by remember { mutableStateOf(false) }
+    var bannerMessage by remember { mutableStateOf("") }
+
 
     Scaffold(
         topBar = {
@@ -80,6 +86,7 @@ fun LoginScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
+
             InputTextFieldLogin(
                 value = email,
                 onValueChange = { email = it },
@@ -111,13 +118,17 @@ fun LoginScreen(
                 Text(stringResource(id = com.example.mixandmealapp.R.string.dont_have_account_register))
             }
 
-            // React to state changes
+            ErrorBanner(
+                message = bannerMessage,
+                visible = showBanner,
+                onDismiss = { showBanner = false }
+            )
+
             when (state) {
                 is AuthUiState.Error -> {
                     LaunchedEffect(state) {
-                        snackbarHostState.showSnackbar(
-                            (state as AuthUiState.Error).message
-                        )
+                        bannerMessage = (state as AuthUiState.Error).message
+                        showBanner = true
                     }
                 }
                 is AuthUiState.Success -> {
@@ -129,6 +140,7 @@ fun LoginScreen(
                 }
                 else -> Unit
             }
+
         }
     }
 }

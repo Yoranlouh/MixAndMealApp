@@ -1,7 +1,8 @@
-package api.models
+package com.example.mixandmealapp.models.enums
 
 @kotlinx.serialization.Serializable
 enum class Role{
     USER,
-    ADMIN
+    ADMIN,
+    GUEST
 }
