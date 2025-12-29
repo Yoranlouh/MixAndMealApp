@@ -38,7 +38,7 @@ import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
 import com.example.mixandmealapp.ui.viewmodel.AuthUiState
-
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +47,7 @@ fun LoginScreen(
     onLogin: (String, String) -> Unit = { _, _ -> },
     onGoToRegister: () -> Unit = {},
     navController: NavHostController,
-    viewModel: AuthViewModel = viewModel()
+    viewModel: AuthViewModel = koinViewModel<AuthViewModel>()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

@@ -2,10 +2,12 @@ package com.example.mixandmealapp.network
 
 import com.example.mixandmealapp.models.entries.TokenClaim
 import com.example.mixandmealapp.models.enums.Difficulty
+import com.example.mixandmealapp.models.enums.Role
 import com.example.mixandmealapp.models.requests.Login
 import com.example.mixandmealapp.models.responses.AuthResponse
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
+import com.example.mixandmealapp.models.responses.RoleResponse
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -38,10 +40,10 @@ object ApiService {
             setBody(request)
         }.body()
 
-    suspend fun checkRole(token: TokenClaim): Boolean =
+    suspend fun checkRole(token: String?): RoleResponse =
         client.post("$domain/authenticate") {
             contentType(ContentType.Application.Json)
-            header(token.name, token.value)
-        } .body()
+            header("Authorization", "Bearer $token")
+        }.body()
 }
 

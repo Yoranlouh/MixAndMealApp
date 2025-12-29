@@ -1,13 +1,14 @@
 package com.example.mixandmealapp.ui.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mixandmealapp.models.entries.UserEntry
+import com.example.mixandmealapp.models.responses.RoleResponse
 import com.example.mixandmealapp.ui.components.AdminBottomNavBar
 import com.example.mixandmealapp.ui.components.GuestBottomNavBar
 import com.example.mixandmealapp.ui.components.UserBottomNavBar
@@ -38,6 +39,7 @@ import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
+import org.koin.androidx.compose.koinViewModel
 
 private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
@@ -53,9 +55,9 @@ fun AppNavigation() {
     val fridgeViewModel = remember { FridgeViewModel() }
     // Shared ViewModel instance for favourites across screens
     val favouritesViewModel = remember { FavouritesViewModel() }
-    val homeViewModel = remember { HomeViewModel() }
+    val homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>()
 
-    var role = TOKEN
+    val role by homeViewModel.role.collectAsState()
 
     // observe huidige route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -66,12 +68,12 @@ fun AppNavigation() {
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                if (role == "USER") {
+                if (role == RoleResponse("USER")) {
                     UserBottomNavBar(
                         navController = navController,
                         currentDestination = currentDestination)
 
-                } else if (role == "ADMIN") {
+                } else if (role == RoleResponse("ADMIN")) {
                     AdminBottomNavBar(
                         navController = navController,
                         currentDestination = currentDestination
@@ -194,7 +196,7 @@ fun AppNavigation() {
 
             // Andere bestemmingen
             composable(Navigation.LOGIN) {
-                    val viewModel: AuthViewModel = viewModel()
+                    val viewModel: AuthViewModel = koinViewModel()
                     val state = viewModel.uiState
 
                     LoginScreen(

@@ -10,12 +10,14 @@ import com.example.mixandmealapp.data.AuthRepository
 import com.example.mixandmealapp.data.ServiceLocator
 import com.example.mixandmealapp.data.SessionRepository
 import com.example.mixandmealapp.data.SettingsRepository
+import com.example.mixandmealapp.data.TokenRepository
 import com.example.mixandmealapp.models.responses.AuthResponse
 import com.example.mixandmealapp.repository.UserRepository
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 // Login
 data class LoginUiState(
@@ -127,10 +129,12 @@ data class LoginSplashUiState(
 //}
 //
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(
+    private val repo: TokenRepository,
+    private val homeViewModel: HomeViewModel
+) : ViewModel() {
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val uiState = _uiState.asStateFlow()
-
 
     fun login(email: String, password: String) {
         fun statusMessage(code: Int): String =
@@ -150,6 +154,8 @@ class AuthViewModel : ViewModel() {
                 val response = UserRepository().login(email, password)
                 Log.d("AuthViewModel", "Login SUCCESS: ${response.token}")
                 _uiState.value = AuthUiState.Success(response)
+                repo.setToken(response.token)
+                homeViewModel.authenticateRole()
 
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Login FAILED: ${e.message}")

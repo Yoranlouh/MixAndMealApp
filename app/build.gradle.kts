@@ -71,7 +71,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore-preferences:1.2.0")
 
     // ktor connection
     implementation("io.ktor:ktor-client-core:3.3.0")
@@ -85,5 +85,11 @@ dependencies {
 
     // image url uses
     implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+
+    // Koin
+    // Core Koin for Android
+    implementation("io.insert-koin:koin-android:4.1.1")
+    implementation(platform("io.insert-koin:koin-bom:4.1.1"))
+    implementation("io.insert-koin:koin-core-coroutines:4.1.1")
+    implementation("io.insert-koin:koin-androidx-compose:4.1.1")
 }
