@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import com.example.mixandmealapp.repository.RecipeRepository
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
@@ -51,7 +50,6 @@ import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
-import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -325,10 +323,10 @@ fun EasyRecipesSection(onRecipeClick: () -> Unit = {}) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    MixAndMealAppTheme {
-        com.example.mixandmealapp.ui.navigation.AppNavigation()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview() {
+//    MixAndMealAppTheme {
+//        com.example.mixandmealapp.ui.navigation.AppNavigation(localeViewModel)
+//    }
+//}

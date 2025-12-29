@@ -1,6 +1,5 @@
 package com.example.mixandmealapp.ui.screens.settings.options
 
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -25,17 +23,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.os.LocaleListCompat
 import androidx.navigation.NavController
+import com.example.mixandmealapp.ui.viewmodel.LocaleViewModel
 import com.example.mixandmealapp.R
 import com.example.mixandmealapp.ui.components.BackButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LanguageChoiceScreen(navController: NavController) {
-    val currentLocales = AppCompatDelegate.getApplicationLocales()
-    val currentTag = currentLocales.toLanguageTags().ifBlank { "en" }
-    var selected by remember { mutableStateOf(if (currentTag.startsWith("nl")) "nl" else "en") }
+fun LanguageChoiceScreen(
+    navController: NavController,
+    localeViewModel: LocaleViewModel
+) {
+    var selected by remember { mutableStateOf("en") }
 
     Scaffold(
         topBar = {
@@ -50,39 +49,39 @@ fun LanguageChoiceScreen(navController: NavController) {
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).padding(16.dp)) {
+
             LanguageOptionRow(
                 title = stringResource(R.string.english),
                 selected = selected == "en",
-                onClick = {
-                    selected = "en"
-                }
+                onClick = { selected = "en" }
             )
+
             Divider()
+
             LanguageOptionRow(
                 title = stringResource(R.string.dutch),
                 selected = selected == "nl",
-                onClick = {
-                    selected = "nl"
-                }
+                onClick = { selected = "nl" }
             )
 
             Spacer(modifier = Modifier.padding(8.dp))
-            Text(text = stringResource(R.string.language_changes_applied), style = MaterialTheme.typography.bodySmall)
+            Text(text = stringResource(R.string.language_changes_applied))
 
             Spacer(modifier = Modifier.padding(12.dp))
+
             Button(
                 onClick = {
-                    val tag = if (selected == "nl") "nl" else "en"
-                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
                     navController.popBackStack()
-                },
-                colors = ButtonDefaults.buttonColors()
+                    localeViewModel.setLocale(selected)
+
+                }
             ) {
                 Text(text = stringResource(id = R.string.save))
             }
         }
     }
 }
+
 
 @Composable
 private fun LanguageOptionRow(title: String, selected: Boolean, onClick: () -> Unit) {

@@ -17,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mixandmealapp.models.responses.RoleResponse
+import com.example.mixandmealapp.ui.viewmodel.LocaleViewModel
 import com.example.mixandmealapp.ui.components.AdminBottomNavBar
 import com.example.mixandmealapp.ui.components.GuestBottomNavBar
 import com.example.mixandmealapp.ui.components.UserBottomNavBar
@@ -49,7 +50,7 @@ private val noBottomBarRoutes = listOf(
 )
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(localeViewModel: LocaleViewModel) {
     val navController = rememberNavController()
     // Shared ViewModel instance for fridge across screens
     val fridgeViewModel = remember { FridgeViewModel() }
@@ -157,7 +158,10 @@ fun AppNavigation() {
                 )
             }
             composable(Navigation.LANGUAGE_CHOICE) {
-                LanguageChoiceScreen(navController = navController)
+                LanguageChoiceScreen(
+                    navController = navController,
+                    localeViewModel = localeViewModel
+                )
             }
             composable(Navigation.ADMIN_ANALYTICS) {
                 AdminAnalyticsScreen()
