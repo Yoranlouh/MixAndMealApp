@@ -2,7 +2,6 @@ package com.example.mixandmealapp.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Kitchen
+import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -49,11 +49,8 @@ data class BottomNavItem(
 fun BottomNavBar(
     navController: NavHostController,
     currentDestination: NavDestination?,
-    Role: Role // Voeg de rol toe als parameter
+    userRole: Role
 ) {
-    val isAdmin = Role.name == "ADMIN"
-    // Definieer de items voor elke rol
-
     val userNavItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
         BottomNavItem("Favourites", Icons.Filled.Favorite, Navigation.FAVOURITES),
@@ -65,7 +62,7 @@ fun BottomNavBar(
     val adminNavItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
         BottomNavItem("Upload", Icons.Filled.Edit, Navigation.UPLOAD),
-        BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
+        BottomNavItem("Scan", Icons.Filled.DocumentScanner, Navigation.SCAN),
         BottomNavItem("Analytics", Icons.Filled.Analytics, Navigation.ADMIN_ANALYTICS),
         BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
     )
@@ -78,14 +75,13 @@ fun BottomNavBar(
         BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
     )
 
-    // Kies de juiste lijst op basis van de rol
-    val items = when (Role.name) {
-        "USER" -> userNavItems
-        "ADMIN" -> adminNavItems
+    // Select items based on role
+    val items = when (userRole) {
+        Role.USER -> userNavItems
+        Role.ADMIN -> adminNavItems
         else -> guestNavItems
     }
 
-    // Shared palette from screenshot
     val unselectedGrey = Color(0xFFB0B8BF)
 
     Box {
@@ -97,14 +93,15 @@ fun BottomNavBar(
             items.forEach { item ->
                 val selected =
                     currentDestination?.hierarchy?.any { it.route == item.route } == true
+                
+                // Identify the "Scan" or "Search" item for special styling if needed
+                val isFloatingAction = item.route == Navigation.SCAN || (item.route == Navigation.SEARCH && userRole != Role.ADMIN) // Example condition
 
                 NavigationBarItem(
                     selected = selected,
                     enabled = true,
-                    // Verberg label onder het Search-icoon
-                    alwaysShowLabel = item.route != Navigation.SEARCH,
+                    alwaysShowLabel = item.route != Navigation.SEARCH && item.route != Navigation.SCAN,
                     onClick = {
-                        // Always pop up to Home so the Home tab reliably returns to Home
                         val target = if (item.route == Navigation.HOME) {
                             "${Navigation.HOME}?showPrivacy=false"
                         } else item.route
@@ -112,16 +109,31 @@ fun BottomNavBar(
                         navController.navigate(target) {
                             launchSingleTop = true
                             restoreState = true
-                            // Pop de backstack tot de Home-composable (let op: exacte route met arg-pattern)
                             popUpTo(Navigation.HOME + "?showPrivacy={showPrivacy}") { saveState = true }
                         }
                     },
                     icon = {
-                        // Search icon should always be the floating green circle as per design
-                        val isSearchFloating = item.route == Navigation.SEARCH
-                        if (isSearchFloating) {
-                            // Floating green circle with white icon, overlapping the bar
-                            Box(
+                        // Apply special styling for Scan button for Admin, or Search for User if desired.
+                        // Based on previous user request, Admin Scan was prominent.
+                        if (item.route == Navigation.SCAN) {
+                             Box(
+                                modifier = Modifier
+                                    .offset(y = (-10).dp)
+                                    .size(60.dp)
+                                    .shadow(8.dp, shape = CircleShape)
+                                    .background(BrandGreen, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.title,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        } else if (item.route == Navigation.SEARCH && userRole != Role.ADMIN) {
+                             // User search floating button
+                             Box(
                                 modifier = Modifier
                                     .offset(y = (-10).dp)
                                     .size(60.dp)
@@ -146,8 +158,7 @@ fun BottomNavBar(
                         }
                     },
                     label = {
-                        // Geen label tonen voor Search
-                        if (item.route != Navigation.SEARCH) {
+                        if (item.route != Navigation.SEARCH && item.route != Navigation.SCAN) {
                             val labelColor = if (selected) BrandGreen else unselectedGrey
                             Text(item.title, color = labelColor)
                         }
@@ -165,7 +176,6 @@ fun BottomNavBar(
     }
 }
 
-// Losse wrappers zodat je afzonderlijke composables hebt voor user en admin
 @Composable
 fun UserBottomNavBar(
     navController: NavHostController,
@@ -174,7 +184,7 @@ fun UserBottomNavBar(
     BottomNavBar(
         navController = navController,
         currentDestination = currentDestination,
-        Role = Role.USER
+        userRole = Role.USER
     )
 }
 
@@ -186,7 +196,7 @@ fun AdminBottomNavBar(
     BottomNavBar(
         navController = navController,
         currentDestination = currentDestination,
-        Role = Role.ADMIN
+        userRole = Role.ADMIN
     )
 }
 
@@ -198,11 +208,10 @@ fun GuestBottomNavBar(
     BottomNavBar(
         navController = navController,
         currentDestination = currentDestination,
-        Role = Role.GUEST
+        userRole = Role.GUEST
     )
 }
 
-// Preview voor de USER rol
 @Preview(showBackground = true, name = "BottomNavBar - User")
 @Composable
 fun BottomNavBarUserPreview() {
@@ -218,7 +227,6 @@ fun BottomNavBarUserPreview() {
     }
 }
 
-// Preview voor de ADMIN rol
 @Preview(showBackground = true, name = "BottomNavBar - Admin")
 @Composable
 fun BottomNavBarAdminPreview() {

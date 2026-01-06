@@ -17,6 +17,6 @@ val appModule = module {
     single{get<Context>().dataStore}
     single{ TokenRepository(get()) }
     single{ UserRepository() }
-    viewModel{ HomeViewModel(get(), get()) }
-    viewModel { AuthViewModel(get(), get()) }
+    single{ HomeViewModel(get(), get()) }
+    viewModel{ AuthViewModel(get(), get()) }
 }

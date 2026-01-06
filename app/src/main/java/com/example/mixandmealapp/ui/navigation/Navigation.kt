@@ -20,4 +20,5 @@ object Navigation {
     const val RECIPE_DETAIL = "Recipe_Detail_Screen"
     const val LANGUAGE_CHOICE = "Language_Choice_Screen"
     const val ADMIN_ANALYTICS = "Admin_Analytics_Screen"
+    const val SCAN = "Scan_Screen"
 }

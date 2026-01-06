@@ -375,24 +375,28 @@ private fun FavoriteRecipeCard(
     )
 }
 
-@Preview(showBackground = true, name = "Account Screen (Logged In)")
-@Composable
-fun AccountScreenLoggedInPreview() {
-    MixAndMealAppTheme {
-        AccountScreen(
-            navController = rememberNavController(),
-            isLoggedIn = true
-        )
-    }
-}
 
-@Preview(showBackground = true, name = "Account Screen (Logged Out)")
-@Composable
-fun AccountScreenLoggedOutPreview() {
-    MixAndMealAppTheme {
-        AccountScreen(
-            navController = rememberNavController(),
-            isLoggedIn = false
-        )
-    }
-}
+
+
+
+//@Preview(showBackground = true, name = "Account Screen (Logged In)")
+//@Composable
+//fun AccountScreenLoggedInPreview() {
+//    MixAndMealAppTheme {
+//        AccountScreen(
+//            navController = rememberNavController(),
+//            isLoggedIn = true
+//        )
+//    }
+//}
+//
+//@Preview(showBackground = true, name = "Account Screen (Logged Out)")
+//@Composable
+//fun AccountScreenLoggedOutPreview() {
+//    MixAndMealAppTheme {
+//        AccountScreen(
+//            navController = rememberNavController(),
+//            isLoggedIn = false
+//        )
+//    }
+//}

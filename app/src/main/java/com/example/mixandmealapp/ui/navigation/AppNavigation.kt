@@ -9,81 +9,114 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mixandmealapp.models.responses.RoleResponse
-import com.example.mixandmealapp.ui.viewmodel.LocaleViewModel
+import com.example.mixandmealapp.models.enums.Role
 import com.example.mixandmealapp.ui.components.AdminBottomNavBar
 import com.example.mixandmealapp.ui.components.GuestBottomNavBar
 import com.example.mixandmealapp.ui.components.UserBottomNavBar
 import com.example.mixandmealapp.ui.screens.account.AccountScreen
+import com.example.mixandmealapp.ui.screens.admin.AdminAnalyticsScreen
 import com.example.mixandmealapp.ui.screens.auth.LoginScreen
 import com.example.mixandmealapp.ui.screens.auth.RegisterScreen
 import com.example.mixandmealapp.ui.screens.favorites.FavouritesScreen
-import com.example.mixandmealapp.ui.screens.home.HomeScreen
-import com.example.mixandmealapp.ui.screens.search.SearchResultScreen
-import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
-import com.example.mixandmealapp.ui.screens.search.SearchScreen
-import com.example.mixandmealapp.ui.screens.upload.UploadScreen
 import com.example.mixandmealapp.ui.screens.fridge.FridgeScreen
-import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
+import com.example.mixandmealapp.ui.screens.home.HomeScreen
 import com.example.mixandmealapp.ui.screens.recipes.RecipeDetailScreen
+import com.example.mixandmealapp.ui.screens.scan.ScanScreen
+import com.example.mixandmealapp.ui.screens.search.SearchResultScreen
+import com.example.mixandmealapp.ui.screens.search.SearchScreen
+import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
 import com.example.mixandmealapp.ui.screens.settings.options.LanguageChoiceScreen
-import com.example.mixandmealapp.ui.screens.admin.AdminAnalyticsScreen
+import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
+import com.example.mixandmealapp.ui.screens.upload.UploadScreen
 import com.example.mixandmealapp.ui.viewmodel.AuthUiState
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
-import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
+import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
+import com.example.mixandmealapp.ui.viewmodel.LocaleViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
     Navigation.REGISTER,
     Navigation.SETTINGS,
-//    Navigation.SEARCH_RESULT
+    Navigation.SPLASHHOME
 )
 
 @Composable
 fun AppNavigation(localeViewModel: LocaleViewModel) {
     val navController = rememberNavController()
-    // Shared ViewModel instance for fridge across screens
+    
+    // Shared ViewModel instances
     val fridgeViewModel = remember { FridgeViewModel() }
-    // Shared ViewModel instance for favourites across screens
     val favouritesViewModel = remember { FavouritesViewModel() }
-    val homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>()
+    val homeViewModel: HomeViewModel = koinInject()
 
+    // Check role on app start
+    LaunchedEffect(Unit) {
+        homeViewModel.authenticateRole()
+    }
+
+    // Observe role state
     val role by homeViewModel.role.collectAsState()
 
-    // observe huidige route
+    // Log role changes for debugging
+    LaunchedEffect(role) {
+        Log.d("AppNavigation", "Observed role change: ${role.role}")
+    }
+
+    // Observe current route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-
     val showBottomBar = navBackStackEntry?.destination?.route !in noBottomBarRoutes
 
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                if (role == RoleResponse("USER")) {
-                    UserBottomNavBar(
-                        navController = navController,
-                        currentDestination = currentDestination)
+                // Determine current role enum safely
+                val currentRoleEnum: Role = try {
+                    // Normalize the role string: trim whitespace and uppercase
+                    var roleString = role.role.trim().uppercase()
+                    
+                    // Handle "ROLE_" prefix if present (common in Spring Security)
+                    if (roleString.startsWith("ROLE_")) {
+                        roleString = roleString.removePrefix("ROLE_")
+                    }
+                    
+                    Log.d("AppNavigation", "Parsing role string: '$roleString'")
+                    Role.valueOf(roleString)
+                } catch (e: Exception) {
+                    Log.e("AppNavigation", "Failed to parse role: '${role.role}'", e)
+                    Role.GUEST
+                }
 
-                } else if (role == RoleResponse("ADMIN")) {
-                    AdminBottomNavBar(
-                        navController = navController,
-                        currentDestination = currentDestination
-                    )
-                } else {
-                    GuestBottomNavBar(
-                        navController = navController,
-                        currentDestination = currentDestination
-                    )
+                // Show correct bottom bar based on role
+                when (currentRoleEnum) {
+                    Role.USER -> {
+                        UserBottomNavBar(
+                            navController = navController,
+                            currentDestination = currentDestination
+                        )
+                    }
+                    Role.ADMIN -> {
+                        AdminBottomNavBar(
+                            navController = navController,
+                            currentDestination = currentDestination
+                        )
+                    }
+                    else -> {
+                        GuestBottomNavBar(
+                            navController = navController,
+                            currentDestination = currentDestination
+                        )
+                    }
                 }
             }
         }
@@ -93,17 +126,13 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
             startDestination = Navigation.SPLASHHOME,
             modifier = Modifier.padding(paddingValues)
         ) {
+            // --- SPLASH ---
             composable(Navigation.SPLASHHOME) {
                 LoginSplashScreen(
                     navController = navController,
-                    onGoToLogin = {
-                        navController.navigate(Navigation.LOGIN)
-                    },
-                    onGoToRegister = {
-                            navController.navigate(Navigation.REGISTER)
-                    },
+                    onGoToLogin = { navController.navigate(Navigation.LOGIN) },
+                    onGoToRegister = { navController.navigate(Navigation.REGISTER) },
                     onGoToHome = {
-                        // Verwijder de Splash uit de backstack zodat Home het nieuwe beginpunt is
                         navController.navigate(Navigation.HOME) {
                             popUpTo(Navigation.SPLASHHOME) { inclusive = true }
                             launchSingleTop = true
@@ -111,6 +140,8 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
                     }
                 )
             }
+
+            // --- HOME ---
             composable(
                 route = Navigation.HOME + "?showPrivacy={showPrivacy}",
                 arguments = listOf(
@@ -123,20 +154,31 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
                 val showPrivacy = entry.arguments?.getBoolean("showPrivacy") ?: false
                 HomeScreen(navController = navController, showPrivacy = showPrivacy)
             }
-            composable(Navigation.SETTINGS) {
-                SettingsScreen(navController = navController)
-            }
+
+            // --- AUTH ---
             composable(Navigation.LOGIN) {
-                LoginScreen(navController = navController)
+                // Inject AuthViewModel. Koin should provide it with the correct singleton HomeViewModel
+                val viewModel: AuthViewModel = koinViewModel()
+                val state by viewModel.uiState.collectAsState()
+
+                LoginScreen(
+                    navController = navController,
+                    onLogin = { email, password ->
+                        viewModel.login(email, password)
+                    },
+                    onGoToRegister = { navController.navigate(Navigation.REGISTER) }
+                )
             }
             composable(Navigation.REGISTER) {
                 RegisterScreen(
                     navController = navController,
-                    onGoToLogin = {
-                        navController.navigate(Navigation.LOGIN)
-                    }
+                    onGoToLogin = { navController.navigate(Navigation.LOGIN) }
                 )
             }
+
+            // --- MAIN TABS & FEATURES ---
+            composable(Navigation.SETTINGS) { SettingsScreen(navController = navController) }
+            
             composable(Navigation.FAVOURITES) {
                 FavouritesScreen(
                     navController = navController,
@@ -144,92 +186,59 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
                     viewModel = favouritesViewModel
                 )
             }
-            // Results page (separate from the main Search screen)
-            composable(Navigation.SEARCH_RESULTS) { SearchResultScreen(navController = navController) }
 
-            // Bottom bar bestemmingen
-            composable(Navigation.UPLOAD) { UploadScreen(navController = navController) }
-            // Bottom bar Search destination
             composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
-            composable(Navigation.FRIDGE) { FridgeScreen(navController = navController, viewModel = fridgeViewModel) }
-            composable(Navigation.RECIPE_DETAIL) {
-                RecipeDetailScreen(
-                    onBack = { navController.popBackStack() }
-                )
+            composable(Navigation.SEARCH_RESULTS) { SearchResultScreen(navController = navController) }
+            
+            composable(Navigation.UPLOAD) { UploadScreen(navController = navController) }
+            
+            composable(Navigation.SCAN) { ScanScreen() }
+            
+            composable(Navigation.FRIDGE) { 
+                FridgeScreen(navController = navController, viewModel = fridgeViewModel) 
             }
+            
+            composable(Navigation.RECIPE_DETAIL) {
+                RecipeDetailScreen(onBack = { navController.popBackStack() })
+            }
+            
             composable(Navigation.LANGUAGE_CHOICE) {
                 LanguageChoiceScreen(
                     navController = navController,
                     localeViewModel = localeViewModel
                 )
             }
-            composable(Navigation.ADMIN_ANALYTICS) {
-                AdminAnalyticsScreen()
-            }
+
             composable(Navigation.ACCOUNT) {
                 AccountScreen(
                     fridgeViewModel = fridgeViewModel,
                     favouritesViewModel = favouritesViewModel,
                     onGoToLogin = {
-                        navController.navigate(Navigation.LOGIN) {
-                            launchSingleTop = true
-                        }
+                        navController.navigate(Navigation.LOGIN) { launchSingleTop = true }
                     },
                     onLogout = {
+                        // Clear role on logout
+                        homeViewModel.logout()
                         navController.navigate(Navigation.LOGIN) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                             launchSingleTop = true
                         }
                     },
                     onGoToSettings = {
-                        navController.navigate(Navigation.SETTINGS) {
-                            launchSingleTop = true
-                        }
+                        navController.navigate(Navigation.SETTINGS) { launchSingleTop = true }
                     },
-//                    onGoToHome = {
-//                        navController.navigate(Navigation.HOME) {
-//                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-//                            launchSingleTop = true
-//                            restoreState = true
-//                        }
-//                    },
-                    onEditProfile = {navController.navigate(Navigation.EDIT_PROFILE)},
-                    navController = navController
+                    onEditProfile = { navController.navigate(Navigation.EDIT_PROFILE) },
+                    navController = navController,
+                    isLoggedIn = role.role != "Guest" // Pass isLoggedIn state
                 )
             }
 
-            // Andere bestemmingen
-            composable(Navigation.LOGIN) {
-                    val viewModel: AuthViewModel = koinViewModel()
-                    val state = viewModel.uiState
-
-                    LoginScreen(
-                        navController = navController,
-                        onLogin = { email, password ->
-                            viewModel.login(email, password)
-                        },
-                        onGoToRegister = { navController.navigate(Navigation.REGISTER) }
-                    )
-
-                    // React to state changes (navigation, error snackbar, etc.)
-                    when (state) {
-                        is AuthUiState.Success -> {
-                            // e.g. navigate to home
-                            LaunchedEffect(Unit) {
-                                navController.navigate(Navigation.HOME) {
-                                    popUpTo("login") { inclusive = true }
-                                }
-                            }
-                        }
-                        is AuthUiState.Error -> {
-                            // show error UI or Snackbar
-                        }
-                        AuthUiState.Loading -> {
-                            // show progress indicator
-                        }
-                        AuthUiState.Idle -> Unit
-                    }
-                }
+            // --- ADMIN ROUTES ---
+            // Note: These use the same Composables as users for now, 
+            // but the bottom bar will differ (Access to Analytics, etc.)
+            composable(Navigation.ADMIN_ANALYTICS) {
+                AdminAnalyticsScreen()
             }
         }
     }
+}

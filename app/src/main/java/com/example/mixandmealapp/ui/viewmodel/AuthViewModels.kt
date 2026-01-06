@@ -1,6 +1,5 @@
 package com.example.mixandmealapp.ui.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,14 +9,7 @@ import com.example.mixandmealapp.data.AuthRepository
 import com.example.mixandmealapp.data.ServiceLocator
 import com.example.mixandmealapp.data.SessionRepository
 import com.example.mixandmealapp.data.SettingsRepository
-import com.example.mixandmealapp.data.TokenRepository
-import com.example.mixandmealapp.models.responses.AuthResponse
-import com.example.mixandmealapp.repository.UserRepository
-import io.ktor.client.plugins.ResponseException
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 
 // Login
 data class LoginUiState(
@@ -127,47 +119,3 @@ data class LoginSplashUiState(
 //        }
 //    }
 //}
-//
-
-class AuthViewModel(
-    private val repo: TokenRepository,
-    private val homeViewModel: HomeViewModel
-) : ViewModel() {
-    private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
-    val uiState = _uiState.asStateFlow()
-
-    fun login(email: String, password: String) {
-        fun statusMessage(code: Int): String =
-            when (code) {
-                401 -> "Invalid email or password"
-                403 -> "Access denied"
-                404 -> "User not found"
-                500 -> "Server error, try again later"
-                else -> "Login failed (HTTP $code)"
-            }
-
-        viewModelScope.launch {
-            Log.d("AuthViewModel", "Login attempt: $email")
-            _uiState.value = AuthUiState.Loading
-
-            try {
-                val response = UserRepository().login(email, password)
-                Log.d("AuthViewModel", "Login SUCCESS: ${response.token}")
-                _uiState.value = AuthUiState.Success(response)
-                repo.setToken(response.token)
-                homeViewModel.authenticateRole()
-
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Login FAILED: ${e.message}")
-                _uiState.value = AuthUiState.Error(e.message ?: "Login failed")
-            }
-        }
-    }
-}
-
-sealed class AuthUiState {
-    object Idle : AuthUiState()
-    object Loading : AuthUiState()
-    data class Success(val auth: AuthResponse) : AuthUiState()
-    data class Error(val message: String) : AuthUiState()
-}
