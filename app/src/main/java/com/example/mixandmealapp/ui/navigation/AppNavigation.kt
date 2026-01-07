@@ -132,7 +132,12 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
                     navController = navController,
                     onGoToLogin = { navController.navigate(Navigation.LOGIN) },
                     onGoToRegister = { navController.navigate(Navigation.REGISTER) },
+                    // FIX HERE:
                     onGoToHome = {
+                        // 1. Force the app to forget previous sessions
+                        homeViewModel.logout()
+
+                        // 2. Navigate to Home
                         navController.navigate(Navigation.HOME) {
                             popUpTo(Navigation.SPLASHHOME) { inclusive = true }
                             launchSingleTop = true

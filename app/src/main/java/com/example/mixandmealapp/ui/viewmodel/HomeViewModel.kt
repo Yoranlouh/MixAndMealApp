@@ -34,46 +34,62 @@ class HomeViewModel(
     fun authenticateRole(token: String? = null) {
         viewModelScope.launch {
             try {
+                // 1. Get token
                 val tokenToUse = token ?: repo.getTokenOrDefault()
 
-                if (tokenToUse.isNotEmpty()) {
-                    Log.d("HomeViewModel", "Authenticating with token...")
-                    
-                    var roleFound: String? = null
-                    
-                    // 1. Try backend
-                    try {
-                        val userRole = userRepo.checkRole(tokenToUse)
-                        if (userRole != null) {
-                            roleFound = userRole.role
-                        }
-                    } catch (e: Exception) {
-                        Log.e("HomeViewModel", "Backend checkRole failed", e)
-                    }
-
-                    // 2. Fallback to JWT decoding if backend failed or returned nothing
-                    if (roleFound == null) {
-                         Log.d("HomeViewModel", "Attempting JWT decode fallback")
-                         roleFound = getRoleFromToken(tokenToUse)
-                    }
-
-                    if (roleFound != null) {
-                        Log.d("HomeViewModel", "Role determined: $roleFound")
-                        _role.value = RoleResponse(roleFound)
-                    } else {
-                        Log.w("HomeViewModel", "Could not determine role, defaulting to GUEST")
-                        _role.value = RoleResponse("GUEST")
-                    }
-                } else {
+                // 2. CHECK: Use isNullOrBlank() to cover null, empty string "", and whitespace " "
+                if (tokenToUse.isNullOrBlank()) {
                     Log.d("HomeViewModel", "No token found, defaulting to GUEST")
                     _role.value = RoleResponse("GUEST")
+                    return@launch
                 }
+
+                Log.d("HomeViewModel", "Authenticating with token...")
+
+                var roleFound: String? = null
+
+                // 3. Try backend check
+                try {
+                    val response = userRepo.checkRole(tokenToUse)
+                    if (response != null) {
+                        roleFound = response.role
+                    }
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Backend checkRole failed", e)
+                    // OPTIONAL: If error is 401 (Unauthorized), clear token immediately?
+                    // For now, let fallback handle it.
+                }
+
+                // 4. Fallback to JWT decoding (Offline check)
+                if (roleFound == null) {
+                    Log.d("HomeViewModel", "Attempting JWT decode fallback")
+                    roleFound = getRoleFromToken(tokenToUse)
+                }
+
+                // 5. Final assignment
+                if (roleFound != null) {
+                    Log.d("HomeViewModel", "Role determined: $roleFound")
+                    _role.value = RoleResponse(roleFound)
+                } else {
+                    // CRITICAL CHANGE HERE:
+                    // If we had a token, but Backend failed AND JWT decode failed,
+                    // the token is likely garbage. We should treat them as Guest.
+                    Log.w("HomeViewModel", "Token exists but is invalid. Defaulting to GUEST.")
+
+                    // Optional: Clear the bad token so we don't try again next time
+                    // repo.clearToken()
+
+                    _role.value = RoleResponse("GUEST")
+                }
+
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error authenticating role", e)
+                Log.e("HomeViewModel", "Error in authenticateRole", e)
                 _role.value = RoleResponse("GUEST")
             }
         }
     }
+
+
 
     private fun getRoleFromToken(token: String): String? {
         return try {

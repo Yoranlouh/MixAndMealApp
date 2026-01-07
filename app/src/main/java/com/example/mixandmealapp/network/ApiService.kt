@@ -40,10 +40,11 @@ object ApiService {
             setBody(request)
         }.body()
 
+
     suspend fun checkRole(token: String?): RoleResponse =
-        client.post("$domain/authenticate") {
-            contentType(ContentType.Application.Json)
+        client.get("$domain/authenticate") {
             header("Authorization", "Bearer $token")
         }.body()
+
 }
 
