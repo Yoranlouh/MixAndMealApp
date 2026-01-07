@@ -15,6 +15,8 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 
 object ApiService {
     private val client = ApiClient.client
@@ -41,6 +43,7 @@ object ApiService {
         }.body()
 
 
+    // Change return type back to RoleResponse
     suspend fun checkRole(token: String?): RoleResponse =
         client.get("$domain/authenticate") {
             header("Authorization", "Bearer $token")

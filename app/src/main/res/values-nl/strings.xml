@@ -28,6 +28,7 @@
     <string name="about">Over Mix &amp; Meal</string>
     <string name="version">Versie 1.0</string>
     <string name="logout">Uitloggen</string>
+    <string name="logout_desc">Tot morgen?</string>
 
     <!-- Language Choice Screen -->
     <string name="my_language">Mijn taal</string>

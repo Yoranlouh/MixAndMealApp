@@ -28,6 +28,8 @@
     <string name="about">About Mix &amp; Meal</string>
     <string name="version">Version 1.0</string>
     <string name="logout">Logout</string>
+    <string name="logout_desc">See you tomorrow?</string>
+
 
     <!-- Language Choice Screen -->
     <string name="my_language">My language</string>

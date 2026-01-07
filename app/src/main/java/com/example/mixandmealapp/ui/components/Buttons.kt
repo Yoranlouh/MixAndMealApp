@@ -218,6 +218,39 @@ fun SettingsButton(
 }
 
 @Composable
+fun LogoutButton(
+    title: String,
+    description: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    trailingContent: (@Composable () -> Unit)? = null
+) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = title,
+                color = Color.Red, // White text for better contrast on red
+                fontWeight = FontWeight.Bold
+            )
+        },
+        supportingContent = {
+            if (description != null) {
+                Text(
+                    text = description,
+                    color = Color.Red.copy(alpha = 0.8f) // Slightly transparent white
+                )
+            }
+        },
+        trailingContent = trailingContent,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    )
+    Divider()
+}
+
+
+@Composable
 fun OpenFridgeButton(
     text: String = "Open fridge",
     modifier: Modifier = Modifier,

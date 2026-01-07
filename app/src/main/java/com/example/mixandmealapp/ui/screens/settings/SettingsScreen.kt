@@ -20,9 +20,16 @@ import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.navigation.Navigation
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.os.LocaleListCompat
+import com.example.mixandmealapp.ui.components.LogoutButton
 import com.example.mixandmealapp.ui.components.SettingsButton
+import org.koin.compose.koinInject
+import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
+import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
+import org.koin.androidx.compose.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,6 +39,10 @@ fun SettingsScreen(
     navController: NavController
 ) {
     var notificationsEnabled by remember { mutableStateOf(true) }
+
+//    val homeViewModel: HomeViewModel = koinInject()
+//
+//    val accountViewModel: AccountViewModel = koinViewModel()
 
     Column(modifier = modifier) {
 
@@ -82,7 +93,6 @@ fun SettingsScreen(
                 // TODO
             }
         )
-        Divider()
 
         // Allergies
         SettingsButton(
@@ -93,11 +103,6 @@ fun SettingsScreen(
             }
         )
 
-        Divider()
-
-
-        Divider()
-
         SettingsButton(
             title = stringResource(R.string.language_choice),
             description = stringResource(R.string.language_choice_support),
@@ -106,7 +111,6 @@ fun SettingsScreen(
             }
         )
 
-        Divider()
 
         // Privacy & Security
         SettingsButton(
@@ -117,7 +121,6 @@ fun SettingsScreen(
             }
         )
 
-        Divider()
 
         // Help/Support
         SettingsButton(
@@ -128,7 +131,6 @@ fun SettingsScreen(
             }
         )
 
-        Divider()
 
 
         // Notifications Toggle
@@ -144,7 +146,6 @@ fun SettingsScreen(
             }
         )
 
-        Divider()
 
         // About
         SettingsButton(
@@ -153,20 +154,23 @@ fun SettingsScreen(
             onClick = {}
         )
 
-        Divider()
 
         // Logout
-//        SettingsButton(
+//        LogoutButton(
 //            title = stringResource(R.string.logout),
-//            description = "",
+//            description = stringResource(R.string.logout_desc),
 //            onClick = {
-//                // Logout logic here
-//                (LocalContext.
-//                current as? Activity)?.finish() // optionally exit app
-//            },
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = MaterialTheme.colorScheme.error
-//            )
+//                // 2. CLEAR DATA
+//                accountViewModel.logout() // Clears token from SessionRepository
+//                homeViewModel.logout()    // Resets global Role to "Guest"
+//
+//                // 3. NAVIGATE TO LOGIN
+//                navController.navigate(Navigation.LOGIN) {
+//                    // Clear the backstack so the user can't press "Back" to return to settings
+//                    popUpTo(0) { inclusive = true }
+//                    launchSingleTop = true
+//                }
+//            }
 //        )
     }
 }
