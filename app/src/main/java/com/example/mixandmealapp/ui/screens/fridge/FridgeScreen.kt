@@ -40,6 +40,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mixandmealapp.ui.components.LabelFridge
@@ -50,15 +52,18 @@ import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
+import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? = null) {
+fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? = null, homeViewModel: HomeViewModel = koinInject()) {
     // Shared repository-backed ViewModel is provided by caller (AppNavigation).
     // In previews, fall back to a local instance.
     val vm = viewModel ?: remember { FridgeViewModel() }
     val uiState = vm.uiState
     var newIngredient by remember { mutableStateOf("") }
+    val user by homeViewModel.role.collectAsState()
 
     Scaffold(
         topBar = {

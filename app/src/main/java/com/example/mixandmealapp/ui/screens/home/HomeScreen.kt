@@ -53,6 +53,7 @@ import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun HomeScreen(
@@ -80,7 +81,7 @@ fun HomeScreen(
             .padding(16.dp)
     ) {
 
-        Header()
+        Header(viewModel)
         Spacer(modifier = Modifier.height(24.dp))
         FeaturedSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
         Spacer(modifier = Modifier.height(24.dp))
@@ -93,7 +94,10 @@ fun HomeScreen(
 }
 
 @Composable
-fun Header() {
+fun Header(
+    viewModel: HomeViewModel = koinViewModel()
+) {
+    var user = viewModel.role.collectAsState()
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -105,7 +109,7 @@ fun Header() {
                 Spacer(modifier = Modifier.padding(4.dp))
                 Text(text = stringResource(id = com.example.mixandmealapp.R.string.hello), style = MaterialTheme.typography.bodyLarge)
             }
-            Text(text = "Richard", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            Text(text = user.value.userName , style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         }
     }
 }

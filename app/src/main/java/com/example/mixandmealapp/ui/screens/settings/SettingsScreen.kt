@@ -166,9 +166,9 @@ fun SettingsScreen(
 
                 // 3. NAVIGATE TO LOGIN
                 navController.navigate(Navigation.HOME) {
-                    // Clear the backstack so the user can't press "Back" to return to settings
-                    popUpTo(0) { inclusive = true }
-                    launchSingleTop = true
+//                    // Clear the backstack so the user can't press "Back" to return to settings
+//                    popUpTo(0) { inclusive = true }
+//                    launchSingleTop = true
                 }
             }
         )

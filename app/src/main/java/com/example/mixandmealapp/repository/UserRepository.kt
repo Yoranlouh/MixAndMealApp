@@ -17,7 +17,7 @@ class UserRepository() {
 
     suspend fun checkRole(token: String): RoleResponse? {
         val response = ApiService.checkRole(token)
-        Log.d("UserRepo", "📡 RoleResponse: $response")
+        Log.d("UserRepo", "📡 RoleResponse: ${response}")
         return response
     }
 }

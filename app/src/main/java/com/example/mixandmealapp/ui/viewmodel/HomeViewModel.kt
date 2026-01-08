@@ -24,7 +24,7 @@ class HomeViewModel(
     private val userRepo: UserRepository
 ) : ViewModel() {
 
-    private val _role = MutableStateFlow<RoleResponse>(RoleResponse("Guest"))
+    private val _role = MutableStateFlow<RoleResponse>(RoleResponse("GUEST", "", "Guest"))
     val role: StateFlow<RoleResponse> = _role.asStateFlow()
 
     init {
@@ -40,19 +40,21 @@ class HomeViewModel(
                 // 2. CHECK: Use isNullOrBlank() to cover null, empty string "", and whitespace " "
                 if (tokenToUse.isNullOrBlank()) {
                     Log.d("HomeViewModel", "No token found, defaulting to GUEST")
-                    _role.value = RoleResponse("GUEST")
+                    _role.value = RoleResponse("GUEST", "", "Guest")
                     return@launch
                 }
 
                 Log.d("HomeViewModel", "Authenticating with token...")
 
-                var roleFound: String? = null
+                var roleFound: RoleResponse? = null
 
                 // 3. Try backend check
                 try {
                     val response = userRepo.checkRole(tokenToUse)
                     if (response != null) {
-                        roleFound = response.role
+                        roleFound = response
+                        Log.d("HomeViewModel", "Role determined: $roleFound")
+                        _role.value = roleFound
                     }
                 } catch (e: Exception) {
                     Log.e("HomeViewModel", "Backend checkRole failed", e)
@@ -60,70 +62,17 @@ class HomeViewModel(
                     // For now, let fallback handle it.
                 }
 
-                // 4. Fallback to JWT decoding (Offline check)
-                if (roleFound == null) {
-                    Log.d("HomeViewModel", "Attempting JWT decode fallback")
-                    roleFound = getRoleFromToken(tokenToUse)
-                }
-
-                // 5. Final assignment
-                if (roleFound != null) {
-                    Log.d("HomeViewModel", "Role determined: $roleFound")
-                    _role.value = RoleResponse(roleFound)
-                } else {
-                    // CRITICAL CHANGE HERE:
-                    // If we had a token, but Backend failed AND JWT decode failed,
-                    // the token is likely garbage. We should treat them as Guest.
-                    Log.w("HomeViewModel", "Token exists but is invalid. Defaulting to GUEST.")
-
-                    // Optional: Clear the bad token so we don't try again next time
-                    // repo.clearToken()
-
-                    _role.value = RoleResponse("GUEST")
-                }
-
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error in authenticateRole", e)
-                _role.value = RoleResponse("GUEST")
+                _role.value = RoleResponse("GUEST", "", "Guest")
             }
-        }
-    }
-
-
-
-    private fun getRoleFromToken(token: String): String? {
-        return try {
-            val parts = token.split(".")
-            if (parts.size == 3) {
-                // Decode payload
-                val payload = String(Base64.decode(parts[1], Base64.URL_SAFE))
-                Log.d("HomeViewModel", "JWT Payload: $payload")
-
-                // Try various common keys for role
-                val keys = listOf("role", "roles", "authorities", "scope", "scp", "permission")
-                var foundValue: String? = null
-                
-                for (key in keys) {
-                    // Regex to find "key":"VALUE" or "key":["VALUE"]
-                    val regex = "\"$key\"\\s*:\\s*\"?([^\",\\]]+)\"?".toRegex(RegexOption.IGNORE_CASE)
-                    val match = regex.find(payload)
-                    if (match != null) {
-                        foundValue = match.groupValues[1]
-                        break
-                    }
-                }
-                foundValue
-            } else null
-        } catch (e: Exception) {
-            Log.e("HomeViewModel", "JWT decode failed", e)
-            null
         }
     }
 
     fun logout() {
         viewModelScope.launch {
             repo.clearToken()
-            _role.value = RoleResponse("GUEST")
+            _role.value = RoleResponse("GUEST", "", "Guest")
         }
     }
 }

@@ -65,11 +65,11 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
     }
 
     // Observe role state
-    val role by homeViewModel.role.collectAsState()
+    val user by homeViewModel.role.collectAsState()
 
     // Log role changes for debugging
-    LaunchedEffect(role) {
-        Log.d("AppNavigation", "Observed role change: ${role.role}")
+    LaunchedEffect(user) {
+        Log.d("AppNavigation", "Observed role change: ${user.role}")
     }
 
     // Observe current route
@@ -83,17 +83,17 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
                 // Determine current role enum safely
                 val currentRoleEnum: Role = try {
                     // Normalize the role string: trim whitespace and uppercase
-                    var roleString = role.role.trim().uppercase()
+                    var roleString = user.role.trim().uppercase()
                     
                     // Handle "ROLE_" prefix if present (common in Spring Security)
-                    if (roleString.startsWith("ROLE_")) {
-                        roleString = roleString.removePrefix("ROLE_")
-                    }
+//                    if (roleString.startsWith("ROLE_")) {
+//                        roleString = roleString.removePrefix("ROLE_")
+//                    }
                     
                     Log.d("AppNavigation", "Parsing role string: '$roleString'")
                     Role.valueOf(roleString)
                 } catch (e: Exception) {
-                    Log.e("AppNavigation", "Failed to parse role: '${role.role}'", e)
+                    Log.e("AppNavigation", "Failed to parse role: '${user.role}'", e)
                     Role.GUEST
                 }
 
@@ -234,7 +234,7 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
                     },
                     onEditProfile = { navController.navigate(Navigation.EDIT_PROFILE) },
                     navController = navController,
-                    isLoggedIn = role.role != "Guest" // Pass isLoggedIn state
+                    isLoggedIn = user.role != "Guest" // Pass isLoggedIn state
                 )
             }
 
