@@ -9,10 +9,13 @@ import io.ktor.serialization.kotlinx.json.json
 
 object ApiClient {
     val client = HttpClient(CIO) {
+        install(Logging) {
+            level = LogLevel.ALL
+        }
         install(ContentNegotiation) { json(
             kotlinx.serialization.json.Json {
                 ignoreUnknownKeys = true
             }
-        ) }
+        )}
     }
 }

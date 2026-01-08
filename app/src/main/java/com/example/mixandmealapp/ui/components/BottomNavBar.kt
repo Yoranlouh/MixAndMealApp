@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -36,7 +35,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.BrandGreen
-import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
 data class BottomNavItem(
@@ -72,7 +70,7 @@ fun BottomNavBar(
         BottomNavItem("Favourites", Icons.Filled.Favorite, Navigation.LOGIN),
         BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
         BottomNavItem("Fridge", Icons.Filled.Kitchen, Navigation.LOGIN),
-        BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
+        BottomNavItem("Profile", Icons.Filled.Person, Navigation.LOGIN)
     )
 
     // Select items based on role

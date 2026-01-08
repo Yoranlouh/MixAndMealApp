@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,13 +30,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import com.example.mixandmealapp.ui.components.BackButton
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import com.example.mixandmealapp.ui.components.ErrorBanner
+import com.example.mixandmealapp.ui.navigation.Navigation
+import com.example.mixandmealapp.ui.viewmodel.AuthUiState
+import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
+import org.koin.androidx.compose.koinViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onRegister: (String, String, String) -> Unit = { _, _, _ -> },
     onGoToLogin: () -> Unit = {},
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: AuthViewModel = koinViewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -45,6 +55,10 @@ fun RegisterScreen(
     var usernameError by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
+
+    val authState by viewModel.uiState.collectAsState()
+    var showBanner by remember { mutableStateOf(false) }
+    var bannerMessage by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -122,14 +136,13 @@ fun RegisterScreen(
             // Submit button
             Button(
                 onClick = {
-                    // Reset errors
                     usernameError = if (username.isBlank()) ctx.getString(com.example.mixandmealapp.R.string.username_empty_error) else ""
                     emailError = if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) ctx.getString(com.example.mixandmealapp.R.string.invalid_email) else ""
                     passwordError = if (password.length < 6) ctx.getString(com.example.mixandmealapp.R.string.password_min_error) else ""
 
-                    // Only submit if all fields are valid
                     if (usernameError.isEmpty() && emailError.isEmpty() && passwordError.isEmpty()) {
-                        onRegister(username, email, password)
+                        // 3. Call the ViewModel function
+                        viewModel.register(username, email, password)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -144,6 +157,30 @@ fun RegisterScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(stringResource(id = com.example.mixandmealapp.R.string.already_have_account_login))
+            }
+            ErrorBanner(
+                message = bannerMessage,
+                visible = showBanner,
+                onDismiss = { showBanner = false }
+            )
+
+            when (val state = authState) {
+                is AuthUiState.Error -> {
+                    LaunchedEffect(state) {
+                        bannerMessage = state.message
+                        showBanner = true
+                    }
+                }
+                is AuthUiState.Success -> {
+                    LaunchedEffect(state) {
+                        // On success, navigate to home and clear the auth backstack
+                        navController.navigate(Navigation.HOME) {
+                            popUpTo(Navigation.REGISTER) { inclusive = true }
+                            popUpTo(Navigation.LOGIN) { inclusive = true } // Also pop login in case user came from there
+                        }
+                    }
+                }
+                else -> Unit // Handle Idle, Loading if needed
             }
         }
     }

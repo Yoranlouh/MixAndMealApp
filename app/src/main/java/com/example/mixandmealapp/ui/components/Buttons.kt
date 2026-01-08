@@ -202,7 +202,7 @@ fun SettingsButton(
 ) {
     ListItem(
         headlineContent = {
-//            Text(text = title, color = titleColor)
+            Text(text = title)
         },
         supportingContent = {
             if (description != null) {

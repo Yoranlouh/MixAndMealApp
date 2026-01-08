@@ -19,5 +19,5 @@ val appModule = module {
     single{ TokenRepository(get()) }
     single{ UserRepository() }
     single{ HomeViewModel(get(), get()) }
-    viewModel{ AuthViewModel(get(), get()) }
+    viewModel{ AuthViewModel(get(), get(), get()) }
 }

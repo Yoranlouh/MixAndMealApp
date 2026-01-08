@@ -158,14 +158,13 @@ fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
         }
     }
 }
-
 @Composable
 fun CategorySection(navController: NavController) {
     val categories = listOf(
-        stringResource(id = com.example.mixandmealapp.R.string.breakfast),
-        stringResource(id = com.example.mixandmealapp.R.string.lunch),
-        stringResource(id = com.example.mixandmealapp.R.string.dinner),
-        stringResource(id = com.example.mixandmealapp.R.string.dessert)
+        stringResource(id = com.example.mixandmealapp.R.string.search_filter_breakfast),
+        stringResource(id = com.example.mixandmealapp.R.string.search_filter_lunch),
+        stringResource(id = com.example.mixandmealapp.R.string.search_filter_dinner),
+        stringResource(id = com.example.mixandmealapp.R.string.search_filter_dessert)
     )
 
     Column {
@@ -326,11 +325,3 @@ fun EasyRecipesSection(onRecipeClick: () -> Unit = {}) {
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun HomeScreenPreview() {
-//    MixAndMealAppTheme {
-//        com.example.mixandmealapp.ui.navigation.AppNavigation(localeViewModel)
-//    }
-//}

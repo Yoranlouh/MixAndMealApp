@@ -39,10 +39,7 @@ fun SettingsScreen(
     navController: NavController
 ) {
     var notificationsEnabled by remember { mutableStateOf(true) }
-
     val homeViewModel: HomeViewModel = koinInject()
-
-//    val accountViewModel: AccountViewModel = koinViewModel()
 
     Column(modifier = modifier) {
 
@@ -72,7 +69,6 @@ fun SettingsScreen(
                 // TODO: Send to account page
             }
         )
-
 
         // Favorites
         val messages = listOf(
@@ -117,7 +113,7 @@ fun SettingsScreen(
             title = stringResource(R.string.p_and_s),
             description = "Privacy & Security",
             onClick = {
-                navController.navigate(Navigation.LANGUAGE_CHOICE)
+                // TODO
             }
         )
 

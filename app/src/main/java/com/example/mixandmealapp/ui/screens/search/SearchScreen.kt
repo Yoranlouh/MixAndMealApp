@@ -81,7 +81,7 @@ fun MinimalSearchContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "What are we making today?",
+            text = stringResource(id = com.example.mixandmealapp.R.string.search_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold
         )
@@ -103,7 +103,7 @@ fun MinimalSearchContent(
                 val activeCount = selKitchens.size + selMeals.size + selAllergens.size + selDiets.size
                 Box {
                     IconButton(onClick = { showFilters = true }) {
-                        Icon(imageVector = Icons.Filled.FilterList, contentDescription = "Filters")
+                        Icon(imageVector = Icons.Filled.FilterList, contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search_filter_button))
                     }
                     if (activeCount > 0) {
                         // tiny orange dot to indicate active filters
@@ -254,73 +254,73 @@ fun SearchBarComponent(query: String, onQueryChange: (String) -> Unit) {
     )
 }
 
-@Composable
-fun CategoryFilterSection(selectedCategory: String, onCategorySelected: (String) -> Unit) {
-    val categories = listOf(
-        stringResource(id = com.example.mixandmealapp.R.string.breakfast),
-        stringResource(id = com.example.mixandmealapp.R.string.lunch),
-        stringResource(id = com.example.mixandmealapp.R.string.dinner)
-    )
+//@Composable
+//fun CategoryFilterSection(selectedCategory: String, onCategorySelected: (String) -> Unit) {
+//    val categories = listOf(
+//        stringResource(id = com.example.mixandmealapp.R.string.search_filter_breakfast),
+//        stringResource(id = com.example.mixandmealapp.R.string.search_filter_lunch),
+//        stringResource(id = com.example.mixandmealapp.R.string.search_filter_dinner)
+//    )
+//
+//    LazyRow(
+//        horizontalArrangement = Arrangement.spacedBy(12.dp)
+//    ) {
+//        items(categories) { category ->
+//            val isSelected = category == selectedCategory
+//            Button(
+//                onClick = { onCategorySelected(category) },
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = if (isSelected) BrandOrange else BrandGrey,
+//                    contentColor = if (isSelected) Color.White else DarkText
+//                ),
+//                shape = RoundedCornerShape(24.dp),
+//                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+//            ) {
+//                Text(category)
+//            }
+//        }
+//    }
+//}
 
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(categories) { category ->
-            val isSelected = category == selectedCategory
-            Button(
-                onClick = { onCategorySelected(category) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isSelected) BrandOrange else BrandGrey,
-                    contentColor = if (isSelected) Color.White else DarkText
-                ),
-                shape = RoundedCornerShape(24.dp),
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
-            ) {
-                Text(category)
-            }
-        }
-    }
-}
-
-@Composable
-fun PopularRecipesSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit = {}) {
-    val recipes = listOf(
-        "Egg & Avocado".truncate(10),
-        "Bowl of rice".truncate(10),
-        "Chicken Soup".truncate(10)
-    )
-
-
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(id = com.example.mixandmealapp.R.string.popular_recipes),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
-                style = MaterialTheme.typography.bodyMedium,
-                color = BrandOrange,
-                modifier = Modifier.clickable { onViewAll() }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(recipes) { recipe ->
-                PopularRecipeCard(recipe, onClick = onRecipeClick)
-            }
-        }
-    }
-}
+//@Composable
+//fun PopularRecipesSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit = {}) {
+//    val recipes = listOf(
+//        "Egg & Avocado".truncate(10),
+//        "Bowl of rice".truncate(10),
+//        "Chicken Soup".truncate(10)
+//    )
+//
+//
+//    Column {
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            Text(
+//                text = stringResource(id = com.example.mixandmealapp.R.string.popular_recipes),
+//                style = MaterialTheme.typography.titleLarge,
+//                fontWeight = FontWeight.Bold
+//            )
+//            Text(
+//                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
+//                style = MaterialTheme.typography.bodyMedium,
+//                color = BrandOrange,
+//                modifier = Modifier.clickable { onViewAll() }
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        LazyRow(
+//            horizontalArrangement = Arrangement.spacedBy(16.dp)
+//        ) {
+//            items(recipes) { recipe ->
+//                PopularRecipeCard(recipe, onClick = onRecipeClick)
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun PopularRecipeCard(recipeName: String, onClick: () -> Unit = {}) {
@@ -353,94 +353,94 @@ fun PopularRecipeCard(recipeName: String, onClick: () -> Unit = {}) {
     }
 }
 
-@Composable
-fun EditorsChoiceSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit = {}) {
-    val recipes = listOf(
-        EditorRecipe("Easy homemade beef burger"),
-        EditorRecipe("Blueberry with egg for breakfast")
-    )
+//@Composable
+//fun EditorsChoiceSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit = {}) {
+//    val recipes = listOf(
+//        EditorRecipe("Easy homemade beef burger"),
+//        EditorRecipe("Blueberry with egg for breakfast")
+//    )
+//
+//    Column {
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            Text(
+//                text = stringResource(id = com.example.mixandmealapp.R.string.editors_choice),
+//                style = MaterialTheme.typography.titleLarge,
+//                fontWeight = FontWeight.Bold
+//            )
+//            Text(
+//                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
+//                style = MaterialTheme.typography.bodyMedium,
+//                color = BrandOrange,
+//                modifier = Modifier.clickable { onViewAll() }
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        recipes.forEach { recipe ->
+//            EditorChoiceCard(recipe = recipe, onClick = onRecipeClick)
+//            Spacer(modifier = Modifier.height(16.dp))
+//        }
+//    }
+//}
 
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(id = com.example.mixandmealapp.R.string.editors_choice),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
-                style = MaterialTheme.typography.bodyMedium,
-                color = BrandOrange,
-                modifier = Modifier.clickable { onViewAll() }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        recipes.forEach { recipe ->
-            EditorChoiceCard(recipe = recipe, onClick = onRecipeClick)
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-}
-
-data class EditorRecipe(val title: String)
-
-@Composable
-fun EditorChoiceCard(recipe: EditorRecipe, onClick: () -> Unit = {}) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Recipe Image
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .background(BrandGrey, RoundedCornerShape(12.dp))
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Recipe Info
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = recipe.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                // Removed author avatar placeholder as per design
-            }
-
-            // Small arrow in orange rounded square
-            IconButton(
-                onClick = onClick,
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(BrandOrange, shape = RoundedCornerShape(8.dp))
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowForward,
-                    contentDescription = stringResource(id = com.example.mixandmealapp.R.string.go_to_details),
-                    tint = Color.White
-                )
-            }
-        }
-    }
-}
+//data class EditorRecipe(val title: String)
+//
+//@Composable
+//fun EditorChoiceCard(recipe: EditorRecipe, onClick: () -> Unit = {}) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable { onClick() },
+//        shape = RoundedCornerShape(16.dp)
+//    ) {
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(12.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            // Recipe Image
+//            Box(
+//                modifier = Modifier
+//                    .size(80.dp)
+//                    .background(BrandGrey, RoundedCornerShape(12.dp))
+//            )
+//
+//            Spacer(modifier = Modifier.width(16.dp))
+//
+//            // Recipe Info
+//            Column(
+//                modifier = Modifier.weight(1f)
+//            ) {
+//                Text(
+//                    text = recipe.title,
+//                    style = MaterialTheme.typography.titleMedium,
+//                    fontWeight = FontWeight.SemiBold
+//                )
+//                // Removed author avatar placeholder as per design
+//            }
+//
+//            // Small arrow in orange rounded square
+//            IconButton(
+//                onClick = onClick,
+//                modifier = Modifier
+//                    .size(36.dp)
+//                    .background(BrandOrange, shape = RoundedCornerShape(8.dp))
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Filled.ArrowForward,
+//                    contentDescription = stringResource(id = com.example.mixandmealapp.R.string.go_to_details),
+//                    tint = Color.White
+//                )
+//            }
+//        }
+//    }
+//}
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 @Composable

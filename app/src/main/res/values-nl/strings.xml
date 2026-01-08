@@ -43,26 +43,27 @@
     <string name="featured_card">Uitgelichte receptkaart</string>
     <string name="category">Categorie</string>
     <string name="see_all">Alles bekijken</string>
-    <string name="breakfast">Ontbijt</string>
-    <string name="lunch">Lunch</string>
-    <string name="dinner">Diner</string>
-    <string name="dessert">Dessert</string>
     <string name="popular_recipes">Populaire recepten</string>
     <string name="quick_recipes">Snelle Recepten</string>
     <string name="easy_recipes">Makkelijke Recepten</string>
     <string name="kcal_minutes">120 Kcal | 20 Min</string>
 
     <!-- Search -->
+    <string name="search_title">Wat gaan we maken vandaag?</string>
     <string name="search">Zoeken</string>
     <string name="search_placeholder">Zoeken</string>
     <string name="editors_choice">Keuze van de redactie</string>
     <string name="view_all">Alles bekijken</string>
     <string name="go_to_details">Ga naar details</string>
 
+    <!-- Filter -->
+    <string name="search_filter_button">Filters</string>
+
     <!-- Extra (nieuw toegevoegd) -->
     <string name="register_title">Registreren</string>
 
     <!-- Upload -->
+    <string name="search_filter_dessert">Dessert</string>
     <string name="upload_enter_recipe_name">Voer receptnaam in</string>
     <string name="upload_tell_about_recipe">Vertel iets over je recept</string>
     <string name="upload_enter_ingredient">Ingrediënt invoeren</string>
@@ -114,4 +115,7 @@
     <string name="confirm_remove_favourite_message">Recept verwijderen uit favorieten?</string>
     <string name="yes">Ja</string>
     <string name="no">Nee</string>
+    <string name="search_filter_breakfast">Ontbijt</string>
+    <string name="search_filter_lunch">Lunch</string>
+    <string name="search_filter_dinner">Dinner</string>
 </resources>
