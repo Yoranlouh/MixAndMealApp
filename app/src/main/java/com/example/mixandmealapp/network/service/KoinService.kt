@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.mixandmealapp.data.TokenRepository
 import com.example.mixandmealapp.data.dataStore
 import com.example.mixandmealapp.repository.UserRepository
+import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import org.koin.core.module.dsl.bind

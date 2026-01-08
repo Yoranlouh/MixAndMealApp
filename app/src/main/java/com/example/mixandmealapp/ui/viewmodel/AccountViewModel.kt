@@ -27,7 +27,7 @@ class AccountViewModel(
     var uiState by mutableStateOf(AccountUiState())
         private set
 
-    init { load() }
+//    init { load() }
 
     private fun load() {
         viewModelScope.launch {

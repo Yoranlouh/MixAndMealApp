@@ -40,8 +40,8 @@ fun SettingsScreen(
 ) {
     var notificationsEnabled by remember { mutableStateOf(true) }
 
-//    val homeViewModel: HomeViewModel = koinInject()
-//
+    val homeViewModel: HomeViewModel = koinInject()
+
 //    val accountViewModel: AccountViewModel = koinViewModel()
 
     Column(modifier = modifier) {
@@ -155,22 +155,22 @@ fun SettingsScreen(
         )
 
 
-        // Logout
-//        LogoutButton(
-//            title = stringResource(R.string.logout),
-//            description = stringResource(R.string.logout_desc),
-//            onClick = {
-//                // 2. CLEAR DATA
+//         Logout
+        LogoutButton(
+            title = stringResource(R.string.logout),
+            description = stringResource(R.string.logout_desc),
+            onClick = {
+                // 2. CLEAR DATA
 //                accountViewModel.logout() // Clears token from SessionRepository
-//                homeViewModel.logout()    // Resets global Role to "Guest"
-//
-//                // 3. NAVIGATE TO LOGIN
-//                navController.navigate(Navigation.LOGIN) {
-//                    // Clear the backstack so the user can't press "Back" to return to settings
-//                    popUpTo(0) { inclusive = true }
-//                    launchSingleTop = true
-//                }
-//            }
-//        )
+                homeViewModel.logout()    // Resets global Role to "Guest"
+
+                // 3. NAVIGATE TO LOGIN
+                navController.navigate(Navigation.HOME) {
+                    // Clear the backstack so the user can't press "Back" to return to settings
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        )
     }
 }
