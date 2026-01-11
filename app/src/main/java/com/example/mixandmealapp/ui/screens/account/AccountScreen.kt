@@ -55,6 +55,8 @@ import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 import androidx.compose.runtime.LaunchedEffect
+import com.example.mixandmealapp.models.requests.RecipeIDRequest
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,13 +66,13 @@ fun AccountScreen(
     onGoToSettings: () -> Unit = {},
     onGoToLogin: () -> Unit = {},
     fridgeViewModel: FridgeViewModel? = null,
-    favouritesViewModel: FavouritesViewModel? = null,
+    favouritesViewModel: FavouritesViewModel = koinViewModel(),
     navController: NavHostController,
     isLoggedIn: Boolean = true // Default to true to show logged-in state
 ) {
     val vm = fridgeViewModel ?: remember { FridgeViewModel() }
-    val favVm = favouritesViewModel ?: remember { FavouritesViewModel() }
-    LaunchedEffect(favVm) { favVm.load() }
+
+    LaunchedEffect(favouritesViewModel) { favouritesViewModel.load() }
 
     Scaffold(
         topBar = {
@@ -104,7 +106,7 @@ fun AccountScreen(
                 ProfileCard(name = "Richard Balke", onEditProfile = onEditProfile)
                 Spacer(modifier = Modifier.height(32.dp))
                 MyFavoritesSection(
-                    viewModel = favVm,
+                    viewModel = favouritesViewModel,
                     onNavigateToFavourites = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FAVOURITES) },
                     onRecipeClick = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.RECIPE_DETAIL) }
                 )
@@ -178,11 +180,11 @@ private fun ProfileCard(name: String, onEditProfile: () -> Unit) {
 private fun MyFavoritesSection(
     viewModel: FavouritesViewModel,
     onNavigateToFavourites: () -> Unit = {},
-    onRecipeClick: (String) -> Unit = {}
+    onRecipeClick: (Int) -> Unit = {}
 ) {
     // Observe shared favourites and only show up to 4 on Account
     val favourites = viewModel.uiState.favourites.take(4)
-    var pendingDeleteTitle by remember { mutableStateOf<String?>(null) }
+    var pendingDeleteTitle by remember { mutableStateOf<Int?>(null) }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
@@ -204,19 +206,21 @@ private fun MyFavoritesSection(
         for (row in favourites.chunked(2)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 FavoriteRecipeCard(
-                    title = row.getOrNull(0) ?: "",
+                    recipeId = row[0].recipeId,
+                    title = row[0].title,
                     modifier = Modifier.weight(1f),
-                    onClick = { onRecipeClick(row.getOrNull(0) ?: "") },
+                    onClick = { onRecipeClick(row[0].recipeId) },
                     onUnfavoriteRequested = {
-                        row.getOrNull(0)?.let { pendingDeleteTitle = it }
+                        row.getOrNull(0)?.let { pendingDeleteTitle = it.recipeId }
                     }
                 )
                 if (row.size > 1) {
                     FavoriteRecipeCard(
-                        title = row[1],
+                        recipeId = row[1].recipeId,
+                        title = row[1].title,
                         modifier = Modifier.weight(1f),
-                        onClick = { onRecipeClick(row[1]) },
-                        onUnfavoriteRequested = { pendingDeleteTitle = row[1] }
+                        onClick = { onRecipeClick(row[1].recipeId) },
+                        onUnfavoriteRequested = { pendingDeleteTitle = row[1].recipeId }
                     )
                 } else {
                     Spacer(modifier = Modifier.weight(1f))
@@ -234,7 +238,7 @@ private fun MyFavoritesSection(
                 title = { Text(text = confirmMessage) },
                 confirmButton = {
                     androidx.compose.material3.TextButton(onClick = {
-                        pendingDeleteTitle?.let { title -> viewModel.remove(title) }
+                        pendingDeleteTitle?.let { recipeId -> viewModel.remove(RecipeIDRequest(recipeId)) }
                         pendingDeleteTitle = null
                     }) {
                         Text(text = yes)
@@ -356,6 +360,7 @@ private fun FridgeItem(name: String, quantity: Int) {
 
 @Composable
 private fun FavoriteRecipeCard(
+    recipeId : Int,
     title: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},

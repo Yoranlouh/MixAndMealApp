@@ -56,7 +56,7 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
     
     // Shared ViewModel instances
     val fridgeViewModel = remember { FridgeViewModel() }
-    val favouritesViewModel = remember { FavouritesViewModel() }
+    val favouritesViewModel : FavouritesViewModel = koinViewModel()
     val homeViewModel: HomeViewModel = koinInject()
 
     // Check role on app start

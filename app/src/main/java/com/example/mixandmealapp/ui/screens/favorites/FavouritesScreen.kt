@@ -38,19 +38,21 @@ import com.example.mixandmealapp.ui.components.FavoriteIcon
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.R
+import com.example.mixandmealapp.models.requests.RecipeIDRequest
+import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavouritesScreen(
-    onItemClick: (String) -> Unit = {},
+    onItemClick: (Int) -> Unit = {},
     navController: NavHostController,
-    viewModel: FavouritesViewModel? = null
+    viewModel: FavouritesViewModel = koinViewModel()
 ) {
-    val vm = viewModel ?: remember { FavouritesViewModel() }
-    LaunchedEffect(vm) { vm.load() }
-    val items = vm.uiState.favourites
-    var pendingDeleteTitle by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(viewModel) { viewModel.load() }
+    val items = viewModel.uiState.favourites
+    var pendingDeleteTitle by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
         topBar = {
@@ -86,17 +88,19 @@ fun FavouritesScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     FavoriteRecipeCardItem(
-                        title = row[0],
+                        id = row[0].recipeId,
+                        title = row[0].title,
                         modifier = Modifier.weight(1f),
-                        onClick = { onItemClick(row[0]) },
-                        onUnfavoriteRequested = { pendingDeleteTitle = row[0] }
+                        onClick = { onItemClick(row[0].recipeId) },
+                        onUnfavoriteRequested = { pendingDeleteTitle = row[0].recipeId }
                     )
                     if (row.size > 1) {
                         FavoriteRecipeCardItem(
-                            title = row[1],
+                            id = row[1].recipeId,
+                            title = row[1].title,
                             modifier = Modifier.weight(1f),
-                            onClick = { onItemClick(row[1]) },
-                            onUnfavoriteRequested = { pendingDeleteTitle = row[1] }
+                            onClick = { onItemClick(row[1].recipeId) },
+                            onUnfavoriteRequested = { pendingDeleteTitle = row[1].recipeId }
                         )
                     } else {
                         Box(modifier = Modifier.weight(1f)) {}
@@ -116,7 +120,7 @@ fun FavouritesScreen(
                 text = { Text(text = message) },
                 confirmButton = {
                     TextButton(onClick = {
-                        pendingDeleteTitle?.let { title -> vm.remove(title) }
+                        pendingDeleteTitle?.let { recipeId -> viewModel.remove(RecipeIDRequest(recipeId)) }
                         pendingDeleteTitle = null
                     }) {
                         Text(text = yesText)
@@ -134,6 +138,7 @@ fun FavouritesScreen(
 
 @Composable
 private fun FavoriteRecipeCardItem(
+    id: Int,
     title: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},

@@ -7,16 +7,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mixandmealapp.data.FavouritesRepository
 import com.example.mixandmealapp.data.ServiceLocator
+import com.example.mixandmealapp.data.TokenRepository
+import com.example.mixandmealapp.models.requests.RecipeIDRequest
+import com.example.mixandmealapp.models.responses.RecipeCardResponse
+import com.example.mixandmealapp.repository.UserRepository
 import kotlinx.coroutines.launch
 
 data class FavouritesUiState(
-    val favourites: List<String> = emptyList(),
+    val favourites: List<RecipeCardResponse> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
 class FavouritesViewModel(
-    private val repository: FavouritesRepository = ServiceLocator.favouritesRepository
+    private val repo: TokenRepository,
+    private val userRepo: UserRepository
 ) : ViewModel() {
     var uiState by mutableStateOf(FavouritesUiState())
         private set
@@ -25,7 +30,8 @@ class FavouritesViewModel(
         uiState = uiState.copy(isLoading = true, error = null)
         viewModelScope.launch {
             try {
-                val list = repository.getFavourites()
+                val tokenToUse = repo.getTokenOrDefault()
+                val list = userRepo.getFavourites(tokenToUse)
                 uiState = uiState.copy(favourites = list, isLoading = false)
             } catch (t: Throwable) {
                 uiState = uiState.copy(error = t.message, isLoading = false)
@@ -33,11 +39,13 @@ class FavouritesViewModel(
         }
     }
 
-    fun remove(id: String) {
+    fun remove(id: RecipeIDRequest) {
         viewModelScope.launch {
             try {
-                repository.removeFavourite(id)
-                uiState = uiState.copy(favourites = uiState.favourites.filterNot { it == id })
+                val tokenToUse = repo.getTokenOrDefault()
+                val favourites = userRepo.toggleFavourite(tokenToUse, id)
+                uiState = uiState.copy(favourites, isLoading = false)
+                load()
             } catch (t: Throwable) {
                 uiState = uiState.copy(error = t.message)
             }

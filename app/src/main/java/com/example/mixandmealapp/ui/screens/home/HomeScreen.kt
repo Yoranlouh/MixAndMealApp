@@ -208,7 +208,7 @@ fun CategorySection(navController: NavController) {
 @Composable
 fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
     val recipeRepository = RecipeRepository()
-    var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
+    var recipes by remember { mutableStateOf(listOf<RecipeCardResponse>()) }
     LaunchedEffect(Unit) {
         try {
             recipes = recipeRepository.getPopularRecipesResponse(2)
