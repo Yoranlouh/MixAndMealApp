@@ -21,6 +21,7 @@
     <string name="language_choice_support">Taal wijzigen</string>
     <string name="p_and_s">Privacy &amp; Beveiliging</string>
 
+    <string name="cookie_preferences_text">We gebruiken cookies om uw ervaring te verbeteren. Accepteer deze om de app te blijven gebruiken.</string>
     <string name="help_support">Help/Support</string>
     <string name="help_support_desc">Hulp nodig?</string>
     <string name="notifications_enable">Notificaties inschakelen</string>
@@ -188,4 +189,5 @@
     <string name="upload_diets_paleo">Paleo</string>
     <string name="upload_diets_flexitarian">Flexitariër</string>
     <string name="upload_diets_raw_food">Rauw</string>
+    <string name="cookie_preferences_title">Cookie voorkeuren</string>
 </resources>

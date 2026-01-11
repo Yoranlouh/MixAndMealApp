@@ -1,13 +1,10 @@
 package com.example.mixandmealapp.ui.screens.upload
 
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,9 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,7 +53,6 @@ import com.example.mixandmealapp.ui.components.InputFieldSmall
 import com.example.mixandmealapp.ui.components.InputFieldTextBox
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
-import com.example.mixandmealapp.ui.components.cameraButton
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.screens.search.FilterOptions
 import com.example.mixandmealapp.ui.theme.BrandGreen
@@ -186,7 +180,7 @@ fun UploadScreen(
 
         // Difficulty
         Text(
-            text = "Difficulty",
+            text = stringResource(R.string.upload_difficulty_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = DarkText
@@ -559,7 +553,7 @@ fun DifficultySelector(
                 onClick = {
                     if (isSelected) onDifficultySelected("") else onDifficultySelected(difficulty)
                 },
-                label = { stringResource(R.string.upload_difficulty_title) },
+                label = { Text(difficulty) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = selectedColor,
                     selectedLabelColor = Color.White,
