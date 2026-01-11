@@ -3,12 +3,16 @@ package com.example.mixandmealapp.ui.viewmodel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mixandmealapp.data.ServiceLocator
-import com.example.mixandmealapp.data.SessionRepository
-import com.example.mixandmealapp.data.UserProfile
-import com.example.mixandmealapp.data.UserRepository
+import com.example.mixandmealapp.data.TokenRepository
+import com.example.mixandmealapp.models.entries.AllergenEntry
+import com.example.mixandmealapp.models.entries.DietEntry
+import com.example.mixandmealapp.repository.UserRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class AccountUiState(
@@ -17,41 +21,102 @@ data class AccountUiState(
     val avatarUrl: String? = null,
     val isSaving: Boolean = false,
     val error: String? = null,
-    val saved: Boolean = false
+    val saved: Boolean = false,
+    val userAllergens: List<AllergenEntry> = emptyList(),
+    val userDiets: List<DietEntry> = emptyList(),
+    val allAvailableAllergens: List<AllergenEntry> = emptyList(),
+    val allAvailableDiets: List<DietEntry> = emptyList()
 )
 
 class AccountViewModel(
-    private val userRepo: UserRepository = ServiceLocator.userRepository,
-    private val sessionRepo: SessionRepository = ServiceLocator.sessionRepository
+    private val userRepo: UserRepository,
+    private val tokenRepo: TokenRepository
 ) : ViewModel() {
-    var uiState by mutableStateOf(AccountUiState())
-        private set
+    private val _uiState = MutableStateFlow(AccountUiState())
+    val uiState = _uiState.asStateFlow()
 
-//    init { load() }
-
-    private fun load() {
+    fun load() {
         viewModelScope.launch {
             try {
-                val profile = userRepo.getProfile()
-                uiState = uiState.copy(name = profile.name, email = profile.email, avatarUrl = profile.avatarUrl)
+                val token = tokenRepo.getTokenOrDefault()
+                // In een echte app zouden we ook het profiel laden, maar de focus ligt nu op allergenen en diëten.
+                val allergens = userRepo.getAllergens(token)
+                val diets = userRepo.getDiets(token)
+                val allAllergens = userRepo.getAllAllergens()
+                val allDiets = userRepo.getAllDiets()
+
+                _uiState.value = _uiState.value.copy(
+                    userAllergens = allergens,
+                    userDiets = diets,
+                    allAvailableAllergens = allAllergens,
+                    allAvailableDiets = allDiets
+                )
             } catch (t: Throwable) {
-                uiState = uiState.copy(error = t.message)
+                _uiState.value = _uiState.value.copy(error = t.message)
             }
         }
     }
 
-    fun onNameChange(value: String) { uiState = uiState.copy(name = value, saved = false) }
-    fun onEmailChange(value: String) { uiState = uiState.copy(email = value, saved = false) }
-    fun setAvatar(url: String?) { uiState = uiState.copy(avatarUrl = url, saved = false) }
-
-    fun save() {
-        uiState = uiState.copy(isSaving = true, error = null)
+    fun addAllergen(allergen: AllergenEntry) {
         viewModelScope.launch {
             try {
-                userRepo.saveProfile(UserProfile(name = uiState.name, email = uiState.email, avatarUrl = uiState.avatarUrl))
-                uiState = uiState.copy(isSaving = false, saved = true)
+                val token = tokenRepo.getTokenOrDefault() ?: return@launch
+                val updated = userRepo.addAllergen(token, allergen)
+                _uiState.value = _uiState.value.copy(userAllergens = updated)
             } catch (t: Throwable) {
-                uiState = uiState.copy(isSaving = false, error = t.message)
+                _uiState.value = _uiState.value.copy(error = t.message)
+            }
+        }
+    }
+
+    fun removeAllergen(allergen: AllergenEntry) {
+        viewModelScope.launch {
+            try {
+                val token = tokenRepo.getTokenOrDefault() ?: return@launch
+                val updated = userRepo.removeAllergen(token, allergen)
+                _uiState.value = _uiState.value.copy(userAllergens = updated)
+            } catch (t: Throwable) {
+                _uiState.value = _uiState.value.copy(error = t.message)
+            }
+        }
+    }
+
+    fun addDiet(diet: DietEntry) {
+        viewModelScope.launch {
+            try {
+                val token = tokenRepo.getTokenOrDefault() ?: return@launch
+                val updated = userRepo.addDiet(token, diet)
+                _uiState.value = _uiState.value.copy(userDiets = updated)
+            } catch (t: Throwable) {
+                _uiState.value = _uiState.value.copy(error = t.message)
+            }
+        }
+    }
+
+    fun removeDiet(diet: DietEntry) {
+        viewModelScope.launch {
+            try {
+                val token = tokenRepo.getTokenOrDefault() ?: return@launch
+                val updated = userRepo.removeDiet(token, diet)
+                _uiState.value = _uiState.value.copy(userDiets = updated)
+            } catch (t: Throwable) {
+                _uiState.value = _uiState.value.copy(error = t.message)
+            }
+        }
+    }
+
+    fun onNameChange(value: String) { _uiState.value = _uiState.value.copy(name = value, saved = false) }
+    fun onEmailChange(value: String) { _uiState.value = _uiState.value.copy(email = value, saved = false) }
+    fun setAvatar(url: String?) { _uiState.value = _uiState.value.copy(avatarUrl = url, saved = false) }
+
+    fun save() {
+        _uiState.value = _uiState.value.copy(isSaving = true, error = null)
+        viewModelScope.launch {
+            try {
+                // userRepo.saveProfile(UserProfile(name = uiState.value.name, email = uiState.value.email, avatarUrl = uiState.value.avatarUrl))
+                _uiState.value = _uiState.value.copy(isSaving = false, saved = true)
+            } catch (t: Throwable) {
+                _uiState.value = _uiState.value.copy(isSaving = false, error = t.message)
             }
         }
     }
@@ -59,9 +124,9 @@ class AccountViewModel(
     fun logout() {
         viewModelScope.launch {
             try {
-                sessionRepo.clear()
+                tokenRepo.clearToken()
             } catch (t: Throwable) {
-                uiState = uiState.copy(error = t.message)
+                _uiState.value = _uiState.value.copy(error = t.message)
             }
         }
     }

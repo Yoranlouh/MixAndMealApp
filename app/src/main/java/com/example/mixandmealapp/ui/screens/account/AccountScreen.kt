@@ -30,6 +30,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,6 +59,11 @@ import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
+import com.example.mixandmealapp.models.entries.AllergenEntry
+import com.example.mixandmealapp.models.entries.DietEntry
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,11 +75,15 @@ fun AccountScreen(
     fridgeViewModel: FridgeViewModel? = null,
     favouritesViewModel: FavouritesViewModel? = null,
     navController: NavHostController,
-    isLoggedIn: Boolean = true // Default to true to show logged-in state
+    isLoggedIn: Boolean = true, // Default to true to show logged-in state
+    accountViewModel: AccountViewModel = koinViewModel()
 ) {
     val vm = fridgeViewModel ?: remember { FridgeViewModel() }
     val favVm = favouritesViewModel ?: remember { FavouritesViewModel() }
+    val accountState by accountViewModel.uiState.collectAsState()
+
     LaunchedEffect(favVm) { favVm.load() }
+    LaunchedEffect(Unit) { accountViewModel.load() }
 
     Scaffold(
         topBar = {
@@ -109,6 +122,23 @@ fun AccountScreen(
                     onRecipeClick = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.RECIPE_DETAIL) }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
+                
+                MyAllergensSection(
+                    userAllergens = accountState.userAllergens,
+                    allAllergens = accountState.allAvailableAllergens,
+                    onAddAllergen = { accountViewModel.addAllergen(it) },
+                    onRemoveAllergen = { accountViewModel.removeAllergen(it) }
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+
+                MyDietsSection(
+                    userDiets = accountState.userDiets,
+                    allDiets = accountState.allAvailableDiets,
+                    onAddDiet = { accountViewModel.addDiet(it) },
+                    onRemoveDiet = { accountViewModel.removeDiet(it) }
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+
                 MyFridgeSection(
                     items = vm.uiState.items.map { it.name },
                     count = vm.uiState.items.size,
@@ -174,6 +204,185 @@ private fun ProfileCard(name: String, onEditProfile: () -> Unit) {
     }
 }
 
+@Composable
+private fun MyAllergensSection(
+    userAllergens: List<AllergenEntry>,
+    allAllergens: List<AllergenEntry>,
+    onAddAllergen: (AllergenEntry) -> Unit,
+    onRemoveAllergen: (AllergenEntry) -> Unit
+) {
+    var showAllDialog by remember { mutableStateOf(false) }
+
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "My Allergens", style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = "Edit",
+                color = BrandOrange,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.clickable { showAllDialog = true }
+            )
+        }
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            userAllergens.forEach { allergen ->
+                FilterChip(
+                    selected = true,
+                    onClick = { onRemoveAllergen(allergen) },
+                    label = { Text(allergen.displayName) },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+    if (showAllDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showAllDialog = false },
+            title = { Text("All Allergens") },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    allAllergens.forEach { allergen ->
+                        val isSelected = userAllergens.any { it.id == allergen.id }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (isSelected) onRemoveAllergen(allergen)
+                                    else onAddAllergen(allergen)
+                                }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            androidx.compose.material3.Checkbox(
+                                checked = isSelected,
+                                onCheckedChange = null
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(allergen.displayName)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { showAllDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun MyDietsSection(
+    userDiets: List<DietEntry>,
+    allDiets: List<DietEntry>,
+    onAddDiet: (DietEntry) -> Unit,
+    onRemoveDiet: (DietEntry) -> Unit
+) {
+    var showAllDialog by remember { mutableStateOf(false) }
+
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "My Diets", style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = "Edit",
+                color = BrandOrange,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.clickable { showAllDialog = true }
+            )
+        }
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            userDiets.forEach { diet ->
+                FilterChip(
+                    selected = true,
+                    onClick = { onRemoveDiet(diet) },
+                    label = { Text(diet.displayName) },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+    if (showAllDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showAllDialog = false },
+            title = { Text("All Diets") },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    allDiets.forEach { diet ->
+                        val isSelected = userDiets.any { it.id == diet.id }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (isSelected) onRemoveDiet(diet)
+                                    else onAddDiet(diet)
+                                }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            androidx.compose.material3.Checkbox(
+                                checked = isSelected,
+                                onCheckedChange = null
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(diet.displayName)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { showAllDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MyFavoritesSection(
     viewModel: FavouritesViewModel,
@@ -379,24 +588,24 @@ private fun FavoriteRecipeCard(
 
 
 
-//@Preview(showBackground = true, name = "Account Screen (Logged In)")
-//@Composable
-//fun AccountScreenLoggedInPreview() {
-//    MixAndMealAppTheme {
-//        AccountScreen(
-//            navController = rememberNavController(),
-//            isLoggedIn = true
-//        )
-//    }
-//}
-//
-//@Preview(showBackground = true, name = "Account Screen (Logged Out)")
-//@Composable
-//fun AccountScreenLoggedOutPreview() {
-//    MixAndMealAppTheme {
-//        AccountScreen(
-//            navController = rememberNavController(),
-//            isLoggedIn = false
-//        )
-//    }
-//}
+@Preview(showBackground = true, name = "Account Screen (Logged In)")
+@Composable
+fun AccountScreenLoggedInPreview() {
+    MixAndMealAppTheme {
+        AccountScreen(
+            navController = rememberNavController(),
+            isLoggedIn = true
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Account Screen (Logged Out)")
+@Composable
+fun AccountScreenLoggedOutPreview() {
+    MixAndMealAppTheme {
+        AccountScreen(
+            navController = rememberNavController(),
+            isLoggedIn = false
+        )
+    }
+}

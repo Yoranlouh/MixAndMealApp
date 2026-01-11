@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.network
 
+import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.TokenClaim
 import com.example.mixandmealapp.models.entries.UserFridgeEntry
@@ -72,6 +73,31 @@ object ApiService {
             contentType(ContentType.Application.Json)
             setBody(diet)
         }.body()
+
+    suspend fun getAllergensForUser(token: String?): List<AllergenEntry> =
+        client.get("$domain/user-allergens") {
+            header("Authorization", "Bearer $token")
+        }.body()
+
+    suspend fun addAllergenForUser(token: String?, allergen: AllergenEntry): List<AllergenEntry> =
+        client.post("$domain/user-allergens/add-allergen"){
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(allergen)
+        }.body()
+
+    suspend fun removeAllergenForUser(token: String?, allergen: AllergenEntry) : List<AllergenEntry> =
+        client.delete("$domain/user-allergens/remove-allergen"){
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(allergen)
+        }.body()
+
+    suspend fun getAllAllergens(): List<AllergenEntry> =
+        client.get("$domain/allergens").body()
+
+    suspend fun getAllDiets(): List<DietEntry> =
+        client.get("$domain/diets").body()
 
     suspend fun getFavouritesForUser(token: String?): List<RecipeCardResponse> =
         client.get("$domain/favourites") {
