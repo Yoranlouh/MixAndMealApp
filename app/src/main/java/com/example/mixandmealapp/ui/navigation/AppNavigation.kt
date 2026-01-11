@@ -99,7 +99,6 @@ fun AppNavigation(
                     Log.e("AppNavigation", "Failed to parse role: '${user.role}'", e)
                     Role.GUEST
                 }
-
                 // Show correct bottom bar based on role
                 when (currentRoleEnum) {
                     Role.USER -> {
