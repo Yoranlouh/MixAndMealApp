@@ -1,6 +1,9 @@
 package com.example.mixandmealapp.ui.components
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
@@ -10,10 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -33,16 +38,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import com.example.mixandmealapp.repository.UserRepository
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandGreen
 import kotlinx.coroutines.launch
+import java.io.File
 
 object MixAndMealColours {
     val backgroundButton = Color(0xFF16752D)
@@ -265,54 +273,27 @@ fun OpenFridgeButton(
 }
 
 
+@Composable
+fun cameraButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF6B7C8E))
+                .clickable { onClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Filled.CameraAlt,
+                contentDescription = "Camera",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
 
-
-
-
-//
-//
-//
-//@Composable
-//fun TestPrimaryButtonWithLogin(
-//    text: String,
-//    email: String,
-//    password: String,
-//    userRepository: UserRepository,
-//    modifier: Modifier = Modifier,
-//    backgroundColor: Color = BrandGreen
-//) {
-//    val context = LocalContext.current
-//    val coroutineScope = rememberCoroutineScope()
-//
-//    Button(
-//        onClick = {
-//            coroutineScope.launch {
-//                try {
-//                    val token = userRepository.login(email, password)
-//                    if (token != null) {
-//                        Toast.makeText(context, "Token: $token", Toast.LENGTH_SHORT).show()
-//                    } else {
-//                        Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
-//                    }
-//                } catch (e: Exception) {
-//                    Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT)
-//                        .show()
-//                }
-//            }
-//        },
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .height(56.dp),
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = backgroundColor,
-//            contentColor = MixAndMealColours.buttonText
-//        ),
-//        shape = RoundedCornerShape(16.dp)
-//    ) {
-//        Text(
-//            text = text,
-//            style = MaterialTheme.typography.titleMedium,
-//            fontWeight = FontWeight.Bold
-//        )
-//    }
-//}

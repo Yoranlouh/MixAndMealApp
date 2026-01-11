@@ -65,8 +65,18 @@
 
 
     <!-- Upload -->
+    <string name="upload_cover_photo">Add Cover Photo</string>
+    <string name="upload_cover_photo_text">(Up to 12 Mb)</string>
+    <string name="upload_enter_recipe_name_title">Recipe Name</string>
     <string name="upload_enter_recipe_name">Enter recipe name</string>
+    <string name="upload_tell_about_recipe_title">Description</string>
     <string name="upload_tell_about_recipe">Tell a little about your recipe</string>
+    <string name="upload_difficulty_title">Difficulty</string>
+    <string name="upload_difficulty_easy">Easy</string>
+    <string name="upload_difficulty_medium">Medium</string>
+    <string name="upload_difficulty_hard">Hard</string>
+    <string name="upload_enter_cooking_duration">Cooking Duration</string>
+    <string name="upload_enter_ingredient_title">Enter ingredient</string>
     <string name="upload_enter_ingredient">Enter ingredient</string>
     <string name="upload_add_ingredient">Add ingredient</string>
     <string name="upload_new_ingredient">New ingredient</string>
@@ -74,11 +84,72 @@
     <string name="qty">Qty</string>
     <string name="unit">Unit</string>
     <string name="upload_description_label">Description</string>
+
     <string name="upload_kitchen_style">Kitchen Style</string>
+    <string name="upload_kitchen_style_asian">Asian</string>
+    <string name="upload_kitchen_style_chinese">Chinese</string>
+    <string name="upload_kitchen_style_dutch">Dutch</string>
+    <string name="upload_kitchen_style_easteurope">East Europe</string>
+    <string name="upload_kitchen_style_french">French</string>
+    <string name="upload_kitchen_style_greek">Greek</string>
+    <string name="upload_kitchen_style_indian">Indian</string>
+    <string name="upload_kitchen_style_italian">Italian</string>
+    <string name="upload_kitchen_style_japanese">Japanese</string>
+    <string name="upload_kitchen_style_korean">Korean</string>
+    <string name="upload_kitchen_style_mediterranean">Mediterranean</string>
+    <string name="upload_kitchen_style_mexican">Mexican</string>
+    <string name="upload_kitchen_style_spanish">Spanish</string>
+    <string name="upload_kitchen_style_thai">Thai</string>
+    <string name="upload_kitchen_style_turkish">Turkish</string>
+    <string name="upload_kitchen_style_vietnamese">Vietnamese</string>
+
+    <string name="upload_meal_type">Meal Type</string>
+    <string name="upload_meal_type_breakfast">Breakfast</string>
+    <string name="upload_meal_type_lunch">Lunch</string>
+    <string name="upload_meal_type_dinner">Dinner</string>
+    <string name="upload_meal_type_dessert">Dessert</string>
+
+    <string name="upload_allergens">Allergens</string>
+    <string name="upload_allergens_gluten">Gluten</string>
+    <string name="upload_allergens_shellfish">Shellfish</string>
+    <string name="upload_allergens_eggs">Eggs</string>
+    <string name="upload_allergens_fish">Fish</string>
+    <string name="upload_allergens_peanuts">Peanuts</string>
+    <string name="upload_allergens_soy">Soy</string>
+    <string name="upload_allergens_milk">Milk</string>
+    <string name="upload_allergens_tree_nuts">Tree nuts</string>
+    <string name="upload_allergens_celery">Celery</string>
+    <string name="upload_allergens_mustard">Mustard</string>
+    <string name="upload_allergens_sesame">Sesame</string>
+    <string name="upload_allergens_sulphites">Sulphites</string>
+    <string name="upload_allergens_lupin">Lupin</string>
+    <string name="upload_allergens_molluscs">Molluscs</string>
+    <string name="upload_allergens_corn">Corn</string>
+
+    <string name="upload_diets">Diets</string>
+    <string name="upload_diets_vegan">Vegan</string>
+    <string name="upload_diets_vegetarian">Vegetarian</string>
+    <string name="upload_diets_gluten_free">Gluten free</string>
+    <string name="upload_diets_lactose_free">Lactose free</string>
+    <string name="upload_diets_nut_free">Nut free</string>
+    <string name="upload_diets_dairy_free">Dairy free</string>
+    <string name="upload_diets_low_sugar">Low sugar</string>
+    <string name="upload_diets_low_salt">Low salt</string>
+    <string name="upload_diets_halal">Halal</string>
+    <string name="upload_diets_kosher">Kosher</string>
+    <string name="upload_diets_paleo">Paleo</string>
+    <string name="upload_diets_flexitarian">Flexitarian</string>
+    <string name="upload_diets_raw_food">Raw Food</string>
+    <string name="upload_diets_keto">Keto</string>
+
     <string name="add_new_ingredient_option">Add "%1$s" as new ingredient…</string>
     <string name="ingredient_title">Ingredient title</string>
     <string name="ingredient_description">Description</string>
-    <string name="cancel">Cancel</string>
+    <string name="upload_button">Upload</string>
+    <string name="upload_succes_title">Upload Success</string>
+    <string name="upload_succes_text">Your recipe has been uploaded,
+        you can see it on your profile</string>
+    <string name="upload_button_home">Back to Home</string>
 
     <!-- Fridge -->
     <string name="fridge_title">Fridge</string>
@@ -117,4 +188,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="search_title">What are we making today?</string>
+    <string name="cancel">Cancel</string>
+    <string name="upload_diets_diary_free">Dairy Free</string>
 </resources>
