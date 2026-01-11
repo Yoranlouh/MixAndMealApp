@@ -119,4 +119,6 @@
     <string name="search_filter_lunch">Lunch</string>
     <string name="search_filter_dinner">Dinner</string>
     <string name="voice_search_content_description">Spraakgestuurd zoeken</string>
+    <string name="read_instructions">Instructies voorlezen</string>
+    <string name="no_instructions_found">Geen instructies gevonden</string>
 </resources>
