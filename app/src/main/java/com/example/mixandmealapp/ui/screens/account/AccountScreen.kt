@@ -63,7 +63,6 @@ import androidx.compose.runtime.collectAsState
 import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
-import org.koin.compose.viewmodel.koinViewModel
 import com.example.mixandmealapp.models.requests.RecipeIDRequest
 import org.koin.androidx.compose.koinViewModel
 
@@ -81,10 +80,9 @@ fun AccountScreen(
     accountViewModel: AccountViewModel = koinViewModel()
 ) {
     val vm = fridgeViewModel ?: remember { FridgeViewModel() }
-    val favVm = favouritesViewModel ?: remember { FavouritesViewModel() }
     val accountState by accountViewModel.uiState.collectAsState()
 
-    LaunchedEffect(favVm) { favVm.load() }
+    LaunchedEffect(favouritesViewModel) { favouritesViewModel.load() }
     LaunchedEffect(Unit) { accountViewModel.load() }
 
     LaunchedEffect(favouritesViewModel) { favouritesViewModel.load() }
