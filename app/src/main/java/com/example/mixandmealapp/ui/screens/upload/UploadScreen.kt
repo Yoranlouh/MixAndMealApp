@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -46,11 +44,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.mixandmealapp.R
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.InputFieldSmall
 import com.example.mixandmealapp.ui.components.InputFieldTextBox
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
+import com.example.mixandmealapp.ui.components.cameraButton
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.screens.search.FilterOptions
 import com.example.mixandmealapp.ui.theme.BrandGreen
@@ -68,7 +68,7 @@ data class Ingredient(
 )
 
 @Composable
-fun UploadScreen(navController: NavHostController) {
+fun UploadScreen(navController: NavHostController, onCameraClick: () -> Unit) {
     var recipeName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedDifficulty by remember { mutableStateOf("") }
@@ -98,6 +98,12 @@ fun UploadScreen(navController: NavHostController) {
     var dietExpanded by remember { mutableStateOf(true) }
 
     var showSuccessDialog by remember { mutableStateOf(false) }
+
+    // Translated filter options
+    val kitchenStylesStrings = FilterOptions.kitchenStyles.map { stringResource(it) }
+    val mealTypeStrings = FilterOptions.mealTypes.map { stringResource(it) }
+    val allergensStrings = FilterOptions.allergens.map { stringResource(it) }
+    val dietsStrings = FilterOptions.diets.map { stringResource(it) }
 
     if (showSuccessDialog) {
         UploadSuccessDialog(
@@ -130,7 +136,9 @@ fun UploadScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // Add Cover Photo Section
-        AddCoverPhotoSection()
+        AddCoverPhotoSection(
+            onCameraClick = onCameraClick
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -140,8 +148,8 @@ fun UploadScreen(navController: NavHostController) {
         InputFieldSmall(
             value = recipeName,
             onValueChange = { recipeName = it },
-            label = "Recipe Name",
-            placeholder = "Enter Recipe Name",
+            label = stringResource(R.string.upload_enter_recipe_name_title),
+            placeholder = stringResource(R.string.upload_enter_recipe_name),
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -150,8 +158,8 @@ fun UploadScreen(navController: NavHostController) {
         InputFieldTextBox(
             value = description,
             onValueChange = { description = it },
-            label = "Description",
-            placeholder = "Tell us a little about your recipe",
+            label = stringResource(R.string.upload_tell_about_recipe_title),
+            placeholder = stringResource(R.string.upload_tell_about_recipe)
         )
 
 
@@ -175,7 +183,7 @@ fun UploadScreen(navController: NavHostController) {
         // Cooking Duration
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "Cooking Duration",
+                text = stringResource(R.string.upload_enter_cooking_duration),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = DarkText
@@ -199,7 +207,7 @@ fun UploadScreen(navController: NavHostController) {
 
         // Ingredients Section
         Text(
-            text = "Ingredients",
+            text = stringResource(R.string.upload_enter_ingredient_title),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = DarkText
@@ -255,7 +263,7 @@ fun UploadScreen(navController: NavHostController) {
             value = newIngredientName,
             onValueChange = { newIngredientName = it },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.upload_enter_ingredient)) },
+            placeholder = { Text(stringResource(id = R.string.upload_enter_ingredient)) },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = BrandGrey,
                 focusedBorderColor = BrandOrange,
@@ -284,7 +292,7 @@ fun UploadScreen(navController: NavHostController) {
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add", tint = DarkText)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(id = com.example.mixandmealapp.R.string.upload_add_ingredient))
+                Text(stringResource(id = R.string.upload_add_ingredient))
             }
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -311,16 +319,17 @@ fun UploadScreen(navController: NavHostController) {
                     tint = DarkText
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(id = com.example.mixandmealapp.R.string.upload_new_ingredient))
+                Text(stringResource(id = R.string.upload_new_ingredient))
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
+
         // Kitchen Style Section
         FilterSection(
-            title = stringResource(id = com.example.mixandmealapp.R.string.upload_kitchen_style),
-            options = FilterOptions.kitchenStyles,
+            title = stringResource(id = R.string.upload_kitchen_style),
+            options = kitchenStylesStrings,
             selectedOptions = selectedKitchenStyles,
             expanded = kitchenExpanded,
             onHeaderToggle = { kitchenExpanded = !kitchenExpanded },
@@ -334,8 +343,8 @@ fun UploadScreen(navController: NavHostController) {
 
         // Meal Type Section
         FilterSection(
-            title = "Meal Type",
-            options = FilterOptions.mealTypes,
+            title = stringResource(R.string.upload_meal_type),
+            options = mealTypeStrings,
             selectedOptions = selectedMealTypes,
             expanded = mealTypeExpanded,
             onHeaderToggle = { mealTypeExpanded = !mealTypeExpanded },
@@ -349,8 +358,8 @@ fun UploadScreen(navController: NavHostController) {
 
         // Allergens Section
         FilterSection(
-            title = "Allergens",
-            options = FilterOptions.allergens,
+            title = stringResource(R.string.upload_allergens),
+            options = allergensStrings,
             selectedOptions = selectedAllergens,
             expanded = allergensExpanded,
             onHeaderToggle = { allergensExpanded = !allergensExpanded },
@@ -367,8 +376,8 @@ fun UploadScreen(navController: NavHostController) {
 
         // Diet Section
         FilterSection(
-            title = "Diet",
-            options = FilterOptions.diets,
+            title = stringResource(R.string.upload_diets),
+            options = dietsStrings,
             selectedOptions = selectedDiets,
             expanded = dietExpanded,
             onHeaderToggle = { dietExpanded = !dietExpanded },
@@ -382,7 +391,7 @@ fun UploadScreen(navController: NavHostController) {
 
         // Upload Button (uses app-wide PrimaryButton style)
         PrimaryButton(
-            text = "Upload",
+            text = stringResource(R.string.upload_button),
             onClick = { showSuccessDialog = true }
         )
 
@@ -409,13 +418,13 @@ fun UploadSuccessDialog(onDismiss: () -> Unit, onBackToHome: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    "Upload Success",
+                    stringResource(R.string.upload_succes_title),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    "Your recipe has been uploaded,\nyou can see it on your profile",
+                    stringResource(R.string.upload_succes_text),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = DarkText.copy(alpha = 0.8f)
@@ -428,7 +437,8 @@ fun UploadSuccessDialog(onDismiss: () -> Unit, onBackToHome: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(containerColor = BrandOrange),
                     contentPadding = PaddingValues(vertical = 12.dp)
                 ) {
-                    Text("Back to Home", color = Color.White)
+                    Text(stringResource(R.string.upload_button_home),
+                        color = Color.White)
                 }
             }
         }
@@ -436,7 +446,9 @@ fun UploadSuccessDialog(onDismiss: () -> Unit, onBackToHome: () -> Unit) {
 }
 
 @Composable
-fun AddCoverPhotoSection() {
+fun AddCoverPhotoSection(
+    onCameraClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -458,13 +470,13 @@ fun AddCoverPhotoSection() {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Add Cover Photo",
+                text = stringResource(R.string.upload_cover_photo),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF5B6B7C)
             )
             Text(
-                text = "(up to 12 Mb)",
+                text = stringResource(R.string.upload_cover_photo_text),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray
             )
@@ -474,26 +486,7 @@ fun AddCoverPhotoSection() {
     Spacer(modifier = Modifier.height(16.dp))
 
     // Camera icon below
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF6B7C8E))
-                .clickable { /* TODO: Handle camera */ },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.CameraAlt,
-                contentDescription = "Camera",
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-    }
+    cameraButton(onClick = onCameraClick)
 }
 
 @Composable
@@ -501,7 +494,10 @@ fun DifficultySelector(
     selectedDifficulty: String,
     onDifficultySelected: (String) -> Unit
 ) {
-    val difficulties = listOf("Easy", "Medium", "Hard")
+    val difficulties = listOf(
+        stringResource(R.string.upload_difficulty_easy),
+        stringResource(R.string.upload_difficulty_medium),
+        stringResource(R.string.upload_difficulty_hard))
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -520,7 +516,7 @@ fun DifficultySelector(
                 onClick = {
                     if (isSelected) onDifficultySelected("") else onDifficultySelected(difficulty)
                 },
-                label = { Text(difficulty) },
+                label = { stringResource(R.string.upload_difficulty_title) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = selectedColor,
                     selectedLabelColor = Color.White,
@@ -631,7 +627,7 @@ fun SimpleIngredientItem(
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
-                placeholder = stringResource(id = com.example.mixandmealapp.R.string.upload_enter_ingredient)
+                placeholder = stringResource(id = R.string.upload_enter_ingredient)
             )
         }
 
@@ -645,7 +641,7 @@ fun SimpleIngredientItem(
                     .fillMaxWidth()
                     .height(56.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.qty), color = DarkText.copy(alpha = 0.6f)) },
+                placeholder = { Text(stringResource(id = R.string.qty), color = DarkText.copy(alpha = 0.6f)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = BrandGrey,
                     focusedBorderColor = BrandOrange,
@@ -685,7 +681,7 @@ fun SimpleIngredientItem(
                     .fillMaxWidth()
                     .height(56.dp),
                 textStyle = MaterialTheme.typography.bodyMedium,
-                placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.unit), color = DarkText.copy(alpha = 0.6f)) },
+                placeholder = { Text(stringResource(id = R.string.unit), color = DarkText.copy(alpha = 0.6f)) },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = BrandGrey,
                     focusedBorderColor = BrandOrange,
@@ -811,7 +807,10 @@ fun FilterSection(
 @Composable
 fun UploadScreenPreview() {
     MixAndMealAppTheme {
-        UploadScreen(navController = rememberNavController())
+        UploadScreen(
+            navController = rememberNavController(),
+            onCameraClick = {}
+        )
     }
 }
 @Preview(name = "Upload Success Dialog", showBackground = true)

@@ -34,7 +34,6 @@ import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
 import com.example.mixandmealapp.ui.screens.settings.options.LanguageChoiceScreen
 import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
 import com.example.mixandmealapp.ui.screens.upload.UploadScreen
-import com.example.mixandmealapp.ui.viewmodel.AuthUiState
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
@@ -51,7 +50,11 @@ private val noBottomBarRoutes = listOf(
 )
 
 @Composable
-fun AppNavigation(localeViewModel: LocaleViewModel) {
+fun AppNavigation(
+    localeViewModel: LocaleViewModel,
+    onCameraClick: () -> Unit
+
+) {
     val navController = rememberNavController()
     
     // Shared ViewModel instances
@@ -96,7 +99,6 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
                     Log.e("AppNavigation", "Failed to parse role: '${user.role}'", e)
                     Role.GUEST
                 }
-
                 // Show correct bottom bar based on role
                 when (currentRoleEnum) {
                     Role.USER -> {
@@ -195,7 +197,10 @@ fun AppNavigation(localeViewModel: LocaleViewModel) {
             composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
             composable(Navigation.SEARCH_RESULTS) { SearchResultScreen(navController = navController) }
             
-            composable(Navigation.UPLOAD) { UploadScreen(navController = navController) }
+            composable(Navigation.UPLOAD) { UploadScreen(
+                navController = navController,
+                onCameraClick = onCameraClick
+            ) }
             
             composable(Navigation.SCAN) { ScanScreen() }
             

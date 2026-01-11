@@ -1,10 +1,14 @@
 package com.example.mixandmealapp
 
+import android.app.Activity
 import android.app.Application
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.mixandmealapp.network.service.appModule
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -31,6 +35,19 @@ class App : Application() {
     }
 }
 class MainActivity : ComponentActivity() {
+
+    private val cameraLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // Handle captured image
+            }
+        }
+
+    private fun openCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraLauncher.launch(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -40,9 +57,10 @@ class MainActivity : ComponentActivity() {
 
             ProvideLocalizedResources(localeViewModel.locale) {
                 MixAndMealAppTheme {
-                    AppNavigation(localeViewModel)
+                    AppNavigation(localeViewModel, onCameraClick = { openCamera() })
                 }
             }
         }
     }
 }
+

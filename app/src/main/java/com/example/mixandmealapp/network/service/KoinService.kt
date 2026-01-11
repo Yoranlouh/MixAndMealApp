@@ -27,4 +27,5 @@ val appModule = module {
     viewModel { FavouritesViewModel(get(),get()) }
     viewModel { RecipeDetailViewModel(get(), get()) }
 
+    viewModel{ AccountViewModel(get(), get()) }
 }

@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mixandmealapp.ui.screens.upload.FilterSection
 
@@ -47,6 +48,12 @@ fun SearchFilterBottomSheet(
     var allergensExpanded by remember { mutableStateOf(false) }
     var dietsExpanded by remember { mutableStateOf(false) }
 
+    // Translated filter options
+    val kitchenStylesStrings = FilterOptions.kitchenStyles.map { stringResource(it) }
+    val mealTypeStrings = FilterOptions.mealTypes.map { stringResource(it) }
+    val allergensStrings = FilterOptions.allergens.map { stringResource(it) }
+    val dietsStrings = FilterOptions.diets.map { stringResource(it) }
+
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Text(
             text = "Filters",
@@ -58,7 +65,7 @@ fun SearchFilterBottomSheet(
             // Kitchen Styles (multi-select)
             FilterSection(
                 title = "Kitchen Styles",
-                options = FilterOptions.kitchenStyles,
+                options = kitchenStylesStrings,
                 selectedOptions = selectedKitchenStyles,
                 expanded = kitchenExpanded,
                 onHeaderToggle = { kitchenExpanded = !kitchenExpanded },
@@ -72,7 +79,7 @@ fun SearchFilterBottomSheet(
             // Meal Types (multi-select)
             FilterSection(
                 title = "Meal Types",
-                options = FilterOptions.mealTypes,
+                options = mealTypeStrings,
                 selectedOptions = selectedMealTypes,
                 expanded = mealTypeExpanded,
                 onHeaderToggle = { mealTypeExpanded = !mealTypeExpanded },
@@ -86,7 +93,7 @@ fun SearchFilterBottomSheet(
             // Allergens (multi-select)
             FilterSection(
                 title = "Allergens",
-                options = FilterOptions.allergens,
+                options = allergensStrings,
                 selectedOptions = selectedAllergens,
                 expanded = allergensExpanded,
                 onHeaderToggle = { allergensExpanded = !allergensExpanded },
@@ -100,7 +107,7 @@ fun SearchFilterBottomSheet(
             // Diets (multi-select)
             FilterSection(
                 title = "Diets",
-                options = FilterOptions.diets,
+                options = dietsStrings,
                 selectedOptions = selectedDiets,
                 expanded = dietsExpanded,
                 onHeaderToggle = { dietsExpanded = !dietsExpanded },

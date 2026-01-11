@@ -1,6 +1,7 @@
 package com.example.mixandmealapp.repository
 
 import android.util.Log
+import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.UserFridgeEntry
 import com.example.mixandmealapp.models.requests.IngredientIDRequest
@@ -56,6 +57,26 @@ class UserRepository() {
 
     suspend fun removeDiet(token: String, diet: DietEntry) : List<DietEntry> {
         return ApiService.removeDietForUser(token, diet)
+    }
+
+    suspend fun getAllergens(token: String?): List<AllergenEntry> {
+        return ApiService.getAllergensForUser(token)
+    }
+
+    suspend fun addAllergen(token: String, allergen: AllergenEntry) : List<AllergenEntry> {
+        return ApiService.addAllergenForUser(token, allergen)
+    }
+
+    suspend fun removeAllergen(token: String, allergen: AllergenEntry) : List<AllergenEntry> {
+        return ApiService.removeAllergenForUser(token, allergen)
+    }
+
+    suspend fun getAllAllergens(): List<AllergenEntry> {
+        return ApiService.getAllAllergens()
+    }
+
+    suspend fun getAllDiets(): List<DietEntry> {
+        return ApiService.getAllDiets()
     }
 
     suspend fun getFavourites(token: String?): List<RecipeCardResponse>{
