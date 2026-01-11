@@ -1,14 +1,19 @@
 package com.example.mixandmealapp.network
 
+import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.TokenClaim
+import com.example.mixandmealapp.models.entries.UserFridgeEntry
 import com.example.mixandmealapp.models.enums.Difficulty
 import com.example.mixandmealapp.models.enums.Role
+import com.example.mixandmealapp.models.requests.IngredientIDRequest
 import com.example.mixandmealapp.models.requests.Login
+import com.example.mixandmealapp.models.requests.RecipeIDRequest
 import com.example.mixandmealapp.models.responses.AuthResponse
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import com.example.mixandmealapp.models.responses.RoleResponse
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -49,5 +54,54 @@ object ApiService {
             header("Authorization", "Bearer $token")
         }.body()
 
+    suspend fun getDietsForUser(token: String?): List<DietEntry> =
+        client.get("$domain/user-diets") {
+            header("Authorization", "Bearer $token")
+        }.body()
+
+    suspend fun addDietForUser(token: String?, diet: DietEntry): List<DietEntry> =
+        client.post("$domain/user-diets/add-diet"){
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(diet)
+        }.body()
+
+    suspend fun removeDietForUser(token: String?, diet: DietEntry) : List<DietEntry> =
+        client.delete("$domain/user-diets/remove-diet"){
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(diet)
+        }.body()
+
+    suspend fun getFavouritesForUser(token: String?): List<RecipeCardResponse> =
+        client.get("$domain/favourites") {
+            header("Authorization", "Bearer $token")
+        }.body()
+
+    suspend fun toggleFavourite(token: String?, recipeId: RecipeIDRequest): List<RecipeCardResponse> =
+        client.post("$domain/favourites/add-remove-favourite-recipe"){
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(recipeId)
+        }.body()
+
+    suspend fun getFridge(token: String?): List<UserFridgeEntry> =
+        client.get("$domain/fridge") {
+            header("Authorization", "Bearer $token")
+        }.body()
+
+    suspend fun addIngredientToFridge(token: String?, ingredientId: IngredientIDRequest): List<RecipeCardResponse> =
+        client.post("$domain/user-diets/add-diet"){
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(ingredientId)
+        }.body()
+
+    suspend fun removeIngredientFromFridge(token: String?, ingredientId: IngredientIDRequest): List<RecipeCardResponse> =
+        client.delete("$domain/user-diets/remove-diet"){
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(ingredientId)
+        }.body()
 }
 
