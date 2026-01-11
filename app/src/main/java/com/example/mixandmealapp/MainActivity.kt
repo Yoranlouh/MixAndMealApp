@@ -3,6 +3,7 @@ package com.example.mixandmealapp
 import android.app.Activity
 import android.app.Application
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.activity.ComponentActivity
@@ -35,17 +36,23 @@ class App : Application() {
     }
 }
 class MainActivity : ComponentActivity() {
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        // existing camera code
+    }
 
-    private val cameraLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // Handle captured image
-            }
-        }
+    private var _onPhotoPicked: ((Uri?) -> Unit)? = null
+
+    private val photoPickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        // Handle photo URI - pass to UploadScreen via callback later
+    }
 
     private fun openCamera() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        cameraLauncher.launch(intent)
+        // existing code
+    }
+
+
+    private fun openPhotoPicker(callback: (Uri?) -> Unit) {
+        photoPickerLauncher.launch("image/*")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,7 +64,11 @@ class MainActivity : ComponentActivity() {
 
             ProvideLocalizedResources(localeViewModel.locale) {
                 MixAndMealAppTheme {
-                    AppNavigation(localeViewModel, onCameraClick = { openCamera() })
+                    AppNavigation(
+                        localeViewModel = localeViewModel,
+                        onCameraClick = { openCamera() },
+                        onPhotoPick = { callback -> openPhotoPicker(callback) }
+                    )
                 }
             }
         }

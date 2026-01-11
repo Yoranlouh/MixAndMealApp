@@ -1,9 +1,13 @@
 package com.example.mixandmealapp.ui.screens.upload
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.example.mixandmealapp.R
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.InputFieldSmall
@@ -68,7 +76,14 @@ data class Ingredient(
 )
 
 @Composable
-fun UploadScreen(navController: NavHostController, onCameraClick: () -> Unit) {
+fun UploadScreen(
+    navController: NavHostController,
+    onCameraClick: () -> Unit,
+    onPhotoPick: (callback: (Uri?) -> Unit) -> Unit) {
+    
+    // Camera variables
+    var coverPhotoUri by remember { mutableStateOf<Uri?>(null) }
+
     var recipeName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedDifficulty by remember { mutableStateOf("") }
@@ -105,6 +120,8 @@ fun UploadScreen(navController: NavHostController, onCameraClick: () -> Unit) {
     val allergensStrings = FilterOptions.allergens.map { stringResource(it) }
     val dietsStrings = FilterOptions.diets.map { stringResource(it) }
 
+
+
     if (showSuccessDialog) {
         UploadSuccessDialog(
             onDismiss = { showSuccessDialog = false },
@@ -136,8 +153,10 @@ fun UploadScreen(navController: NavHostController, onCameraClick: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // Add Cover Photo Section
-        AddCoverPhotoSection(
-            onCameraClick = onCameraClick
+        PhotoPicker(
+            coverPhotoUri = coverPhotoUri,
+            onPhotoClick = { onPhotoPick { uri -> coverPhotoUri = uri } },
+            onPhotoRemove = { coverPhotoUri = null }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -447,7 +466,7 @@ fun UploadSuccessDialog(onDismiss: () -> Unit, onBackToHome: () -> Unit) {
 
 @Composable
 fun AddCoverPhotoSection(
-    onCameraClick: () -> Unit
+    onClick: () -> Unit  // Changed parameter
 ) {
     Box(
         modifier = Modifier
@@ -456,15 +475,15 @@ fun AddCoverPhotoSection(
             .border(2.dp, BrandGrey, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFFF5F5F5))
-            .clickable { /* TODO: Handle photo selection */ },
-        contentAlignment = Alignment.Center
+            .clickable { onClick() }  // Call parent launcher
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.align(Alignment.Center)
         ) {
             Icon(
                 imageVector = Icons.Filled.AddCircle,
-                contentDescription = "Add photo",
+                contentDescription = "Add cover photo",
                 modifier = Modifier.size(64.dp),
                 tint = Color(0xFF9E9E9E)
             )
@@ -473,7 +492,7 @@ fun AddCoverPhotoSection(
                 text = stringResource(R.string.upload_cover_photo),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF5B6B7C)
+                color = Color(0xFF5B6B7C),
             )
             Text(
                 text = stringResource(R.string.upload_cover_photo_text),
@@ -482,11 +501,35 @@ fun AddCoverPhotoSection(
             )
         }
     }
-
     Spacer(modifier = Modifier.height(16.dp))
+}
 
-    // Camera icon below
-    cameraButton(onClick = onCameraClick)
+@Composable
+fun PhotoPicker(
+    coverPhotoUri: Uri?,
+    onPhotoClick: () -> Unit,
+    onPhotoRemove: () -> Unit
+) {
+    if (coverPhotoUri != null) {
+        // SHOW PREVIEW
+        Box(modifier = Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(16.dp))) {
+            AsyncImage(
+                model = coverPhotoUri,
+                contentDescription = "Cover photo",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            IconButton(
+                onClick = onPhotoRemove,
+                modifier = Modifier.align(Alignment.TopEnd).padding(8.dp)
+            ) {
+                Icon(Icons.Default.Close, "Remove photo", tint = Color.White)
+            }
+        }
+    } else {
+        // SHOW ADD BUTTON
+        AddCoverPhotoSection(onClick = onPhotoClick)
+    }
 }
 
 @Composable
@@ -809,7 +852,8 @@ fun UploadScreenPreview() {
     MixAndMealAppTheme {
         UploadScreen(
             navController = rememberNavController(),
-            onCameraClick = {}
+            onCameraClick = {},
+            onPhotoPick = TODO()
         )
     }
 }
