@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Grain
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -57,6 +58,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.speech.tts.TextToSpeech
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.DisposableEffect
 import com.example.mixandmealapp.R
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
@@ -99,6 +103,21 @@ fun RecipeDetailScreen(
     var selectedTab by remember { mutableStateOf(0) } // 0 = Ingredients, 1 = Instructions
     var descExpanded by remember { mutableStateOf(false) }
     var ingredients = listOf<IngredientUnitEntry>()
+    val context = LocalContext.current
+    var tts: TextToSpeech? by remember { mutableStateOf(null) }
+    val noInstructionsMessage = stringResource(id = R.string.no_instructions_found)
+
+    DisposableEffect(Unit) {
+        val ttsInstance = TextToSpeech(context) { status ->
+            // Hier kun je status checken indien nodig
+        }
+        tts = ttsInstance
+        onDispose {
+            ttsInstance.stop()
+            ttsInstance.shutdown()
+        }
+    }
+
     if(recipe != null) {
         title = remember { recipe!!.title }
         minutes = remember { recipe!!.cookingTime }
@@ -237,8 +256,38 @@ fun RecipeDetailScreen(
                         Text(stringResource(id = com.example.mixandmealapp.R.string.six_item), color = BrandGrey, fontSize = 12.sp)
                         Spacer(modifier = Modifier.height(8.dp))
                     } else {
-                        Text(stringResource(id = com.example.mixandmealapp.R.string.instructions), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                        Text(stringResource(id = com.example.mixandmealapp.R.string.four_steps), color = BrandGrey, fontSize = 12.sp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    stringResource(id = com.example.mixandmealapp.R.string.instructions),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    stringResource(id = com.example.mixandmealapp.R.string.four_steps),
+                                    color = BrandGrey,
+                                    fontSize = 12.sp
+                                )
+                            }
+                            IconButton(onClick = {
+                                val textToRead = if (instructions == "Not found" || instructions.isBlank()) {
+                                    noInstructionsMessage
+                                } else {
+                                    instructions
+                                }
+                                tts?.speak(textToRead, TextToSpeech.QUEUE_FLUSH, null, null)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.VolumeUp,
+                                    contentDescription = stringResource(id = R.string.read_instructions),
+                                    tint = BrandOrange
+                                )
+                            }
+                        }
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }

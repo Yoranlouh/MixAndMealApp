@@ -16,11 +16,18 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.app.Activity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -72,6 +79,31 @@ fun MinimalSearchContent(
     var selMeals by remember { mutableStateOf(setOf<String>()) }
     var selAllergens by remember { mutableStateOf(setOf<String>()) }
     var selDiets by remember { mutableStateOf(setOf<String>()) }
+    val context = LocalContext.current
+
+    val speechLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data
+                val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                if (!results.isNullOrEmpty()) {
+                    searchQuery = results[0]
+                }
+            }
+        }
+    )
+
+    val voicePrompt = stringResource(id = com.example.mixandmealapp.R.string.voice_search_content_description)
+
+    fun startVoiceRecognition() {
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "nl-NL") // Je kunt dit ook dynamisch maken op basis van locale
+            putExtra(RecognizerIntent.EXTRA_PROMPT, voicePrompt)
+        }
+        speechLauncher.launch(intent)
+    }
 
     Column(
         modifier = modifier
@@ -101,18 +133,27 @@ fun MinimalSearchContent(
             },
             trailingIcon = {
                 val activeCount = selKitchens.size + selMeals.size + selAllergens.size + selDiets.size
-                Box {
-                    IconButton(onClick = { showFilters = true }) {
-                        Icon(imageVector = Icons.Filled.FilterList, contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search_filter_button))
-                    }
-                    if (activeCount > 0) {
-                        // tiny orange dot to indicate active filters
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .align(Alignment.TopEnd)
-                                .background(BrandOrange, shape = RoundedCornerShape(50))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { startVoiceRecognition() }) {
+                        Icon(
+                            imageVector = Icons.Filled.Mic,
+                            contentDescription = stringResource(id = com.example.mixandmealapp.R.string.voice_search_content_description),
+                            tint = BrandGrey
                         )
+                    }
+                    Box {
+                        IconButton(onClick = { showFilters = true }) {
+                            Icon(imageVector = Icons.Filled.FilterList, contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search_filter_button))
+                        }
+                        if (activeCount > 0) {
+                            // tiny orange dot to indicate active filters
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .align(Alignment.TopEnd)
+                                    .background(BrandOrange, shape = RoundedCornerShape(50))
+                            )
+                        }
                     }
                 }
             },
