@@ -117,4 +117,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="search_title">What are we making today?</string>
+    <string name="voice_search_content_description">Voice Search</string>
 </resources>

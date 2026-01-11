@@ -118,4 +118,5 @@
     <string name="search_filter_breakfast">Ontbijt</string>
     <string name="search_filter_lunch">Lunch</string>
     <string name="search_filter_dinner">Dinner</string>
+    <string name="voice_search_content_description">Spraakgestuurd zoeken</string>
 </resources>
