@@ -20,6 +20,8 @@
     <string name="language_choice" >Choose Language</string>
     <string name="language_choice_support" >Change language</string>
     <string name="p_and_s" >Privacy &amp; Security</string>
+    <string name="cookie_preferences_title" >Cookie Preferences</string>
+    <string name="cookie_preferences_text" >We use cookies to improve your experience. Please accept to continue using the app.</string>
 
     <string name="help_support">Help/Support</string>
     <string name="help_support_desc">Need some help?</string>
@@ -147,8 +149,7 @@
     <string name="ingredient_description">Description</string>
     <string name="upload_button">Upload</string>
     <string name="upload_succes_title">Upload Success</string>
-    <string name="upload_succes_text">Your recipe has been uploaded,
-        you can see it on your profile</string>
+    <string name="upload_succes_text">Your recipe has been uploaded,         you can see it on your profile</string>
     <string name="upload_button_home">Back to Home</string>
 
     <!-- Fridge -->

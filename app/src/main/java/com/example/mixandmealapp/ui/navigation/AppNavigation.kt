@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.ui.navigation
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -52,8 +53,8 @@ private val noBottomBarRoutes = listOf(
 @Composable
 fun AppNavigation(
     localeViewModel: LocaleViewModel,
-    onCameraClick: () -> Unit
-
+    onCameraClick: () -> Unit,
+    onPhotoPick: (callback: (Uri?) -> Unit) -> Unit
 ) {
     val navController = rememberNavController()
     
@@ -185,7 +186,7 @@ fun AppNavigation(
 
             // --- MAIN TABS & FEATURES ---
             composable(Navigation.SETTINGS) { SettingsScreen(navController = navController) }
-            
+
             composable(Navigation.FAVOURITES) {
                 FavouritesScreen(
                     navController = navController,
@@ -196,11 +197,16 @@ fun AppNavigation(
 
             composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
             composable(Navigation.SEARCH_RESULTS) { SearchResultScreen(navController = navController) }
-            
-            composable(Navigation.UPLOAD) { UploadScreen(
-                navController = navController,
-                onCameraClick = onCameraClick
-            ) }
+
+
+            composable(Navigation.UPLOAD) {
+                UploadScreen(
+                    navController = navController,
+                    onCameraClick = onCameraClick,
+                    onPhotoPick = onPhotoPick
+                )
+            }
+
             
             composable(Navigation.SCAN) { ScanScreen() }
             
