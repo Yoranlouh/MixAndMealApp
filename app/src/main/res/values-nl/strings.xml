@@ -109,9 +109,6 @@
     <string name="instructions">Instructies</string>
     <string name="four_steps">4 stappen</string>
 
-    <!-- Scan -->
-    <string name="scan">Scannen</string>
-
     <!-- Common/Auth buttons and errors -->
     <string name="login">Inloggen</string>
     <string name="login_or_signup">Inloggen/Registreren</string>

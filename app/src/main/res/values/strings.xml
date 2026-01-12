@@ -174,9 +174,6 @@
     <string name="instructions">Instructions</string>
     <string name="four_steps">4 Steps</string>
 
-    <!-- Scan -->
-    <string name="scan">Scan</string>
-
     <!-- Common/Auth buttons and errors -->
     <string name="login">Login</string>
     <string name="login_or_signup">Login/Sign up</string>

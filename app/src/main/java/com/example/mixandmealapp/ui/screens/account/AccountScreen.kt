@@ -114,15 +114,6 @@ fun AccountScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (isLoggedIn) {
-                ProfileCard(name = "Richard Balke", onEditProfile = onEditProfile)
-                Spacer(modifier = Modifier.height(32.dp))
-                MyFavoritesSection(
-                    viewModel = favouritesViewModel,
-                    onNavigateToFavourites = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FAVOURITES) },
-                    onRecipeClick = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.RECIPE_DETAIL) }
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-                
                 MyAllergensSection(
                     userAllergens = accountState.userAllergens,
                     allAllergens = accountState.allAvailableAllergens,
@@ -136,6 +127,15 @@ fun AccountScreen(
                     allDiets = accountState.allAvailableDiets,
                     onAddDiet = { accountViewModel.addDiet(it) },
                     onRemoveDiet = { accountViewModel.removeDiet(it) }
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+
+                MyFavoritesSection(
+                    viewModel = favouritesViewModel,
+                    onNavigateToFavourites = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FAVOURITES) },
+                    onRecipeClick = { recipeId ->
+                        navController.navigate("${com.example.mixandmealapp.ui.navigation.Navigation.RECIPE_DETAIL}/$recipeId")
+                    }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -399,7 +399,7 @@ private fun MyFavoritesSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "My Favorites", style = MaterialTheme.typography.titleLarge)
+            Text(text = "My Favourites", style = MaterialTheme.typography.titleLarge)
             Text(
                 text = "View All",
                 color = BrandOrange,

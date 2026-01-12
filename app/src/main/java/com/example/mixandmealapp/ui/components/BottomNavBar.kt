@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
@@ -14,7 +15,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Kitchen
-import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -60,8 +60,8 @@ fun BottomNavBar(
     val adminNavItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home, Navigation.HOME),
         BottomNavItem("Upload", Icons.Filled.Edit, Navigation.UPLOAD),
-        BottomNavItem("Scan", Icons.Filled.DocumentScanner, Navigation.SCAN),
-        BottomNavItem("Analytics", Icons.Filled.Analytics, Navigation.ADMIN_ANALYTICS),
+        BottomNavItem("Search", Icons.Filled.Search, Navigation.SEARCH),
+        BottomNavItem("Favourites", Icons.Filled.Favorite, Navigation.FAVOURITES),
         BottomNavItem("Profile", Icons.Filled.Person, Navigation.ACCOUNT)
     )
 
@@ -92,45 +92,41 @@ fun BottomNavBar(
                 val selected =
                     currentDestination?.hierarchy?.any { it.route == item.route } == true
                 
-                // Identify the "Scan" or "Search" item for special styling if needed
-                val isFloatingAction = item.route == Navigation.SCAN || (item.route == Navigation.SEARCH && userRole != Role.ADMIN) // Example condition
+                // Identify the "Search" item for special styling if needed
+                val isFloatingAction = item.route == Navigation.SEARCH
 
                 NavigationBarItem(
                     selected = selected,
                     enabled = true,
-                    alwaysShowLabel = item.route != Navigation.SEARCH && item.route != Navigation.SCAN,
+                    alwaysShowLabel = item.route != Navigation.SEARCH,
                     onClick = {
-                        val target = if (item.route == Navigation.HOME) {
-                            "${Navigation.HOME}?showPrivacy=false"
-                        } else item.route
+                        val target = item.route
+                        val currentRoute = navController.currentDestination?.route
 
-                        navController.navigate(target) {
-                            launchSingleTop = true
-                            restoreState = true
-                            popUpTo(Navigation.HOME + "?showPrivacy={showPrivacy}") { saveState = true }
+                        if (currentRoute?.split("?")?.first() == target.split("?")?.first()) {
+                            // If we are already on Search, we might want to stay there but ensure it's clean.
+                            // However, the issue states it should always route to SearchScreen.
+                            // To prevent crash if something is wrong with current state, we can just navigate.
+                            // But usually, if already on the destination, we don't navigate unless we want to clear backstack.
+                            if (target != Navigation.SEARCH) return@NavigationBarItem
+                        }
+
+                        Log.d("BottomNavBar", "Navigating to: $target")
+                        try {
+                            navController.navigate(target) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true 
+                            }
+                        } catch (e: Exception) {
+                            Log.e("BottomNavBar", "Navigation failed", e)
                         }
                     },
                     icon = {
-                        // Apply special styling for Scan button for Admin, or Search for User if desired.
-                        // Based on previous user request, Admin Scan was prominent.
-                        if (item.route == Navigation.SCAN) {
-                             Box(
-                                modifier = Modifier
-                                    .offset(y = (-10).dp)
-                                    .size(60.dp)
-                                    .shadow(8.dp, shape = CircleShape)
-                                    .background(BrandGreen, CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.title,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(28.dp)
-                                )
-                            }
-                        } else if (item.route == Navigation.SEARCH && userRole != Role.ADMIN) {
-                             // User search floating button
+                        // Apply special styling for Search for User/Admin if desired.
+                        if (item.route == Navigation.SEARCH) {
                              Box(
                                 modifier = Modifier
                                     .offset(y = (-10).dp)
@@ -156,7 +152,7 @@ fun BottomNavBar(
                         }
                     },
                     label = {
-                        if (item.route != Navigation.SEARCH && item.route != Navigation.SCAN) {
+                        if (item.route != Navigation.SEARCH) {
                             val labelColor = if (selected) BrandGreen else unselectedGrey
                             Text(item.title, color = labelColor)
                         }

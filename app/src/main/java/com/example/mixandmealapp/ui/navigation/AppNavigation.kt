@@ -28,7 +28,6 @@ import com.example.mixandmealapp.ui.screens.favorites.FavouritesScreen
 import com.example.mixandmealapp.ui.screens.fridge.FridgeScreen
 import com.example.mixandmealapp.ui.screens.home.HomeScreen
 import com.example.mixandmealapp.ui.screens.recipes.RecipeDetailScreen
-import com.example.mixandmealapp.ui.screens.scan.ScanScreen
 import com.example.mixandmealapp.ui.screens.search.SearchResultScreen
 import com.example.mixandmealapp.ui.screens.search.SearchScreen
 import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
@@ -207,15 +206,19 @@ fun AppNavigation(
                 )
             }
 
-            
-            composable(Navigation.SCAN) { ScanScreen() }
-            
             composable(Navigation.FRIDGE) { 
                 FridgeScreen(navController = navController, viewModel = fridgeViewModel) 
             }
             
-            composable(Navigation.RECIPE_DETAIL) {
-                RecipeDetailScreen(onBack = { navController.popBackStack() })
+            composable(
+                route = "${Navigation.RECIPE_DETAIL}/{recipeId}",
+                arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val recipeId = backStackEntry.arguments?.getInt("recipeId") ?: 1
+                RecipeDetailScreen(
+                    recipeId = recipeId,
+                    onBack = { navController.popBackStack() }
+                )
             }
             
             composable(Navigation.LANGUAGE_CHOICE) {

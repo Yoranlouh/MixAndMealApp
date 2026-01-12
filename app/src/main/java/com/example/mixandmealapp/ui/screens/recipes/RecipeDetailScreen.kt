@@ -80,15 +80,16 @@ data class Ingredient(val name: String, val qty: String)
 
 @Composable
 fun RecipeDetailScreen(
+    recipeId: Int = 1,
     onBack: () -> Unit = {},
     onToggleFavorite: (Boolean) -> Unit = {},
     onSave: () -> Unit = {}
 ) {
     val recipeRepository = RecipeRepository()
     var recipe by remember { mutableStateOf<FullRecipeScreenResponse?>(null) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(recipeId) {
         try {
-            recipe = recipeRepository.getFullRecipeResponse(1)
+            recipe = recipeRepository.getFullRecipeResponse(recipeId)
         } catch (e: Exception) {
             e.printStackTrace()
         }
