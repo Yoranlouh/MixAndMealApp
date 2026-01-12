@@ -28,6 +28,8 @@ object ApiService {
     private val client = ApiClient.client
     private val domain = "http://10.0.2.2:8080"
 
+    suspend fun getAllRecipes(): List<RecipeCardResponse> =
+        client.get("$domain/recipes").body()
     suspend fun getFeaturedRecipe(): RecipeCardResponse =
         client.get("$domain/recipes/featured/1").body()
 

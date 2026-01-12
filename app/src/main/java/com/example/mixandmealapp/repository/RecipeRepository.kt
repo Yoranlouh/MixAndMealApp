@@ -32,4 +32,8 @@ class RecipeRepository {
     suspend fun getQuickRecipesResponse(limit: Int): List<RecipeCardResponse> {
         return ApiService.getQuickRecipes(limit)
     }
+
+    suspend fun getAllRecipes(): List<RecipeCardResponse>{
+        return ApiService.getAllRecipes()
+    }
 }

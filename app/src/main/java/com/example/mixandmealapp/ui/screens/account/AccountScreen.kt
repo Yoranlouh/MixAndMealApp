@@ -85,8 +85,6 @@ fun AccountScreen(
     LaunchedEffect(favouritesViewModel) { favouritesViewModel.load() }
     LaunchedEffect(Unit) { accountViewModel.load() }
 
-    LaunchedEffect(favouritesViewModel) { favouritesViewModel.load() }
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(

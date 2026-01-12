@@ -108,13 +108,9 @@ object ServiceLocator {
     val recipesRepository: RecipesRepository by lazy { FakeRecipesRepository() }
     val favouritesRepository: FavouritesRepository by lazy { FakeFavouritesRepository() }
     val settingsRepository: SettingsRepository by lazy { FakeSettingsRepository() }
-    val authRepository: AuthRepository by lazy { FakeAuthRepository() }
-    val sessionRepository: SessionRepository by lazy { InMemorySessionRepository() }
-    val userRepository: UserRepository by lazy { FakeUserRepository() }
     val uploadRepository: UploadRepository by lazy { FakeUploadRepository() }
     val fridgeRepository: FridgeRepository by lazy { InMemoryFridgeRepository() }
     val analyticsRepository: AnalyticsRepository by lazy { FakeAnalyticsRepository() }
-    val searchMetadataRepository: SearchMetadataRepository by lazy { FakeSearchMetadataRepository() }
     val ingredientCatalogRepository: IngredientCatalogRepository by lazy { InMemoryIngredientCatalog() }
 }
 
