@@ -148,7 +148,14 @@ fun UploadScreen(
         // Cancel button
         BackButton(
             navController = navController,
-            modifier = Modifier
+            modifier = Modifier,
+            onClick = {
+                navController.navigate(Navigation.HOME) {
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                }
+            }
         )
 
         Spacer(modifier = Modifier.height(24.dp))

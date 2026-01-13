@@ -52,7 +52,14 @@ fun FavouritesScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         BackButton(
                             navController = navController,
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
+                            onClick = {
+                                navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.HOME) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
                         )
                         Text(
                             text = stringResource(id = R.string.favourites),

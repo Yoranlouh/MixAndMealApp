@@ -334,7 +334,6 @@ fun PopularRecipesSection(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            Text(text = stringResource(id = com.example.mixandmealapp.R.string.see_all), style = MaterialTheme.typography.bodyMedium, color = BrandOrange)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
@@ -386,7 +385,6 @@ fun QuickRecipesSection(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            Text(text = stringResource(id = com.example.mixandmealapp.R.string.see_all), style = MaterialTheme.typography.bodyMedium, color = BrandOrange)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
@@ -437,7 +435,6 @@ fun EasyRecipesSection(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            Text(text = stringResource(id = com.example.mixandmealapp.R.string.see_all), style = MaterialTheme.typography.bodyMedium, color = BrandOrange)
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
