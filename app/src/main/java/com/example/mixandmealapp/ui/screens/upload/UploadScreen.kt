@@ -39,15 +39,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.coroutineScope
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.example.mixandmealapp.network.ApiService
 import coil.compose.AsyncImage
 import com.example.mixandmealapp.R
+import com.example.mixandmealapp.models.entries.AllergenEntry
+import com.example.mixandmealapp.models.entries.DietEntry
+import com.example.mixandmealapp.models.entries.IngredientUnitEntry
+import com.example.mixandmealapp.models.entries.RecipeImageEntry
+import com.example.mixandmealapp.models.enums.Difficulty
+import com.example.mixandmealapp.models.enums.KitchenStyle
+import com.example.mixandmealapp.models.enums.MealType
+import com.example.mixandmealapp.models.requests.RecipeUploadRequest
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.InputFieldSmall
 import com.example.mixandmealapp.ui.components.InputFieldTextBox
@@ -60,7 +68,6 @@ import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
-import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 
 data class Ingredient(
     val name: String,
@@ -72,12 +79,12 @@ data class Ingredient(
 @Composable
 fun UploadScreen(
     navController: NavHostController,
-    onCameraClick: () -> Unit,
+    token: String?,
     onPhotoPick: (callback: (Uri?) -> Unit) -> Unit) {
-    
     // Camera variables
     var coverPhotoUri by remember { mutableStateOf<Uri?>(null) }
 
+    val coroutineScope = rememberCoroutineScope()
     var recipeName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedDifficulty by remember { mutableStateOf("") }
@@ -405,12 +412,63 @@ fun UploadScreen(
         // Upload Button (uses app-wide PrimaryButton style)
         PrimaryButton(
             text = stringResource(R.string.upload_button),
-            onClick = { showSuccessDialog = true }
-        )
+            onClick = {
+                // ✅ Launch coroutine for API call
+                coroutineScope.launch {
+                    if (token.isNullOrBlank()) {
+                        println("No token available - user not logged in")
+                        return@launch  // Exit early if no token
+                    }
+                    try {
+                        val request = RecipeUploadRequest(
+                            title = recipeName,
+                            description = description,
+                            instructions = "Test",
+                            prepTime = 0,
+                            cookingTime = durationOptions[cookingDurationIndex],
+                            difficulty = Difficulty.valueOf(selectedDifficulty.uppercase()),
+                            images = if (coverPhotoUri != null) {
+                                listOf(RecipeImageEntry(
+                                    id = 0,
+                                    recipeId = 0,
+                                    imageUrl = coverPhotoUri.toString()
+                                ))
+                            } else emptyList(),
+                            mealType = MealType.valueOf((selectedMealTypes.firstOrNull() ?: "BREAKFAST").uppercase()),
+                            kitchenStyle = KitchenStyle.valueOf((selectedKitchenStyles.firstOrNull() ?: "ITALIAN").uppercase()),
+                            diets = selectedDiets.map {
+                                DietEntry(id = 0, displayName = it, description = "")
+                            },
+                            allergens = selectedAllergens.map {
+                                AllergenEntry(name = it, id = 0, displayName = it, description = "")
+                            },
+                            ingredients = ingredients.mapNotNull { ingredient ->
+                                if (ingredient.isConfirmed && ingredient.name.isNotBlank() && ingredient.amount != null) {
+                                    IngredientUnitEntry(
+                                        recipeId = 0,
+                                        ingredientName = ingredient.name,
+                                        amount = ingredient.amount!!,
+                                        unitType = ingredient.unitType
+                                    )
+                                } else null
+                            }
+                        )
 
-        Spacer(modifier = Modifier.height(32.dp))
+                        ApiService.uploadRecipe(token, coverPhotoUri?.toString(), request)
+                        showSuccessDialog = true
+
+                    } catch (e: Exception) {
+                        println("Upload failed: ${e.message}")
+                        // TODO: Show error dialog/snackbar
+                    }
+                }
+            }
+        )
     }
+        Spacer(modifier = Modifier.height(32.dp))
 }
+
+
 
 @Composable
 fun UploadSuccessDialog(onDismiss: () -> Unit, onBackToHome: () -> Unit) {
@@ -833,28 +891,28 @@ fun FilterSection(
     }
 }
 
-@Preview(
-    name = "Upload – Full Screen Scroll Preview",
-    showBackground = true,
-    device = Devices.PIXEL_5,
-    showSystemUi = false,
-    widthDp = 411,   // Pixel 5 width in dp
-    heightDp = 2000  // Large height so the Preview panel becomes scrollable
-)
-@Composable
-fun UploadScreenPreview() {
-    MixAndMealAppTheme {
-        UploadScreen(
-            navController = rememberNavController(),
-            onCameraClick = {},
-            onPhotoPick = TODO()
-        )
-    }
-}
-@Preview(name = "Upload Success Dialog", showBackground = true)
-@Composable
-fun UploadSuccessDialogPreview() {
-    MixAndMealAppTheme {
-        UploadSuccessDialog(onDismiss = {}, onBackToHome = {})
-    }
-}
+//@Preview(
+//    name = "Upload – Full Screen Scroll Preview",
+//    showBackground = true,
+//    device = Devices.PIXEL_5,
+//    showSystemUi = false,
+//    widthDp = 411,   // Pixel 5 width in dp
+//    heightDp = 2000  // Large height so the Preview panel becomes scrollable
+//)
+//@Composable
+//fun UploadScreenPreview() {
+//    MixAndMealAppTheme {
+//        UploadScreen(
+//            navController = rememberNavController(),
+//            onCameraClick = {},
+//            onPhotoPick = TODO()
+//        )
+//    }
+//}
+//@Preview(name = "Upload Success Dialog", showBackground = true)
+//@Composable
+//fun UploadSuccessDialogPreview() {
+//    MixAndMealAppTheme {
+//        UploadSuccessDialog(onDismiss = {}, onBackToHome = {})
+//    }
+//}

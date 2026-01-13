@@ -1,8 +1,11 @@
 package com.example.mixandmealapp.repository
 
+import android.net.Uri
 import com.example.mixandmealapp.models.enums.Difficulty
+import com.example.mixandmealapp.models.requests.RecipeUploadRequest
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
+import com.example.mixandmealapp.models.responses.RecipeResponse
 import com.example.mixandmealapp.network.ApiService
 
 class RecipeRepository {
@@ -36,4 +39,9 @@ class RecipeRepository {
     suspend fun getAllRecipes(): List<RecipeCardResponse>{
         return ApiService.getAllRecipes()
     }
+
+    suspend fun uploadRecipe(token: String?, imageUri: String?, request: RecipeUploadRequest): RecipeResponse {
+        return ApiService.uploadRecipe(token, imageUri, request)
+    }
+
 }

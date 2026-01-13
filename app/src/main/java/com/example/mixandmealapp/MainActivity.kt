@@ -1,4 +1,4 @@
-package com.example.mixandmealapp
+                              package com.example.mixandmealapp
 
 import android.app.Activity
 import android.app.Application

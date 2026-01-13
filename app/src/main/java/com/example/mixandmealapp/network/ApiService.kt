@@ -9,9 +9,11 @@ import com.example.mixandmealapp.models.enums.Role
 import com.example.mixandmealapp.models.requests.IngredientIDRequest
 import com.example.mixandmealapp.models.requests.Login
 import com.example.mixandmealapp.models.requests.RecipeIDRequest
+import com.example.mixandmealapp.models.requests.RecipeUploadRequest
 import com.example.mixandmealapp.models.responses.AuthResponse
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
+import com.example.mixandmealapp.models.responses.RecipeResponse
 import com.example.mixandmealapp.models.responses.RoleResponse
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -130,5 +132,16 @@ object ApiService {
             setBody(ingredientId)
         }.body()
 
+    suspend fun uploadRecipe(
+        token: String?,
+        imageUri: String?,
+        request: RecipeUploadRequest
+    ): RecipeResponse {  // Replace with your actual response type
+        return client.post("$domain/recipes") {
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }.body()!!
+    }
 }
 

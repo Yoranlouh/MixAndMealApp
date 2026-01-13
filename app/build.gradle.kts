@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+
 }
 
 android {
@@ -61,9 +62,11 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
+    implementation("com.google.dagger:hilt-android:2.56.1")
     // Coroutines for async repository calls and viewModelScope
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation(libs.ui)
+//    implementation(libs.firebase.appdistribution.gradle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,6 +75,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("androidx.datastore:datastore-preferences:1.2.0")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.56.1")
 
     // ktor connection
     implementation("io.ktor:ktor-client-core:3.3.0")
@@ -88,8 +92,8 @@ dependencies {
 
     // Koin
     // Core Koin for Android
-    implementation("io.insert-koin:koin-android:4.1.1")
-    implementation(platform("io.insert-koin:koin-bom:4.1.1"))
+//    implementation("io.insert-koin:koin-android:4.1.1")
+//    implementation(platform("io.insert-koin:koin-bom:4.1.1"))
     implementation("io.insert-koin:koin-core-coroutines:4.1.1")
     implementation("io.insert-koin:koin-androidx-compose:4.1.1")
 }
