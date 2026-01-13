@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -73,6 +74,8 @@ fun AccountScreen(
     onEditProfile: () -> Unit = {},
     onGoToSettings: () -> Unit = {},
     onGoToLogin: () -> Unit = {},
+    onNavigateToAllergens: () -> Unit = {},
+    onNavigateToDiets: () -> Unit = {},
     fridgeViewModel: FridgeViewModel? = null,
     favouritesViewModel: FavouritesViewModel = koinViewModel(),
     navController: NavHostController,
@@ -116,17 +119,13 @@ fun AccountScreen(
             if (isLoggedIn) {
                 MyAllergensSection(
                     userAllergens = accountState.userAllergens,
-                    allAllergens = accountState.allAvailableAllergens,
-                    onAddAllergen = { accountViewModel.addAllergen(it) },
-                    onRemoveAllergen = { accountViewModel.removeAllergen(it) }
+                    onEdit = onNavigateToAllergens
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
                 MyDietsSection(
                     userDiets = accountState.userDiets,
-                    allDiets = accountState.allAvailableDiets,
-                    onAddDiet = { accountViewModel.addDiet(it) },
-                    onRemoveDiet = { accountViewModel.removeDiet(it) }
+                    onEdit = onNavigateToDiets
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -207,12 +206,8 @@ private fun ProfileCard(name: String, onEditProfile: () -> Unit) {
 @Composable
 private fun MyAllergensSection(
     userAllergens: List<AllergenEntry>,
-    allAllergens: List<AllergenEntry>,
-    onAddAllergen: (AllergenEntry) -> Unit,
-    onRemoveAllergen: (AllergenEntry) -> Unit
+    onEdit: () -> Unit
 ) {
-    var showAllDialog by remember { mutableStateOf(false) }
-
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -225,83 +220,38 @@ private fun MyAllergensSection(
                 color = BrandOrange,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { showAllDialog = true }
+                modifier = Modifier.clickable { onEdit() }
             )
         }
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            userAllergens.forEach { allergen ->
-                FilterChip(
-                    selected = true,
-                    onClick = { onRemoveAllergen(allergen) },
-                    label = { Text(allergen.displayName) },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                )
+        if (userAllergens.isEmpty()) {
+            Text(
+                text = "Geen allergenen geselecteerd",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        } else {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                userAllergens.forEach { allergen ->
+                    SuggestionChip(
+                        onClick = { },
+                        label = { Text(allergen.displayName) }
+                    )
+                }
             }
         }
-    }
-
-    if (showAllDialog) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showAllDialog = false },
-            title = { Text("All Allergens") },
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    allAllergens.forEach { allergen ->
-                        val isSelected = userAllergens.any { it.id == allergen.id }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    if (isSelected) onRemoveAllergen(allergen)
-                                    else onAddAllergen(allergen)
-                                }
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            androidx.compose.material3.Checkbox(
-                                checked = isSelected,
-                                onCheckedChange = null
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(allergen.displayName)
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                androidx.compose.material3.TextButton(onClick = { showAllDialog = false }) {
-                    Text("Close")
-                }
-            }
-        )
     }
 }
 
 @Composable
 private fun MyDietsSection(
     userDiets: List<DietEntry>,
-    allDiets: List<DietEntry>,
-    onAddDiet: (DietEntry) -> Unit,
-    onRemoveDiet: (DietEntry) -> Unit
+    onEdit: () -> Unit
 ) {
-    var showAllDialog by remember { mutableStateOf(false) }
-
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -314,71 +264,30 @@ private fun MyDietsSection(
                 color = BrandOrange,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { showAllDialog = true }
+                modifier = Modifier.clickable { onEdit() }
             )
         }
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            userDiets.forEach { diet ->
-                FilterChip(
-                    selected = true,
-                    onClick = { onRemoveDiet(diet) },
-                    label = { Text(diet.displayName) },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                )
+        if (userDiets.isEmpty()) {
+            Text(
+                text = "Geen dieetvoorkeuren ingesteld",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        } else {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                userDiets.forEach { diet ->
+                    SuggestionChip(
+                        onClick = { },
+                        label = { Text(diet.displayName) }
+                    )
+                }
             }
         }
-    }
-
-    if (showAllDialog) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showAllDialog = false },
-            title = { Text("All Diets") },
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    allDiets.forEach { diet ->
-                        val isSelected = userDiets.any { it.id == diet.id }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    if (isSelected) onRemoveDiet(diet)
-                                    else onAddDiet(diet)
-                                }
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            androidx.compose.material3.Checkbox(
-                                checked = isSelected,
-                                onCheckedChange = null
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(diet.displayName)
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                androidx.compose.material3.TextButton(onClick = { showAllDialog = false }) {
-                    Text("Close")
-                }
-            }
-        )
     }
 }
 

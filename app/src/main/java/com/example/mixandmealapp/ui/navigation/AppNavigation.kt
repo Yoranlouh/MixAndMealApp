@@ -21,6 +21,8 @@ import com.example.mixandmealapp.ui.components.AdminBottomNavBar
 import com.example.mixandmealapp.ui.components.GuestBottomNavBar
 import com.example.mixandmealapp.ui.components.UserBottomNavBar
 import com.example.mixandmealapp.ui.screens.account.AccountScreen
+import com.example.mixandmealapp.ui.screens.account.MyAllergensScreen
+import com.example.mixandmealapp.ui.screens.account.MyDietsScreen
 import com.example.mixandmealapp.ui.screens.admin.AdminAnalyticsScreen
 import com.example.mixandmealapp.ui.screens.auth.LoginScreen
 import com.example.mixandmealapp.ui.screens.auth.RegisterScreen
@@ -46,7 +48,9 @@ private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
     Navigation.REGISTER,
     Navigation.SETTINGS,
-    Navigation.SPLASHHOME
+    Navigation.SPLASHHOME,
+    Navigation.MY_ALLERGENS,
+    Navigation.MY_DIETS
 )
 
 @Composable
@@ -247,9 +251,19 @@ fun AppNavigation(
                         navController.navigate(Navigation.SETTINGS) { launchSingleTop = true }
                     },
                     onEditProfile = { navController.navigate(Navigation.EDIT_PROFILE) },
+                    onNavigateToAllergens = { navController.navigate(Navigation.MY_ALLERGENS) },
+                    onNavigateToDiets = { navController.navigate(Navigation.MY_DIETS) },
                     navController = navController,
                     isLoggedIn = user.role != "Guest" // Pass isLoggedIn state
                 )
+            }
+
+            composable(Navigation.MY_ALLERGENS) {
+                MyAllergensScreen(onBack = { navController.popBackStack() })
+            }
+
+            composable(Navigation.MY_DIETS) {
+                MyDietsScreen(onBack = { navController.popBackStack() })
             }
 
             // --- ADMIN ROUTES ---

@@ -45,13 +45,17 @@ class AccountViewModel(
                 val allAllergens = userRepo.getAllAllergens()
                 val allDiets = userRepo.getAllDiets()
 
+                android.util.Log.d("AccountVM", "Loaded: userAllergens=${allergens.size}, allAvailableAllergens=${allAllergens.size}, userDiets=${diets.size}, allAvailableDiets=${allDiets.size}")
+
                 _uiState.value = _uiState.value.copy(
                     userAllergens = allergens,
                     userDiets = diets,
                     allAvailableAllergens = allAllergens,
-                    allAvailableDiets = allDiets
+                    allAvailableDiets = allDiets,
+                    error = null
                 )
             } catch (t: Throwable) {
+                android.util.Log.e("AccountVM", "Error loading data", t)
                 _uiState.value = _uiState.value.copy(error = t.message)
             }
         }
