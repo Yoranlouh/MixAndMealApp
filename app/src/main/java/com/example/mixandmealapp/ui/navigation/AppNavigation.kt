@@ -193,7 +193,9 @@ fun AppNavigation(
             composable(Navigation.FAVOURITES) {
                 FavouritesScreen(
                     navController = navController,
-                    onItemClick = { navController.navigate(Navigation.RECIPE_DETAIL) },
+                    onItemClick = { recipeId ->
+                        navController.navigate("${Navigation.RECIPE_DETAIL}/$recipeId")
+                    },
                     viewModel = favouritesViewModel
                 )
             }

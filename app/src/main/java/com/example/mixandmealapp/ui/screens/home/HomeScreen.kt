@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -60,6 +61,8 @@ import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
+import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
+import com.example.mixandmealapp.models.requests.RecipeIDRequest
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.runtime.collectAsState
@@ -70,10 +73,14 @@ fun HomeScreen(
     navController: NavController,
     showPrivacy: Boolean,
     onAcceptPrivacy: () -> Unit = {},
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    favouritesViewModel: FavouritesViewModel = koinViewModel()
 ) {
     var openDialog by rememberSaveable { mutableStateOf(showPrivacy) }
 
+    LaunchedEffect(Unit) {
+        favouritesViewModel.load()
+    }
 
     if (openDialog) {
         PrivacyDialog(
@@ -93,13 +100,25 @@ fun HomeScreen(
 
         Header(viewModel)
         Spacer(modifier = Modifier.height(24.dp))
-        FeaturedSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
+        FeaturedSection(
+            onRecipeClick = { recipeId -> navController.navigate("${Navigation.RECIPE_DETAIL}/$recipeId") },
+            favouritesViewModel = favouritesViewModel
+        )
         Spacer(modifier = Modifier.height(24.dp))
         CategorySection(navController = navController)
         Spacer(modifier = Modifier.height(24.dp))
-        PopularRecipesSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
-        QuickRecipesSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
-        EasyRecipesSection(onRecipeClick = { navController.navigate(Navigation.RECIPE_DETAIL) })
+        PopularRecipesSection(
+            onRecipeClick = { recipeId -> navController.navigate("${Navigation.RECIPE_DETAIL}/$recipeId") },
+            favouritesViewModel = favouritesViewModel
+        )
+        QuickRecipesSection(
+            onRecipeClick = { recipeId -> navController.navigate("${Navigation.RECIPE_DETAIL}/$recipeId") },
+            favouritesViewModel = favouritesViewModel
+        )
+        EasyRecipesSection(
+            onRecipeClick = { recipeId -> navController.navigate("${Navigation.RECIPE_DETAIL}/$recipeId") },
+            favouritesViewModel = favouritesViewModel
+        )
     }
 }
 
@@ -125,7 +144,10 @@ fun Header(
 }
 
 @Composable
-fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
+fun FeaturedSection(
+    onRecipeClick: (Int) -> Unit = {},
+    favouritesViewModel: FavouritesViewModel = koinViewModel()
+) {
     val recipeRepository = RecipeRepository()
     var recipeCard by remember { mutableStateOf<RecipeCardResponse?>(null) }
     LaunchedEffect(Unit) {
@@ -148,7 +170,7 @@ fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .clickable { onRecipeClick() },
+                .clickable { recipeCard?.let { onRecipeClick(it.recipeId) } },
             shape = RoundedCornerShape(24.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
@@ -164,6 +186,22 @@ fun FeaturedSection(onRecipeClick: () -> Unit = {}) {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
+
+                // Favorite icon in the top-right corner
+                recipeCard?.let { recipe ->
+                    val isFavorite = favouritesViewModel.uiState.favourites.any { it.recipeId == recipe.recipeId }
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp)
+                            .background(Color.White.copy(alpha = 0.5f), CircleShape)
+                            .padding(8.dp)
+                    ) {
+                        com.example.mixandmealapp.ui.components.FavoriteIcon(isFavorite = isFavorite) {
+                            favouritesViewModel.toggleFavourite(RecipeIDRequest(recipe.recipeId))
+                        }
+                    }
+                }
 
                 // Gradient overlay for text readability
                 Box(
@@ -271,7 +309,10 @@ fun CategorySection(navController: NavController) {
 
 
 @Composable
-fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
+fun PopularRecipesSection(
+    onRecipeClick: (Int) -> Unit = {},
+    favouritesViewModel: FavouritesViewModel = koinViewModel()
+) {
     val recipeRepository = RecipeRepository()
     var recipes by remember { mutableStateOf(listOf<RecipeCardResponse>()) }
     LaunchedEffect(Unit) {
@@ -304,14 +345,25 @@ fun PopularRecipesSection(onRecipeClick: () -> Unit = {}) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             items(recipes) { recipe ->
-                PopularRecipeCard(recipe, onClick = onRecipeClick)
+                val isFavorite = favouritesViewModel.uiState.favourites.any { it.recipeId == recipe.recipeId }
+                PopularRecipeCard(
+                    recipe = recipe,
+                    onClick = { onRecipeClick(recipe.recipeId) },
+                    isFavorite = isFavorite,
+                    onToggleFavorite = {
+                        favouritesViewModel.toggleFavourite(RecipeIDRequest(recipe.recipeId))
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
+fun QuickRecipesSection(
+    onRecipeClick: (Int) -> Unit = {},
+    favouritesViewModel: FavouritesViewModel = koinViewModel()
+) {
     val recipeRepository = RecipeRepository()
     var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
     LaunchedEffect(Unit) {
@@ -345,14 +397,25 @@ fun QuickRecipesSection(onRecipeClick: () -> Unit = {}) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             items(recipes) { recipe ->
-                PopularRecipeCard(recipe, onClick = onRecipeClick)
+                val isFavorite = favouritesViewModel.uiState.favourites.any { it.recipeId == recipe.recipeId }
+                PopularRecipeCard(
+                    recipe = recipe,
+                    onClick = { onRecipeClick(recipe.recipeId) },
+                    isFavorite = isFavorite,
+                    onToggleFavorite = {
+                        favouritesViewModel.toggleFavourite(RecipeIDRequest(recipe.recipeId))
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun EasyRecipesSection(onRecipeClick: () -> Unit = {}) {
+fun EasyRecipesSection(
+    onRecipeClick: (Int) -> Unit = {},
+    favouritesViewModel: FavouritesViewModel = koinViewModel()
+) {
     val recipeRepository = RecipeRepository()
     var recipes by remember { mutableStateOf<List<RecipeCardResponse>>(listOf<RecipeCardResponse>()) }
     LaunchedEffect(Unit) {
@@ -385,7 +448,15 @@ fun EasyRecipesSection(onRecipeClick: () -> Unit = {}) {
             modifier = Modifier.fillMaxWidth(),
         ) {
             items(recipes) { recipe ->
-                PopularRecipeCard(recipe, onClick = onRecipeClick)
+                val isFavorite = favouritesViewModel.uiState.favourites.any { it.recipeId == recipe.recipeId }
+                PopularRecipeCard(
+                    recipe = recipe,
+                    onClick = { onRecipeClick(recipe.recipeId) },
+                    isFavorite = isFavorite,
+                    onToggleFavorite = {
+                        favouritesViewModel.toggleFavourite(RecipeIDRequest(recipe.recipeId))
+                    }
+                )
             }
         }
     }

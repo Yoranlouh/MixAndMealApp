@@ -72,6 +72,9 @@ import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.LightBackground
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
+import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
+import com.example.mixandmealapp.models.requests.RecipeIDRequest
+import org.koin.compose.viewmodel.koinViewModel
 import coil.compose.AsyncImage
 import com.example.mixandmealapp.models.entries.IngredientUnitEntry
 
@@ -83,7 +86,8 @@ fun RecipeDetailScreen(
     recipeId: Int = 1,
     onBack: () -> Unit = {},
     onToggleFavorite: (Boolean) -> Unit = {},
-    onSave: () -> Unit = {}
+    onSave: () -> Unit = {},
+    favouritesViewModel: FavouritesViewModel = koinViewModel()
 ) {
     val recipeRepository = RecipeRepository()
     var recipe by remember { mutableStateOf<FullRecipeScreenResponse?>(null) }
@@ -94,13 +98,21 @@ fun RecipeDetailScreen(
             e.printStackTrace()
         }
     }
+    
+    // Load favourites to ensure isFavorite is accurate
+    LaunchedEffect(Unit) {
+        favouritesViewModel.load()
+    }
+
     var title: String = "Not found"
     var minutes = 0
     var difficulty = "Not found"
     var description = "Not found"
     var instructions = "Not found"
     var image = "https://dumpvanplaatjes.nl/mix-and-meal/default-image.jpg"
-    var isFavorite by remember { mutableStateOf(false) }
+    
+    val isFavorite = favouritesViewModel.uiState.favourites.any { it.recipeId == recipeId }
+    
     var selectedTab by remember { mutableStateOf(0) } // 0 = Ingredients, 1 = Instructions
     var descExpanded by remember { mutableStateOf(false) }
     var ingredients = listOf<IngredientUnitEntry>()
@@ -156,8 +168,8 @@ fun RecipeDetailScreen(
                     icon = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                     tint = if (isFavorite) BrandOrange else Color.White
                 ) {
-                    isFavorite = !isFavorite
-                    onToggleFavorite(isFavorite)
+                    favouritesViewModel.toggleFavourite(RecipeIDRequest(recipeId))
+                    onToggleFavorite(!isFavorite)
                 }
             }
         }
