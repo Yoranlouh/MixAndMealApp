@@ -201,8 +201,8 @@ fun AppNavigation(
             composable(Navigation.UPLOAD) {
                 UploadScreen(
                     navController = navController,
-                    onCameraClick = onCameraClick,
-                    onPhotoPick = onPhotoPick
+                    onPhotoPick = onPhotoPick,
+                    token = ""
                 )
             }
 
