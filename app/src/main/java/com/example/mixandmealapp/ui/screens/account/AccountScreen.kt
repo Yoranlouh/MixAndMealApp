@@ -31,9 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,9 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.mixandmealapp.ui.components.FavoriteIcon
-import com.example.mixandmealapp.ui.components.LabelFridge
-import com.example.mixandmealapp.ui.components.OpenFridgeButton
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
@@ -73,6 +68,8 @@ fun AccountScreen(
     onEditProfile: () -> Unit = {},
     onGoToSettings: () -> Unit = {},
     onGoToLogin: () -> Unit = {},
+    onNavigateToAllergens: () -> Unit = {},
+    onNavigateToDiets: () -> Unit = {},
     fridgeViewModel: FridgeViewModel? = null,
     favouritesViewModel: FavouritesViewModel = koinViewModel(),
     navController: NavHostController,
@@ -116,17 +113,13 @@ fun AccountScreen(
             if (isLoggedIn) {
                 MyAllergensSection(
                     userAllergens = accountState.userAllergens,
-                    allAllergens = accountState.allAvailableAllergens,
-                    onAddAllergen = { accountViewModel.addAllergen(it) },
-                    onRemoveAllergen = { accountViewModel.removeAllergen(it) }
+                    onEdit = onNavigateToAllergens
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
                 MyDietsSection(
                     userDiets = accountState.userDiets,
-                    allDiets = accountState.allAvailableDiets,
-                    onAddDiet = { accountViewModel.addDiet(it) },
-                    onRemoveDiet = { accountViewModel.removeDiet(it) }
+                    onEdit = onNavigateToDiets
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -140,13 +133,7 @@ fun AccountScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 MyFridgeSection(
-                    items = vm.uiState.items.map { it.name },
                     count = vm.uiState.items.size,
-                    onRemove = { name ->
-                        // find by name (demo). In real app use id; here we map first match
-                        val item = vm.uiState.items.firstOrNull { it.name == name }
-                        item?.let { vm.removeItem(it.id) }
-                    },
                     onNavigateToFridge = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FRIDGE) }
                 )
             } else {
@@ -207,12 +194,8 @@ private fun ProfileCard(name: String, onEditProfile: () -> Unit) {
 @Composable
 private fun MyAllergensSection(
     userAllergens: List<AllergenEntry>,
-    allAllergens: List<AllergenEntry>,
-    onAddAllergen: (AllergenEntry) -> Unit,
-    onRemoveAllergen: (AllergenEntry) -> Unit
+    onEdit: () -> Unit
 ) {
-    var showAllDialog by remember { mutableStateOf(false) }
-
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -225,83 +208,38 @@ private fun MyAllergensSection(
                 color = BrandOrange,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { showAllDialog = true }
+                modifier = Modifier.clickable { onEdit() }
             )
         }
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            userAllergens.forEach { allergen ->
-                FilterChip(
-                    selected = true,
-                    onClick = { onRemoveAllergen(allergen) },
-                    label = { Text(allergen.displayName) },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                )
+        if (userAllergens.isEmpty()) {
+            Text(
+                text = "Geen allergenen geselecteerd",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        } else {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                userAllergens.forEach { allergen ->
+                    SuggestionChip(
+                        onClick = { },
+                        label = { Text(allergen.displayName) }
+                    )
+                }
             }
         }
-    }
-
-    if (showAllDialog) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showAllDialog = false },
-            title = { Text("All Allergens") },
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    allAllergens.forEach { allergen ->
-                        val isSelected = userAllergens.any { it.id == allergen.id }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    if (isSelected) onRemoveAllergen(allergen)
-                                    else onAddAllergen(allergen)
-                                }
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            androidx.compose.material3.Checkbox(
-                                checked = isSelected,
-                                onCheckedChange = null
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(allergen.displayName)
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                androidx.compose.material3.TextButton(onClick = { showAllDialog = false }) {
-                    Text("Close")
-                }
-            }
-        )
     }
 }
 
 @Composable
 private fun MyDietsSection(
     userDiets: List<DietEntry>,
-    allDiets: List<DietEntry>,
-    onAddDiet: (DietEntry) -> Unit,
-    onRemoveDiet: (DietEntry) -> Unit
+    onEdit: () -> Unit
 ) {
-    var showAllDialog by remember { mutableStateOf(false) }
-
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -314,71 +252,30 @@ private fun MyDietsSection(
                 color = BrandOrange,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { showAllDialog = true }
+                modifier = Modifier.clickable { onEdit() }
             )
         }
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            userDiets.forEach { diet ->
-                FilterChip(
-                    selected = true,
-                    onClick = { onRemoveDiet(diet) },
-                    label = { Text(diet.displayName) },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                )
+        if (userDiets.isEmpty()) {
+            Text(
+                text = "Geen dieetvoorkeuren ingesteld",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        } else {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                userDiets.forEach { diet ->
+                    SuggestionChip(
+                        onClick = { },
+                        label = { Text(diet.displayName) }
+                    )
+                }
             }
         }
-    }
-
-    if (showAllDialog) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showAllDialog = false },
-            title = { Text("All Diets") },
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    allDiets.forEach { diet ->
-                        val isSelected = userDiets.any { it.id == diet.id }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    if (isSelected) onRemoveDiet(diet)
-                                    else onAddDiet(diet)
-                                }
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            androidx.compose.material3.Checkbox(
-                                checked = isSelected,
-                                onCheckedChange = null
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(diet.displayName)
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                androidx.compose.material3.TextButton(onClick = { showAllDialog = false }) {
-                    Text("Close")
-                }
-            }
-        )
     }
 }
 
@@ -391,7 +288,6 @@ private fun MyFavoritesSection(
 ) {
     // Observe shared favourites and only show up to 4 on Account
     val favourites = viewModel.uiState.favourites.take(4)
-    var pendingDeleteTitle by remember { mutableStateOf<Int?>(null) }
 
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
@@ -417,8 +313,8 @@ private fun MyFavoritesSection(
                     title = row[0].title,
                     modifier = Modifier.weight(1f),
                     onClick = { onRecipeClick(row[0].recipeId) },
-                    onUnfavoriteRequested = {
-                        row.getOrNull(0)?.let { pendingDeleteTitle = it.recipeId }
+                    onToggleFavorite = {
+                        viewModel.toggleFavourite(RecipeIDRequest(row[0].recipeId))
                     }
                 )
                 if (row.size > 1) {
@@ -427,45 +323,21 @@ private fun MyFavoritesSection(
                         title = row[1].title,
                         modifier = Modifier.weight(1f),
                         onClick = { onRecipeClick(row[1].recipeId) },
-                        onUnfavoriteRequested = { pendingDeleteTitle = row[1].recipeId }
+                        onToggleFavorite = {
+                            viewModel.toggleFavourite(RecipeIDRequest(row[1].recipeId))
+                        }
                     )
                 } else {
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
-
-        // Confirmation dialog for removing from favourites (same as FavouritesScreen)
-        val confirmMessage = stringResource(id = com.example.mixandmealapp.R.string.confirm_remove_favourite_message)
-        val yes = stringResource(id = com.example.mixandmealapp.R.string.yes)
-        val no = stringResource(id = com.example.mixandmealapp.R.string.no)
-        if (pendingDeleteTitle != null) {
-            androidx.compose.material3.AlertDialog(
-                onDismissRequest = { pendingDeleteTitle = null },
-                title = { Text(text = confirmMessage) },
-                confirmButton = {
-                    androidx.compose.material3.TextButton(onClick = {
-                        pendingDeleteTitle?.let { recipeId -> viewModel.remove(RecipeIDRequest(recipeId)) }
-                        pendingDeleteTitle = null
-                    }) {
-                        Text(text = yes)
-                    }
-                },
-                dismissButton = {
-                    androidx.compose.material3.TextButton(onClick = { pendingDeleteTitle = null }) {
-                        Text(text = no)
-                    }
-                }
-            )
-        }
     }
 }
 
 @Composable
 private fun MyFridgeSection(
-    items: List<String>,
     count: Int,
-    onRemove: (String) -> Unit,
     onNavigateToFridge: () -> Unit = {}
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -488,18 +360,8 @@ private fun MyFridgeSection(
             )
         }
 
-        // Show maximum 4 items as labels with only a trash icon.
-        items.take(4).forEach { name ->
-            LabelFridge(label = name, onRemove = { onRemove(name) })
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Big brand orange button
-        OpenFridgeButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onNavigateToFridge
-        )
+        // Show only the count.
+        // Individual items and the open fridge button are no longer shown here as per requirements.
     }
 }
 
@@ -571,7 +433,7 @@ private fun FavoriteRecipeCard(
     title: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    onUnfavoriteRequested: () -> Unit = {}
+    onToggleFavorite: () -> Unit = {}
 ) {
     // Delegate to the unified recipe card component
     PopularRecipeCard(
@@ -583,7 +445,7 @@ private fun FavoriteRecipeCard(
         modifier = modifier
             .height(240.dp),
         isFavorite = true,
-        onToggleFavorite = { onUnfavoriteRequested() }
+        onToggleFavorite = onToggleFavorite
     )
 }
 

@@ -36,6 +36,7 @@ class AccountViewModel(
     val uiState = _uiState.asStateFlow()
 
     fun load() {
+        _uiState.value = _uiState.value.copy(error = null)
         viewModelScope.launch {
             try {
                 val token = tokenRepo.getTokenOrDefault()
@@ -45,62 +46,70 @@ class AccountViewModel(
                 val allAllergens = userRepo.getAllAllergens()
                 val allDiets = userRepo.getAllDiets()
 
+                android.util.Log.d("AccountVM", "Loaded: userAllergens=${allergens.size}, allAvailableAllergens=${allAllergens.size}, userDiets=${diets.size}, allAvailableDiets=${allDiets.size}")
+
                 _uiState.value = _uiState.value.copy(
                     userAllergens = allergens,
                     userDiets = diets,
                     allAvailableAllergens = allAllergens,
-                    allAvailableDiets = allDiets
+                    allAvailableDiets = allDiets,
+                    error = null
                 )
             } catch (t: Throwable) {
+                android.util.Log.e("AccountVM", "Error loading data", t)
                 _uiState.value = _uiState.value.copy(error = t.message)
             }
         }
     }
 
     fun addAllergen(allergen: AllergenEntry) {
+        _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
             try {
-                val token = tokenRepo.getTokenOrDefault() ?: return@launch
+                val token = tokenRepo.getTokenOrDefault()
                 val updated = userRepo.addAllergen(token, allergen)
-                _uiState.value = _uiState.value.copy(userAllergens = updated)
+                _uiState.value = _uiState.value.copy(userAllergens = updated, isSaving = false, error = null)
             } catch (t: Throwable) {
-                _uiState.value = _uiState.value.copy(error = t.message)
+                _uiState.value = _uiState.value.copy(error = t.message, isSaving = false)
             }
         }
     }
 
     fun removeAllergen(allergen: AllergenEntry) {
+        _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
             try {
-                val token = tokenRepo.getTokenOrDefault() ?: return@launch
+                val token = tokenRepo.getTokenOrDefault()
                 val updated = userRepo.removeAllergen(token, allergen)
-                _uiState.value = _uiState.value.copy(userAllergens = updated)
+                _uiState.value = _uiState.value.copy(userAllergens = updated, isSaving = false, error = null)
             } catch (t: Throwable) {
-                _uiState.value = _uiState.value.copy(error = t.message)
+                _uiState.value = _uiState.value.copy(error = t.message, isSaving = false)
             }
         }
     }
 
     fun addDiet(diet: DietEntry) {
+        _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
             try {
-                val token = tokenRepo.getTokenOrDefault() ?: return@launch
+                val token = tokenRepo.getTokenOrDefault()
                 val updated = userRepo.addDiet(token, diet)
-                _uiState.value = _uiState.value.copy(userDiets = updated)
+                _uiState.value = _uiState.value.copy(userDiets = updated, isSaving = false, error = null)
             } catch (t: Throwable) {
-                _uiState.value = _uiState.value.copy(error = t.message)
+                _uiState.value = _uiState.value.copy(error = t.message, isSaving = false)
             }
         }
     }
 
     fun removeDiet(diet: DietEntry) {
+        _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
             try {
-                val token = tokenRepo.getTokenOrDefault() ?: return@launch
+                val token = tokenRepo.getTokenOrDefault()
                 val updated = userRepo.removeDiet(token, diet)
-                _uiState.value = _uiState.value.copy(userDiets = updated)
+                _uiState.value = _uiState.value.copy(userDiets = updated, isSaving = false, error = null)
             } catch (t: Throwable) {
-                _uiState.value = _uiState.value.copy(error = t.message)
+                _uiState.value = _uiState.value.copy(error = t.message, isSaving = false)
             }
         }
     }

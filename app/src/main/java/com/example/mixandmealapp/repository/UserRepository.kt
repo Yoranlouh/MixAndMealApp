@@ -34,9 +34,8 @@ class UserRepository() {
     }
 
     suspend fun register(username: String, email: String, password: String): AuthResponse {
-        val url = "http://10.0.2.2:8080/signup"
         return try {
-            val response: AuthResponse = ApiClient.client.post(url) {
+            val response: AuthResponse = ApiClient.client.post("http://10.0.2.2:8080/signup") {
                 contentType(ContentType.Application.Json)
                 setBody(RegisterRequest(username, email, password))
             }.body()

@@ -58,41 +58,41 @@ object ApiService {
         }.body()
 
     suspend fun getDietsForUser(token: String?): List<DietEntry> =
-        client.get("$domain/user-diets") {
+        client.get("$domain/user/diets") {
             header("Authorization", "Bearer $token")
         }.body()
 
     suspend fun addDietForUser(token: String?, diet: DietEntry): List<DietEntry> =
-        client.post("$domain/user-diets/add-diet"){
+        client.post("$domain/user/diets"){
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
-            setBody(diet)
+            setBody(diet.id)
         }.body()
 
     suspend fun removeDietForUser(token: String?, diet: DietEntry) : List<DietEntry> =
-        client.delete("$domain/user-diets/remove-diet"){
+        client.delete("$domain/user/diets"){
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
-            setBody(diet)
+            setBody(diet.id)
         }.body()
 
     suspend fun getAllergensForUser(token: String?): List<AllergenEntry> =
-        client.get("$domain/user-allergens") {
+        client.get("$domain/user/allergens") {
             header("Authorization", "Bearer $token")
         }.body()
 
     suspend fun addAllergenForUser(token: String?, allergen: AllergenEntry): List<AllergenEntry> =
-        client.post("$domain/user-allergens/add-allergen"){
+        client.post("$domain/user/allergens"){
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
-            setBody(allergen)
+            setBody(allergen.id)
         }.body()
 
     suspend fun removeAllergenForUser(token: String?, allergen: AllergenEntry) : List<AllergenEntry> =
-        client.delete("$domain/user-allergens/remove-allergen"){
+        client.delete("$domain/user/allergens"){
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
-            setBody(allergen)
+            setBody(allergen.id)
         }.body()
 
     suspend fun getAllAllergens(): List<AllergenEntry> =
@@ -119,14 +119,14 @@ object ApiService {
         }.body()
 
     suspend fun addIngredientToFridge(token: String?, ingredientId: IngredientIDRequest): List<RecipeCardResponse> =
-        client.post("$domain/user-diets/add-diet"){
+        client.post("$domain/fridge/add-ingredient"){
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(ingredientId)
         }.body()
 
     suspend fun removeIngredientFromFridge(token: String?, ingredientId: IngredientIDRequest): List<RecipeCardResponse> =
-        client.delete("$domain/user-diets/remove-diet"){
+        client.delete("$domain/fridge/remove-ingredient"){
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(ingredientId)

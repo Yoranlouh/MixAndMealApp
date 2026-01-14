@@ -117,10 +117,17 @@ fun TextOnlyButton(
 @Composable
 fun BackButton(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     IconButton(
-        onClick = { navController.popBackStack() },
+        onClick = { 
+            if (onClick != null) {
+                onClick()
+            } else {
+                navController.popBackStack()
+            }
+        },
         modifier = modifier
     ) {
         Icon(

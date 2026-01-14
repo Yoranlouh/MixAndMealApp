@@ -72,7 +72,14 @@ fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? =
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         BackButton(
                             navController = navController,
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
+                            onClick = {
+                                navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.HOME) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
                         )
                         Text(
                             text = stringResource(id = com.example.mixandmealapp.R.string.fridge_title),

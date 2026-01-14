@@ -5,8 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mixandmealapp.data.FavouritesRepository
-import com.example.mixandmealapp.data.ServiceLocator
 import com.example.mixandmealapp.data.TokenRepository
 import com.example.mixandmealapp.models.requests.RecipeIDRequest
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
@@ -39,7 +37,7 @@ class FavouritesViewModel(
         }
     }
 
-    fun remove(id: RecipeIDRequest) {
+    fun toggleFavourite(id: RecipeIDRequest) {
         viewModelScope.launch {
             try {
                 val tokenToUse = repo.getTokenOrDefault()
