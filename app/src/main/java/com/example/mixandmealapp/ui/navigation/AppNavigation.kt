@@ -202,7 +202,8 @@ fun AppNavigation(
                 UploadScreen(
                     navController = navController,
                     onPhotoPick = onPhotoPick,
-                    token = ""
+                    token = "",
+                    repo = koinInject()
                 )
             }
 

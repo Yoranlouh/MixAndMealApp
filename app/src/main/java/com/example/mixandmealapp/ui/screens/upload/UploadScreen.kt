@@ -1,6 +1,7 @@
 package com.example.mixandmealapp.ui.screens.upload
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,7 +41,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.coroutineScope
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -48,6 +48,7 @@ import androidx.navigation.NavHostController
 import com.example.mixandmealapp.network.ApiService
 import coil.compose.AsyncImage
 import com.example.mixandmealapp.R
+import com.example.mixandmealapp.data.TokenRepository
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.IngredientUnitEntry
@@ -68,6 +69,9 @@ import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
+import kotlinx.coroutines.async
+import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
+import org.koin.androidx.compose.koinViewModel
 
 data class Ingredient(
     val name: String,
@@ -80,11 +84,17 @@ data class Ingredient(
 fun UploadScreen(
     navController: NavHostController,
     token: String?,
-    onPhotoPick: (callback: (Uri?) -> Unit) -> Unit) {
+    repo: TokenRepository,
+    onPhotoPick: (callback: (Uri?) -> Unit) -> Unit,
+    viewModel: AuthViewModel = koinViewModel<AuthViewModel>()
+) {
+
+
     // Camera variables
     var coverPhotoUri by remember { mutableStateOf<Uri?>(null) }
 
-    val coroutineScope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
+
     var recipeName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedDifficulty by remember { mutableStateOf("") }
@@ -409,16 +419,17 @@ fun UploadScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Upload Button (uses app-wide PrimaryButton style)
+        // Upload Button
         PrimaryButton(
             text = stringResource(R.string.upload_button),
             onClick = {
-                // ✅ Launch coroutine for API call
-                coroutineScope.launch {
-                    if (token.isNullOrBlank()) {
-                        println("No token available - user not logged in")
-                        return@launch  // Exit early if no token
-                    }
+                // Launch coroutine for API call
+                scope.launch {
+
+                    val tokenToUse = async {token ?: repo.getTokenOrDefault() }
+                    tokenToUse.await()
+                    Log.d("Token", tokenToUse.toString())
+
                     try {
                         val request = RecipeUploadRequest(
                             title = recipeName,
@@ -434,8 +445,8 @@ fun UploadScreen(
                                     imageUrl = coverPhotoUri.toString()
                                 ))
                             } else emptyList(),
-                            mealType = MealType.valueOf((selectedMealTypes.firstOrNull() ?: "BREAKFAST").uppercase()),
-                            kitchenStyle = KitchenStyle.valueOf((selectedKitchenStyles.firstOrNull() ?: "ITALIAN").uppercase()),
+                            mealType = MealType.valueOf((selectedMealTypes.firstOrNull() ?: "").uppercase()),
+                            kitchenStyle = KitchenStyle.valueOf((selectedKitchenStyles.firstOrNull() ?: "").uppercase()),
                             diets = selectedDiets.map {
                                 DietEntry(id = 0, displayName = it, description = "")
                             },
@@ -454,12 +465,11 @@ fun UploadScreen(
                             }
                         )
 
-                        ApiService.uploadRecipe(token, coverPhotoUri?.toString(), request)
+                        ApiService.uploadRecipe(tokenToUse.toString(), coverPhotoUri?.toString(), request)
                         showSuccessDialog = true
 
                     } catch (e: Exception) {
                         println("Upload failed: ${e.message}")
-                        // TODO: Show error dialog/snackbar
                     }
                 }
             }
