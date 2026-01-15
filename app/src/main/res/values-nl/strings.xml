@@ -65,6 +65,7 @@
 
     <!-- Upload -->
     <string name="search_filter_dessert">Dessert</string>
+    <string name="upload_take_photo">Maak een foto!</string>
     <string name="upload_enter_recipe_name_title">Recept naam</string>
     <string name="upload_enter_recipe_name">Voer receptnaam in</string>
     <string name="upload_tell_about_recipe_title">Beschrijving</string>

@@ -56,8 +56,8 @@ private val noBottomBarRoutes = listOf(
 @Composable
 fun AppNavigation(
     localeViewModel: LocaleViewModel,
-    onCameraClick: () -> Unit,
-    onPhotoPick: (callback: (Uri?) -> Unit) -> Unit
+    onPhotoPick: (callback: (Uri?) -> Unit) -> Unit,
+    onCameraClick: (callback: (Uri?) -> Unit) -> Unit // <<< 1. ADD THIS PARAMETER
 ) {
     val navController = rememberNavController()
     
@@ -208,6 +208,7 @@ fun AppNavigation(
                 UploadScreen(
                     navController = navController,
                     onPhotoPick = onPhotoPick,
+                    onCameraClick = onCameraClick, // <<< 2. PASS IT TO THE SCREEN
                     token = "",
                     repo = koinInject()
                 )

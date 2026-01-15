@@ -86,6 +86,7 @@ fun UploadScreen(
     token: String?,
     repo: TokenRepository,
     onPhotoPick: (callback: (Uri?) -> Unit) -> Unit,
+    onCameraClick: (callback: (Uri?) -> Unit) -> Unit, // <<< 1. ADD THIS PARAMETER
     viewModel: AuthViewModel = koinViewModel<AuthViewModel>()
 ) {
 
@@ -175,6 +176,18 @@ fun UploadScreen(
             coverPhotoUri = coverPhotoUri,
             onPhotoClick = { onPhotoPick { uri -> coverPhotoUri = uri } },
             onPhotoRemove = { coverPhotoUri = null }
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        PrimaryButton(
+            text = stringResource(R.string.upload_take_photo), // Add this string to your strings.xml
+            onClick = {
+                // This now calls the logic in MainActivity
+                onCameraClick { uri ->
+                    coverPhotoUri = uri
+                }
+            }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
