@@ -280,27 +280,4 @@ fun OpenFridgeButton(
 }
 
 
-@Composable
-fun cameraButton(onClick: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(Color(0xFF6B7C8E))
-                .clickable { onClick() },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.CameraAlt,
-                contentDescription = "Camera",
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-    }
-}
 

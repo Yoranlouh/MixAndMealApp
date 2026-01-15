@@ -69,6 +69,7 @@
     <!-- Upload -->
     <string name="upload_cover_photo">Add Cover Photo</string>
     <string name="upload_cover_photo_text">(Up to 12 Mb)</string>
+    <string name="upload_take_photo">Take a photo!</string>
     <string name="upload_enter_recipe_name_title">Recipe Name</string>
     <string name="upload_enter_recipe_name">Enter recipe name</string>
     <string name="upload_tell_about_recipe_title">Description</string>
