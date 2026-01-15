@@ -44,10 +44,14 @@ import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.screens.search.CompactFilterSummary
 
 @Composable
-fun SearchScreen(navController: NavHostController) {
+fun SearchScreen(
+    navController: NavHostController,
+    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
+) {
     Scaffold { paddingValues ->
         MinimalSearchContent(
             modifier = Modifier.padding(paddingValues),
+            onSpeechRecognize = onSpeechRecognize,
             onSearch = { query, kitchens, meals, allergens, diets ->
                 navController.currentBackStackEntry?.savedStateHandle?.apply {
                     set("query", query)
@@ -71,7 +75,8 @@ fun MinimalSearchContent(
         mealTypes: Set<String>,
         allergens: Set<String>,
         diets: Set<String>
-    ) -> Unit
+    ) -> Unit,
+    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var showFilters by remember { mutableStateOf(false) }
@@ -81,28 +86,27 @@ fun MinimalSearchContent(
     var selDiets by remember { mutableStateOf(setOf<String>()) }
     val context = LocalContext.current
 
-    val speechLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data = result.data
-                val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                if (!results.isNullOrEmpty()) {
-                    searchQuery = results[0]
-                }
-            }
-        }
-    )
+//    val speechLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.StartActivityForResult(),
+//        onResult = { result ->
+//            if (result.resultCode == Activity.RESULT_OK) {
+//                val data = result.data
+//                val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+//                if (!results.isNullOrEmpty()) {
+//                    searchQuery = results[0]
+//                }
+//            }
+//        }
+//    )
 
     val voicePrompt = stringResource(id = com.example.mixandmealapp.R.string.voice_search_content_description)
 
     fun startVoiceRecognition() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "nl-NL") // Je kunt dit ook dynamisch maken op basis van locale
-            putExtra(RecognizerIntent.EXTRA_PROMPT, voicePrompt)
+        onSpeechRecognize { resultText ->
+            if (resultText != null) {
+                searchQuery = resultText
+            }
         }
-        speechLauncher.launch(intent)
     }
 
     Column(
@@ -483,12 +487,12 @@ fun PopularRecipeCard(recipeName: String, onClick: () -> Unit = {}) {
 //    }
 //}
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
-@Composable
-fun SearchScreenPreview() {
-    MixAndMealAppTheme {
-        androidx.navigation.compose.rememberNavController().let { navController ->
-            SearchScreen(navController)
-        }
-    }
-}
+//@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+//@Composable
+//fun SearchScreenPreview() {
+//    MixAndMealAppTheme {
+//        androidx.navigation.compose.rememberNavController().let { navController ->
+//            SearchScreen(navController)
+//        }
+//    }
+//}

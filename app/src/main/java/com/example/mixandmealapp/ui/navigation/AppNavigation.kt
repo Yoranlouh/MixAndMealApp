@@ -58,7 +58,8 @@ private val noBottomBarRoutes = listOf(
 fun AppNavigation(
     localeViewModel: LocaleViewModel,
     onPhotoPick: (callback: (Uri?) -> Unit) -> Unit,
-    onCameraClick: (callback: (Uri?) -> Unit) -> Unit // <<< 1. ADD THIS PARAMETER
+    onCameraClick: (callback: (Uri?) -> Unit) -> Unit,
+    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
 ) {
     val navController = rememberNavController()
     
@@ -202,7 +203,12 @@ fun AppNavigation(
                 )
             }
 
-            composable(Navigation.SEARCH) { SearchScreen(navController = navController) }
+            composable(Navigation.SEARCH) {
+                SearchScreen(
+                    navController = navController,
+                    onSpeechRecognize = onSpeechRecognize
+                )
+            }
             composable(Navigation.SEARCH_RESULTS) { SearchResultScreen(navController = navController) }
 
 

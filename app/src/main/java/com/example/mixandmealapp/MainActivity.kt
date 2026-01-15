@@ -17,7 +17,9 @@ import com.example.mixandmealapp.ui.viewmodel.ProvideLocalizedResources
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.speech.RecognizerIntent
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.ContextCompat
@@ -36,19 +38,21 @@ class App : Application() {
 }
 
 
-// ... (Your Application class remains the same)
 class MainActivity : ComponentActivity() {
     // --- LAUNCHERS ---
     private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var photoPickerLauncher: ActivityResultLauncher<String>
-    // --- STATE & CALLBACKS ---
+    private lateinit var speechLauncher: ActivityResultLauncher<Intent>
+
+
     private var tempImageUri: Uri? = null
     private var onImagePicked: ((Uri?) -> Unit)? = null
+    private var onSpeechResult: ((String?) -> Unit)? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Initialize all launchers
         setupLaunchers()
         setContent {
             val localeViewModel: LocaleViewModel = viewModel()
@@ -56,15 +60,26 @@ class MainActivity : ComponentActivity() {
                 MixAndMealAppTheme {
                     AppNavigation(
                         localeViewModel = localeViewModel,
-                        // Pass the functions to the navigation graph
                         onPhotoPick = { callback -> openPhotoPicker(callback) },
-                        onCameraClick = { callback -> launchCameraWithPermissionCheck(callback) } // <<< FIX THIS LINE
+                        onCameraClick = { callback -> launchCameraWithPermissionCheck(callback) },
+                        onSpeechRecognize = { callback -> launchSpeechRecognizer(callback) }
                     )
                 }
             }
         }
     }
+
     private fun setupLaunchers() {
+        // Speech launcher
+        speechLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val results = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                onSpeechResult?.invoke(results?.get(0))
+            } else {
+                onSpeechResult?.invoke(null) // Handle cancellation or error
+            }
+        }
+
         // Photo Picker launcher
         photoPickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             onImagePicked?.invoke(uri)
@@ -78,14 +93,24 @@ class MainActivity : ComponentActivity() {
         // Permission launcher
         permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                // Permission granted, now launch the camera
                 launchCamera()
             } else {
-                // Handle permission denial
                 Toast.makeText(this, "Camera permission is required.", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+    // <-- FIX: Moved launchSpeechRecognizer outside of setupLaunchers
+    private fun launchSpeechRecognizer(callback: (String?) -> Unit) {
+        onSpeechResult = callback
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "nl-NL") // Consider making this dynamic
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Say something...") // Generic prompt
+        }
+        speechLauncher.launch(intent)
+    }
+
     private fun openPhotoPicker(callback: (Uri?) -> Unit) {
         onImagePicked = callback
         photoPickerLauncher.launch("image/*")
@@ -94,17 +119,14 @@ class MainActivity : ComponentActivity() {
         onImagePicked = callback
         when (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)) {
             PackageManager.PERMISSION_GRANTED -> {
-                // Permission is already granted
                 launchCamera()
             }
             else -> {
-                // Request permission
                 permissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
     }
     private fun launchCamera() {
-        // Create a temporary file and get its URI
         createImageFileUri().let { uri ->
             tempImageUri = uri
             cameraLauncher.launch(uri)
@@ -114,11 +136,11 @@ class MainActivity : ComponentActivity() {
         val imageFile = File.createTempFile(
             "JPEG_${System.currentTimeMillis()}_",
             ".jpg",
-            externalCacheDir // App's private external cache dir
+            externalCacheDir
         )
         return FileProvider.getUriForFile(
             this,
-            "${packageName}.provider", // Your application's authority
+            "${packageName}.provider",
             imageFile
         )
     }
