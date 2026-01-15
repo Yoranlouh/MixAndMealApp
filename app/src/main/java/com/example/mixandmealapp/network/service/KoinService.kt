@@ -26,5 +26,5 @@ val appModule = module {
     viewModel{ AuthViewModel(get(), get(), get()) }
     viewModel { FavouritesViewModel(get(),get()) }
     viewModel { RecipeDetailViewModel(get(), get()) }
-    viewModel{ AccountViewModel(get(), get()) }
+    single { AccountViewModel(get(), get()) }
 }

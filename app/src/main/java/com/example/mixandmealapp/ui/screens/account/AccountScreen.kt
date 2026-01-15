@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.FlowRow
+import com.example.mixandmealapp.ui.components.LabelFridge
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
@@ -113,13 +114,15 @@ fun AccountScreen(
             if (isLoggedIn) {
                 MyAllergensSection(
                     userAllergens = accountState.userAllergens,
-                    onEdit = onNavigateToAllergens
+                    onEdit = onNavigateToAllergens,
+                    onRemove = { accountViewModel.removeAllergen(it) }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
                 MyDietsSection(
                     userDiets = accountState.userDiets,
-                    onEdit = onNavigateToDiets
+                    onEdit = onNavigateToDiets,
+                    onRemove = { accountViewModel.removeDiet(it) }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -192,9 +195,10 @@ private fun ProfileCard(name: String, onEditProfile: () -> Unit) {
 }
 
 @Composable
-private fun MyAllergensSection(
+fun MyAllergensSection(
     userAllergens: List<AllergenEntry>,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    onRemove: (AllergenEntry) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
@@ -219,15 +223,11 @@ private fun MyAllergensSection(
                 color = Color.Gray
             )
         } else {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 userAllergens.forEach { allergen ->
-                    SuggestionChip(
-                        onClick = { },
-                        label = { Text(allergen.displayName) }
+                    LabelFridge(
+                        label = allergen.displayName,
+                        onRemove = { onRemove(allergen) }
                     )
                 }
             }
@@ -236,9 +236,10 @@ private fun MyAllergensSection(
 }
 
 @Composable
-private fun MyDietsSection(
+fun MyDietsSection(
     userDiets: List<DietEntry>,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    onRemove: (DietEntry) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
@@ -263,15 +264,11 @@ private fun MyDietsSection(
                 color = Color.Gray
             )
         } else {
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 userDiets.forEach { diet ->
-                    SuggestionChip(
-                        onClick = { },
-                        label = { Text(diet.displayName) }
+                    LabelFridge(
+                        label = diet.displayName,
+                        onRemove = { onRemove(diet) }
                     )
                 }
             }

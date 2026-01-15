@@ -36,6 +36,7 @@ import com.example.mixandmealapp.ui.screens.settings.SettingsScreen
 import com.example.mixandmealapp.ui.screens.settings.options.LanguageChoiceScreen
 import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
 import com.example.mixandmealapp.ui.screens.upload.UploadScreen
+import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
@@ -65,6 +66,7 @@ fun AppNavigation(
     val fridgeViewModel = remember { FridgeViewModel() }
     val favouritesViewModel : FavouritesViewModel = koinViewModel()
     val homeViewModel: HomeViewModel = koinInject()
+    val accountViewModel: AccountViewModel = koinInject()
 
     // Check role on app start
     LaunchedEffect(Unit) {
@@ -238,6 +240,7 @@ fun AppNavigation(
                 AccountScreen(
                     fridgeViewModel = fridgeViewModel,
                     favouritesViewModel = favouritesViewModel,
+                    accountViewModel = accountViewModel,
                     onGoToLogin = {
                         navController.navigate(Navigation.LOGIN) { launchSingleTop = true }
                     },
@@ -261,11 +264,17 @@ fun AppNavigation(
             }
 
             composable(Navigation.MY_ALLERGENS) {
-                MyAllergensScreen(onBack = { navController.popBackStack() })
+                MyAllergensScreen(
+                    onBack = { navController.popBackStack() },
+                    accountViewModel = accountViewModel
+                )
             }
 
             composable(Navigation.MY_DIETS) {
-                MyDietsScreen(onBack = { navController.popBackStack() })
+                MyDietsScreen(
+                    onBack = { navController.popBackStack() },
+                    accountViewModel = accountViewModel
+                )
             }
 
             // --- ADMIN ROUTES ---

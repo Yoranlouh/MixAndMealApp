@@ -20,6 +20,13 @@ import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
 import org.koin.androidx.compose.koinViewModel
 
+import androidx.compose.material.icons.filled.Add
+import com.example.mixandmealapp.ui.components.LabelFridge
+import com.example.mixandmealapp.ui.theme.DarkText
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyDietsScreen(
@@ -27,6 +34,8 @@ fun MyDietsScreen(
     accountViewModel: AccountViewModel = koinViewModel()
 ) {
     val state by accountViewModel.uiState.collectAsState()
+    var query by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         accountViewModel.load()
@@ -61,42 +70,100 @@ fun MyDietsScreen(
                         onRetry = { accountViewModel.load() }
                     )
                 }
-                state.allAvailableDiets.isEmpty() && !state.isSaving -> {
-                    DietLoadingState()
-                }
                 else -> {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 16.dp)
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "Selecteer je dieetvoorkeuren. We zullen recepten tonen die passen bij jouw keuzes.",
+                            text = "Beheer je dieetvoorkeuren. We zullen recepten tonen die passen bij jouw keuzes.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(vertical = 16.dp)
+                            modifier = Modifier.padding(bottom = 4.dp)
                         )
 
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            contentPadding = PaddingValues(bottom = 24.dp),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            val sortedDiets = state.allAvailableDiets.sortedBy { it.displayName }
-                            items(
-                                items = sortedDiets,
-                                key = { it.id }
-                            ) { diet ->
-                                val isSelected = state.userDiets.any { it.id == diet.id }
-                                DietPreferenceItem(
-                                    title = diet.displayName,
-                                    isSelected = isSelected,
-                                    onClick = {
-                                        if (isSelected) accountViewModel.removeDiet(diet)
-                                        else accountViewModel.addDiet(diet)
+                        // Actieve diëten lijst
+                        state.userDiets.sortedBy { it.displayName }.forEach { diet ->
+                            LabelFridge(
+                                label = diet.displayName,
+                                onRemove = { accountViewModel.removeDiet(diet) }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Autocomplete veld voor nieuwe diëten
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            OutlinedTextField(
+                                value = query,
+                                onValueChange = { 
+                                    query = it
+                                    expanded = it.isNotBlank()
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = { Text("Voeg een dieet toe...", color = Color.Gray) },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = Color.LightGray,
+                                    focusedBorderColor = BrandOrange,
+                                    unfocusedContainerColor = Color.White,
+                                    focusedContainerColor = Color.White
+                                ),
+                                shape = RoundedCornerShape(24.dp),
+                                singleLine = true
+                            )
+
+                            if (expanded) {
+                                val suggestions = state.allAvailableDiets
+                                    .filter { it.displayName.contains(query, ignoreCase = true) }
+                                    .filter { diet -> state.userDiets.none { it.id == diet.id } }
+                                    .sortedBy { it.displayName }
+
+                                if (suggestions.isNotEmpty()) {
+                                    Surface(
+                                        tonalElevation = 2.dp,
+                                        shadowElevation = 4.dp,
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 56.dp)
+                                    ) {
+                                        Column(modifier = Modifier.background(Color.White)) {
+                                            suggestions.forEach { suggestion ->
+                                                Text(
+                                                    text = suggestion.displayName,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .clickable {
+                                                            accountViewModel.addDiet(suggestion)
+                                                            query = ""
+                                                            expanded = false
+                                                        }
+                                                        .padding(12.dp)
+                                                )
+                                            }
+                                        }
                                     }
-                                )
+                                }
                             }
+                        }
+
+                        if (query.isNotBlank() && expanded) {
+                             val suggestions = state.allAvailableDiets
+                                .filter { it.displayName.contains(query, ignoreCase = true) }
+                                .filter { diet -> state.userDiets.none { it.id == diet.id } }
+                             
+                             if (suggestions.isEmpty()) {
+                                 Text(
+                                     text = "Geen beschikbare diëten gevonden voor \"$query\"",
+                                     style = MaterialTheme.typography.bodySmall,
+                                     color = Color.Gray,
+                                     modifier = Modifier.padding(horizontal = 12.dp)
+                                 )
+                             }
                         }
                     }
                 }

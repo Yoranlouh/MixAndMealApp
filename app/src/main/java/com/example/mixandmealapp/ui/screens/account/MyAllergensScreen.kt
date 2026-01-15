@@ -20,6 +20,13 @@ import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
 import org.koin.androidx.compose.koinViewModel
 
+import androidx.compose.material.icons.filled.Add
+import com.example.mixandmealapp.ui.components.LabelFridge
+import com.example.mixandmealapp.ui.theme.DarkText
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyAllergensScreen(
@@ -27,6 +34,8 @@ fun MyAllergensScreen(
     accountViewModel: AccountViewModel = koinViewModel()
 ) {
     val state by accountViewModel.uiState.collectAsState()
+    var query by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         accountViewModel.load()
@@ -61,42 +70,101 @@ fun MyAllergensScreen(
                         onRetry = { accountViewModel.load() }
                     )
                 }
-                state.allAvailableAllergens.isEmpty() && !state.isSaving -> {
-                    AllergenLoadingState()
-                }
                 else -> {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 16.dp)
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "Selecteer de allergenen die je wilt vermijden. We zullen recepten filteren die deze bevatten.",
+                            text = "Beheer je allergenen. We zullen recepten filteren die deze bevatten.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(vertical = 16.dp)
+                            modifier = Modifier.padding(bottom = 4.dp)
                         )
 
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            contentPadding = PaddingValues(bottom = 24.dp),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            val sortedAllergens = state.allAvailableAllergens.sortedBy { it.displayName }
-                            items(
-                                items = sortedAllergens,
-                                key = { it.id }
-                            ) { allergen ->
-                                val isSelected = state.userAllergens.any { it.id == allergen.id }
-                                AllergenPreferenceItem(
-                                    title = allergen.displayName,
-                                    isSelected = isSelected,
-                                    onClick = {
-                                        if (isSelected) accountViewModel.removeAllergen(allergen)
-                                        else accountViewModel.addAllergen(allergen)
+                        // Actieve allergenen lijst
+                        state.userAllergens.sortedBy { it.displayName }.forEach { allergen ->
+                            LabelFridge(
+                                label = allergen.displayName,
+                                onRemove = { accountViewModel.removeAllergen(allergen) }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Autocomplete veld voor nieuwe allergenen
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            OutlinedTextField(
+                                value = query,
+                                onValueChange = { 
+                                    query = it
+                                    expanded = it.isNotBlank()
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = { Text("Voeg een allergeen toe...", color = Color.Gray) },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = Color.LightGray,
+                                    focusedBorderColor = BrandOrange,
+                                    unfocusedContainerColor = Color.White,
+                                    focusedContainerColor = Color.White
+                                ),
+                                shape = RoundedCornerShape(24.dp),
+                                singleLine = true
+                            )
+
+                            if (expanded) {
+                                val suggestions = state.allAvailableAllergens
+                                    .filter { it.displayName.contains(query, ignoreCase = true) }
+                                    .filter { allergen -> state.userAllergens.none { it.id == allergen.id } }
+                                    .sortedBy { it.displayName }
+
+                                if (suggestions.isNotEmpty()) {
+                                    Surface(
+                                        tonalElevation = 2.dp,
+                                        shadowElevation = 4.dp,
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 56.dp)
+                                    ) {
+                                        Column(modifier = Modifier.background(Color.White)) {
+                                            suggestions.forEach { suggestion ->
+                                                Text(
+                                                    text = suggestion.displayName,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .clickable {
+                                                            accountViewModel.addAllergen(suggestion)
+                                                            query = ""
+                                                            expanded = false
+                                                        }
+                                                        .padding(12.dp)
+                                                )
+                                            }
+                                        }
                                     }
-                                )
+                                }
                             }
+                        }
+
+                        if (query.isNotBlank() && expanded) {
+                             // Optioneel: toon melding als er geen suggesties zijn
+                             val suggestions = state.allAvailableAllergens
+                                .filter { it.displayName.contains(query, ignoreCase = true) }
+                                .filter { allergen -> state.userAllergens.none { it.id == allergen.id } }
+                             
+                             if (suggestions.isEmpty()) {
+                                 Text(
+                                     text = "Geen beschikbare allergenen gevonden voor \"$query\"",
+                                     style = MaterialTheme.typography.bodySmall,
+                                     color = Color.Gray,
+                                     modifier = Modifier.padding(horizontal = 12.dp)
+                                 )
+                             }
                         }
                     }
                 }
