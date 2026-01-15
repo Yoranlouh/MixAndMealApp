@@ -920,29 +920,3 @@ fun FilterSection(
         }
     }
 }
-
-//@Preview(
-//    name = "Upload – Full Screen Scroll Preview",
-//    showBackground = true,
-//    device = Devices.PIXEL_5,
-//    showSystemUi = false,
-//    widthDp = 411,   // Pixel 5 width in dp
-//    heightDp = 2000  // Large height so the Preview panel becomes scrollable
-//)
-//@Composable
-//fun UploadScreenPreview() {
-//    MixAndMealAppTheme {
-//        UploadScreen(
-//            navController = rememberNavController(),
-//            onCameraClick = {},
-//            onPhotoPick = TODO()
-//        )
-//    }
-//}
-//@Preview(name = "Upload Success Dialog", showBackground = true)
-//@Composable
-//fun UploadSuccessDialogPreview() {
-//    MixAndMealAppTheme {
-//        UploadSuccessDialog(onDismiss = {}, onBackToHome = {})
-//    }
-//}
