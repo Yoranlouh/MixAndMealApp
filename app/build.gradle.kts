@@ -66,6 +66,7 @@ dependencies {
     // Coroutines for async repository calls and viewModelScope
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation(libs.ui)
+    implementation(libs.androidx.datastore.preferences.core)
 //    implementation(libs.firebase.appdistribution.gradle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -96,4 +97,7 @@ dependencies {
 //    implementation(platform("io.insert-koin:koin-bom:4.1.1"))
     implementation("io.insert-koin:koin-core-coroutines:4.1.1")
     implementation("io.insert-koin:koin-androidx-compose:4.1.1")
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.10.1")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.10.1")
 }
