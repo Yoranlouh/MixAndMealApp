@@ -70,6 +70,7 @@
     <string name="upload_enter_recipe_name">Voer receptnaam in</string>
     <string name="upload_tell_about_recipe_title">Beschrijving</string>
     <string name="upload_tell_about_recipe">Vertel iets over je recept</string>
+    <string name="R.string.upload_difficulty_60">60%gt</string>
     <string name="upload_enter_ingredient_title">Ingrëdienten</string>
     <string name="upload_enter_ingredient">Ingrediënt invoeren</string>
     <string name="upload_add_ingredient">Ingrediënt toevoegen</string>
@@ -188,4 +189,13 @@
     <string name="upload_diets_flexitarian">Flexitariër</string>
     <string name="upload_diets_raw_food">Rauw</string>
     <string name="cookie_preferences_title">Cookie voorkeuren</string>
+    <string name="upload_cooking_duration_10">%lt;10</string>
+    <string name="upload_cooking_duration_15">15</string>
+    <string name="upload_cooking_duration_30">30</string>
+    <string name="upload_cooking_duration_45">45</string>
+    <string name="upload_cooking_duration_60">65%gt;</string>
+    <string name="upload_prep_time_15">15</string>
+    <string name="upload_prep_time_30">30</string>
+    <string name="upload_prep_time_45">45</string>
+    <string name="upload_prep_time_60">60%gt;</string>
 </resources>

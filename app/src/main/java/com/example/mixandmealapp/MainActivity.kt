@@ -79,7 +79,6 @@ class MainActivity : ComponentActivity() {
                 onSpeechResult?.invoke(null) // Handle cancellation or error
             }
         }
-
         // Photo Picker launcher
         photoPickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             onImagePicked?.invoke(uri)
@@ -100,7 +99,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // <-- FIX: Moved launchSpeechRecognizer outside of setupLaunchers
     private fun launchSpeechRecognizer(callback: (String?) -> Unit) {
         onSpeechResult = callback
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {

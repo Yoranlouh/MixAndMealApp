@@ -62,6 +62,7 @@ import com.example.mixandmealapp.ui.components.InputFieldSmall
 import com.example.mixandmealapp.ui.components.InputFieldTextBox
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
+import com.example.mixandmealapp.ui.components.SingleChoiceSegmentedButton
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.screens.search.FilterOptions
 import com.example.mixandmealapp.ui.theme.BrandGreen
@@ -102,7 +103,7 @@ fun UploadScreen(
     // Discrete cooking time options (in minutes) for slider steps
     // index 0 represents "<10"; show labels only for first, middle (30), and last
     val durationOptions = listOf(9, 15, 30, 45, 60)
-    var cookingDurationIndex by remember { mutableIntStateOf(2) } // default 30 min
+    var cookingDuration by remember { mutableIntStateOf(2) } // default 30 min
     val ingredients = remember { mutableStateListOf<Ingredient>() }
     var newIngredientName by remember { mutableStateOf("") }
 
@@ -212,7 +213,6 @@ fun UploadScreen(
             placeholder = stringResource(R.string.upload_tell_about_recipe)
         )
 
-
         Spacer(modifier = Modifier.height(20.dp))
 
         // Difficulty
@@ -223,6 +223,7 @@ fun UploadScreen(
             color = DarkText
         )
         Spacer(modifier = Modifier.height(12.dp))
+
         DifficultySelector(
             selectedDifficulty = selectedDifficulty,
             onDifficultySelected = { selectedDifficulty = it }
@@ -230,30 +231,38 @@ fun UploadScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Cooking Duration
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(R.string.upload_enter_cooking_duration),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = DarkText
+        var selectedPrepTime by remember { mutableIntStateOf(0) }
+        var selectedCookingDuration by remember { mutableIntStateOf(0) }
+
+        fun getValue(selectedCookingDuration: Int): Int {
+            var result = 0
+            when(selectedCookingDuration){
+                0 -> result = 0
+                1 -> result = 15
+                2 -> result = 30
+                3 -> result = 45
+                4 -> result = 60
+            }
+            return result
+        }
+
+        Column {
+            SingleChoiceSegmentedButton(
+                title = "Prep time in minutes",
+                selectedIndex = selectedPrepTime,
+                onOptionSelected = { index -> selectedPrepTime = index }
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            val durationText = if (cookingDurationIndex == 0) "(<10 minutes)" else "(${durationOptions[cookingDurationIndex]} minutes)"
-            Text(
-                text = durationText,
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            SingleChoiceSegmentedButton(
+                title = "Cooking time in minutes",
+                selectedIndex = selectedCookingDuration,
+                onOptionSelected = { index -> selectedCookingDuration = index }
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
-        CookingDurationSlider(
-            index = cookingDurationIndex,
-            onIndexChange = { cookingDurationIndex = it },
-            options = durationOptions
-        )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
         // Ingredients Section
         Text(
@@ -454,9 +463,9 @@ fun UploadScreen(
                         val request = RecipeUploadRequest(
                             title = recipeName,
                             description = description,
-                            instructions = "Test",
-                            prepTime = 0,
-                            cookingTime = durationOptions[cookingDurationIndex],
+                            instructions = "Instructions Needed",
+                            prepTime = getValue(selectedPrepTime),
+                            cookingTime = getValue(selectedCookingDuration),
                             difficulty = Difficulty.valueOf(selectedDifficulty.uppercase()),
                             images = if (coverPhotoUri != null) {
                                 listOf(RecipeImageEntry(
@@ -661,59 +670,145 @@ fun DifficultySelector(
     }
 }
 
+//@Composable
+//fun PrepTime(
+//    selectedPrepTime: String,
+//    onPrepTimeSelected: (String) -> Unit
+//) {
+//    val PrepTime = listOf(
+//        stringResource(R.string.upload_prep_time_10),
+//        stringResource(R.string.upload_prep_time_15),
+//        stringResource(R.string.upload_prep_time_30),
+//        stringResource(R.string.upload_prep_time_45),
+//        stringResource(R.string.upload_prep_time_60),
+//
+//
+//    Row(
+//        modifier = Modifier.fillMaxWidth(),
+//        horizontalArrangement = Arrangement.spacedBy(8.dp)
+//    ) {
+//        PrepTime.forEach { PrepTime ->
+//            val isSelected = PrepTime == selectedPrepTime
+//
+//            FilterChip(
+//                selected = isSelected,
+//                onClick = {
+//                    if (isSelected) onPrepTimeSelected("") else onPrepTimeSelected(PrepTime)
+//                },
+//                label = { Text(PrepTime) },
+//                colors = FilterChipDefaults.filterChipColors(
+//                    selectedLabelColor = Color.White,
+//                    containerColor = Color.White,
+//                    labelColor = DarkText
+//                ),
+//                border = FilterChipDefaults.filterChipBorder(
+//                    enabled = true,
+//                    selected = isSelected,
+//                    borderColor = BrandGrey,
+//                    borderWidth = 1.dp,
+//                    selectedBorderWidth = 1.dp
+//                )
+//            )
+//        }
+//    }
+//}
+
 @Composable
-fun CookingDurationSlider(
-    index: Int,
-    onIndexChange: (Int) -> Unit,
-    options: List<Int>
+fun CookingDuration(
+    selectedCookingDuration: String,
+    onCookingDurationSelected: (String) -> Unit
 ) {
-    val min = 0f
-    val max = (options.size - 1).toFloat()
+    val cookingDuration = listOf(
+        stringResource(R.string.upload_cooking_duration_10),
+        stringResource(R.string.upload_cooking_duration_15),
+        stringResource(R.string.upload_cooking_duration_30),
+        stringResource(R.string.upload_cooking_duration_45),
+        stringResource(R.string.upload_cooking_duration_60),
+    )
 
-    // Only show labels at <10, 30, and 60
-    val labelRow = List(options.size) { i ->
-        when (i) {
-            0 -> "<10 min"
-            options.indexOf(30) -> "30 min"
-            options.lastIndex -> "60 min"
-            else -> ""
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        cookingDuration.forEach { cookingDuration ->
+            val isSelected = cookingDuration == selectedCookingDuration
+
+            FilterChip(
+                selected = isSelected,
+                onClick = {
+                    if (isSelected) onCookingDurationSelected("") else onCookingDurationSelected(cookingDuration)
+                },
+                label = { Text(cookingDuration) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedLabelColor = Color.White,
+                    containerColor = Color.White,
+                    labelColor = DarkText
+                ),
+                border = FilterChipDefaults.filterChipBorder(
+                    enabled = true,
+                    selected = isSelected,
+                    borderColor = BrandGrey,
+                    borderWidth = 1.dp,
+                    selectedBorderWidth = 1.dp
+                )
+            )
         }
-    }
-
-    Column {
-        // Labels row aligned with slider positions
-        Row(modifier = Modifier.fillMaxWidth()) {
-            labelRow.forEach { label ->
-                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    if (label.isNotEmpty()) {
-                        Text(label, color = BrandOrange, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        // Slider zonder extra tick marks; oranje track en groene thumb
-        Slider(
-            value = index.toFloat(),
-            onValueChange = { raw ->
-                val snapped = raw.coerceIn(min, max).toInt()
-                onIndexChange(snapped)
-            },
-            valueRange = min..max,
-            steps = (options.size - 2).coerceAtLeast(0),
-            colors = SliderDefaults.colors(
-                thumbColor = BrandGreen,
-                activeTrackColor = BrandOrange,
-                inactiveTrackColor = BrandOrange.copy(alpha = 0.25f)
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(32.dp)
-        )
     }
 }
+
+//@Composable
+//fun CookingDurationSlider(
+//    index: Int,
+//    onIndexChange: (Int) -> Unit,
+//    options: List<Int>
+//) {
+//    val min = 0f
+//    val max = (options.size - 1).toFloat()
+//
+//    // Only show labels at <10, 30, and 60
+//    val labelRow = List(options.size) { i ->
+//        when (i) {
+//            0 -> "<10 min"
+//            options.indexOf(30) -> "30 min"
+//            options.lastIndex -> "60 min"
+//            else -> ""
+//        }
+//    }
+//
+//    Column {
+//        // Labels row aligned with slider positions
+//        Row(modifier = Modifier.fillMaxWidth()) {
+//            labelRow.forEach { label ->
+//                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+//                    if (label.isNotEmpty()) {
+//                        Text(label, color = BrandOrange, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+//                    }
+//                }
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(6.dp))
+//
+//        // Slider zonder extra tick marks; oranje track en groene thumb
+//        Slider(
+//            value = index.toFloat(),
+//            onValueChange = { raw ->
+//                val snapped = raw.coerceIn(min, max).toInt()
+//                onIndexChange(snapped)
+//            },
+//            valueRange = min..max,
+//            steps = (options.size - 2).coerceAtLeast(0),
+//            colors = SliderDefaults.colors(
+//                thumbColor = BrandGreen,
+//                activeTrackColor = BrandOrange,
+//                inactiveTrackColor = BrandOrange.copy(alpha = 0.25f)
+//            ),
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(32.dp)
+//        )
+//    }
+//}
 
 @Composable
 fun SimpleIngredientItem(

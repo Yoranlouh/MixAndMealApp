@@ -78,7 +78,17 @@
     <string name="upload_difficulty_easy">Easy</string>
     <string name="upload_difficulty_medium">Medium</string>
     <string name="upload_difficulty_hard">Hard</string>
+    <string name="upload_prep_time_10">%lt;10</string>
+    <string name="upload_prep_time_15">15</string>
+    <string name="upload_prep_time_30">30</string>
+    <string name="upload_prep_time_45">45</string>
+    <string name="upload_prep_time_60">60%gt;</string>
     <string name="upload_enter_cooking_duration">Cooking Duration</string>
+    <string name="upload_cooking_duration_10">%lt;10</string>
+    <string name="upload_cooking_duration_15">15</string>
+    <string name="upload_cooking_duration_30">30</string>
+    <string name="upload_cooking_duration_45">45</string>
+    <string name="upload_cooking_duration_60">60%gt</string>
     <string name="upload_enter_ingredient_title">Enter ingredient</string>
     <string name="upload_enter_ingredient">Enter ingredient</string>
     <string name="upload_add_ingredient">Add ingredient</string>

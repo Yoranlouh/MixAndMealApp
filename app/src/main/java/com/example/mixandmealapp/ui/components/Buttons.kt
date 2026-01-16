@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,10 +29,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -278,6 +283,38 @@ fun OpenFridgeButton(
         onClick = onClick
     )
 }
+
+@Composable
+fun SingleChoiceSegmentedButton(
+    modifier: Modifier = Modifier,
+    title: String,
+    selectedIndex: Int,
+    onOptionSelected: (Int) -> Unit  // Lambda callback, not a function returning Int
+) {
+    val options = listOf("<10", "15", "30", "45", ">60")
+
+    Column(modifier) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        SingleChoiceSegmentedButtonRow {
+            options.forEachIndexed { index, optionTitle ->
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = options.size
+                    ),
+                    onClick = { onOptionSelected(index) },  // Call parent's callback
+                    selected = index == selectedIndex,
+                    label = { Text(optionTitle) }
+                )
+            }
+        }
+    }
+}
+
 
 
 
