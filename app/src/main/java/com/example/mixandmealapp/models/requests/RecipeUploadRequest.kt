@@ -18,8 +18,8 @@ data class RecipeUploadRequest(
     val cookingTime: Int,
     val difficulty: Difficulty,
     val images: List<RecipeImageEntry>,
-    val mealType: MealType,
-    val kitchenStyle: KitchenStyle,
+    val mealType: MealType?,
+    val kitchenStyle: KitchenStyle?,
     val diets: List<DietEntry>,
     val allergens: List<AllergenEntry>,
     val ingredients: List<IngredientUnitEntry>

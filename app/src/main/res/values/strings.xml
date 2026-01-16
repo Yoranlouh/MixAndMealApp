@@ -74,6 +74,8 @@
     <string name="upload_enter_recipe_name">Enter recipe name</string>
     <string name="upload_tell_about_recipe_title">Description</string>
     <string name="upload_tell_about_recipe">Tell a little about your recipe</string>
+    <string name="upload_tell_about_recipe_instruction">Instructions</string>
+    <string name="upload_instruction_recipe">How do you make your recipe</string>
     <string name="upload_difficulty_title">Difficulty</string>
     <string name="upload_difficulty_easy">Easy</string>
     <string name="upload_difficulty_medium">Medium</string>
@@ -102,7 +104,7 @@
     <string name="upload_kitchen_style_asian">Asian</string>
     <string name="upload_kitchen_style_chinese">Chinese</string>
     <string name="upload_kitchen_style_dutch">Dutch</string>
-    <string name="upload_kitchen_style_easteurope">East Europe</string>
+    <string name="upload_kitchen_style_easteurope">East_european</string>
     <string name="upload_kitchen_style_french">French</string>
     <string name="upload_kitchen_style_greek">Greek</string>
     <string name="upload_kitchen_style_indian">Indian</string>
@@ -202,4 +204,5 @@
     <string name="voice_search_content_description">Voice Search</string>
     <string name="read_instructions">Read instructions</string>
     <string name="no_instructions_found">No instructions found</string>
+    <string name="R.string.upload_difficulty_60">60%gt</string>
 </resources>

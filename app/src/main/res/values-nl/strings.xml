@@ -140,12 +140,13 @@
     <string name="upload_button">Uploaden</string>
     <string name="upload_succes_title">Upload Succesvol geupload</string>
     <string name="upload_succes_text">Uw nieuwe recept is geupload</string>
+    <string name="upload_instruction_recipe">Hoe maak jij je recept</string>
     <string name="upload_difficulty_title">Moeilijkheidsgraad</string>
     <string name="upload_difficulty_easy">Makkelijk</string>
     <string name="upload_kitchen_style_asian">Aziatisch</string>
     <string name="upload_kitchen_style_chinese">Chinees</string>
     <string name="upload_kitchen_style_dutch">Nederlands</string>
-    <string name="upload_kitchen_style_easteurope">Oost Europeaans</string>
+    <string name="upload_kitchen_style_easteurope">OostEuropeaans</string>
     <string name="upload_kitchen_style_french">Frans</string>
     <string name="upload_kitchen_style_greek">Grieks</string>
     <string name="upload_kitchen_style_indian">Indisch</string>
@@ -194,8 +195,10 @@
     <string name="upload_cooking_duration_30">30</string>
     <string name="upload_cooking_duration_45">45</string>
     <string name="upload_cooking_duration_60">65%gt;</string>
+    <string name="upload_prep_time_10">%lt;10</string>
     <string name="upload_prep_time_15">15</string>
     <string name="upload_prep_time_30">30</string>
     <string name="upload_prep_time_45">45</string>
     <string name="upload_prep_time_60">60%gt;</string>
+    <string name="upload_tell_about_recipe_instruction">Instructies</string>
 </resources>

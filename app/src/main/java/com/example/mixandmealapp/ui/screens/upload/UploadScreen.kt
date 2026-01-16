@@ -99,7 +99,8 @@ fun UploadScreen(
 
     var recipeName by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var selectedDifficulty by remember { mutableStateOf("") }
+    var instructions by remember { mutableStateOf("") }
+
     // Discrete cooking time options (in minutes) for slider steps
     // index 0 represents "<10"; show labels only for first, middle (30), and last
     val durationOptions = listOf(9, 15, 30, 45, 60)
@@ -107,34 +108,29 @@ fun UploadScreen(
     val ingredients = remember { mutableStateListOf<Ingredient>() }
     var newIngredientName by remember { mutableStateOf("") }
 
+    // Difficulty states
+    var selectedDifficulty by remember { mutableStateOf(setOf<Difficulty>()) }
+
     // Kitchen Style states
-    var selectedKitchenStyles by remember { mutableStateOf(setOf<String>()) }
+    var kitchenExpanded by remember { mutableStateOf(true) }
+    var selectedKitchenStyles by remember { mutableStateOf(setOf<KitchenStyle>()) }
+    val kitchenStyleOptions: List<KitchenStyle> = KitchenStyle.entries.toList()
 
     // Meal Type states
-    var selectedMealTypes by remember { mutableStateOf(setOf<String>()) }
+    var selectedMealTypes by remember { mutableStateOf(setOf<MealType>()) }
+    var mealTypeExpanded by remember { mutableStateOf(true) }
 
     // Allergens states
     var selectedAllergens by remember { mutableStateOf(setOf<String>()) }
+    var allergensExpanded by remember { mutableStateOf(true) }
+    val allergensStrings = FilterOptions.allergens.map { stringResource(it) }
 
     // Diet states
     var selectedDiets by remember { mutableStateOf(setOf<String>()) }
-
-    // Expand/collapse states for filter sections
-    var kitchenExpanded by remember { mutableStateOf(true) }
-    var mealTypeExpanded by remember { mutableStateOf(true) }
-    var allergensExpanded by remember { mutableStateOf(true) }
     var dietExpanded by remember { mutableStateOf(true) }
-
-    var showSuccessDialog by remember { mutableStateOf(false) }
-
-    // Translated filter options
-    val kitchenStylesStrings = FilterOptions.kitchenStyles.map { stringResource(it) }
-    val mealTypeStrings = FilterOptions.mealTypes.map { stringResource(it) }
-    val allergensStrings = FilterOptions.allergens.map { stringResource(it) }
     val dietsStrings = FilterOptions.diets.map { stringResource(it) }
 
-
-
+    var showSuccessDialog by remember { mutableStateOf(false) }
     if (showSuccessDialog) {
         UploadSuccessDialog(
             onDismiss = { showSuccessDialog = false },
@@ -215,18 +211,41 @@ fun UploadScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Difficulty
-        Text(
-            text = stringResource(R.string.upload_difficulty_title),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = DarkText
+        InputFieldTextBox(
+            value = instructions,
+            onValueChange = { instructions = it },
+            label = stringResource(R.string.upload_tell_about_recipe_instruction),
+            placeholder = stringResource(R.string.upload_tell_about_recipe_instruction)
         )
-        Spacer(modifier = Modifier.height(12.dp))
 
-        DifficultySelector(
-            selectedDifficulty = selectedDifficulty,
-            onDifficultySelected = { selectedDifficulty = it }
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Difficulty
+        val difficultyOptions: List<Difficulty> = Difficulty.entries.toList()
+
+        @Composable
+        fun difficultyLabel(diff: Difficulty): String = when (diff) {
+            Difficulty.EASY -> stringResource(R.string.upload_difficulty_easy)
+            Difficulty.MEDIUM -> stringResource(R.string.upload_difficulty_medium)
+            Difficulty.HARD -> stringResource(R.string.upload_difficulty_hard)
+        }
+
+        val difficultyStrings = difficultyOptions.map { difficultyLabel(it) }
+        val difficultyLabelToEnum = difficultyOptions.associateBy { difficultyLabel(it) }
+
+        FilterSection(
+            title = stringResource(R.string.upload_difficulty_title),
+            options = difficultyStrings,
+            selectedOptions = selectedDifficulty.map { difficultyLabel(it) }.toSet(),
+            expanded = true,
+            onHeaderToggle = { },
+            onOptionToggle = { label ->
+                val enum = difficultyLabelToEnum[label] ?: return@FilterSection
+                selectedDifficulty = if (selectedDifficulty.contains(enum))
+                    emptySet()
+                else
+                    setOf(enum)
+            }
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -386,33 +405,78 @@ fun UploadScreen(
 
 
         // Kitchen Style Section
+
+        @Composable
+        fun kitchenStyleLabel(style: KitchenStyle): String =
+            when (style) {
+                KitchenStyle.ASIAN -> stringResource(R.string.upload_kitchen_style_asian)
+                KitchenStyle.EAST_EUROPEAN -> stringResource(R.string.upload_kitchen_style_easteurope)
+                KitchenStyle.MEXICAN -> stringResource(R.string.upload_kitchen_style_mexican)
+                KitchenStyle.DUTCH -> stringResource(R.string.upload_kitchen_style_dutch)
+                KitchenStyle.TURKISH -> stringResource(R.string.upload_kitchen_style_turkish)
+                KitchenStyle.GREEK -> stringResource(R.string.upload_kitchen_style_greek)
+                KitchenStyle.MEDITERRANEAN -> stringResource(R.string.upload_kitchen_style_mediterranean)
+                KitchenStyle.JAPANESE -> stringResource(R.string.upload_kitchen_style_japanese)
+                KitchenStyle.INDIAN -> stringResource(R.string.upload_kitchen_style_indian)
+                KitchenStyle.CHINESE -> stringResource(R.string.upload_kitchen_style_chinese)
+                KitchenStyle.ITALIAN -> stringResource(R.string.upload_kitchen_style_italian)
+                KitchenStyle.FRENCH -> stringResource(R.string.upload_kitchen_style_french)
+                KitchenStyle.THAI -> stringResource(R.string.upload_kitchen_style_thai)
+                KitchenStyle.SPANISH -> stringResource(R.string.upload_kitchen_style_spanish)
+                KitchenStyle.KOREAN -> stringResource(R.string.upload_kitchen_style_korean)
+                KitchenStyle.VIETNAMESE -> stringResource(R.string.upload_kitchen_style_vietnamese)
+            }
+
+        val kitchenStylesStrings = kitchenStyleOptions.map { style ->
+            kitchenStyleLabel(style)
+        }
+        val kitchenLabelToEnum = kitchenStyleOptions.associateBy { kitchenStyleLabel(it) }
         FilterSection(
             title = stringResource(id = R.string.upload_kitchen_style),
             options = kitchenStylesStrings,
-            selectedOptions = selectedKitchenStyles,
+            selectedOptions = selectedKitchenStyles.map { kitchenStyleLabel(it) }.toSet(),
             expanded = kitchenExpanded,
             onHeaderToggle = { kitchenExpanded = !kitchenExpanded },
-            onOptionToggle = { option ->
-                // single-select gedrag
-                selectedKitchenStyles = if (selectedKitchenStyles.contains(option)) emptySet() else setOf(option)
+            onOptionToggle = { label ->
+                val enum = kitchenLabelToEnum[label] ?: return@FilterSection
+                selectedKitchenStyles = if (selectedKitchenStyles.contains(enum))
+                    emptySet()
+                else
+                    setOf(enum)
             }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Meal Type Section
+
+        val mealTypeOptions: List<MealType> = MealType.entries.toList()
+
+        @Composable
+        fun mealTypeLabel(type: MealType): String =
+            when (type) {
+                MealType.BREAKFAST -> stringResource(R.string.upload_meal_type_breakfast)
+                MealType.LUNCH -> stringResource(R.string.upload_meal_type_lunch)
+                MealType.DINNER -> stringResource(R.string.upload_meal_type_dinner)
+                else -> stringResource(R.string.upload_meal_type_dessert)
+            }
+
+        val mealTypeStrings = mealTypeOptions.map { mealTypeLabel(it) }
+        val mealLabelToEnum = mealTypeOptions.associateBy { mealTypeLabel(it) }
+
         FilterSection(
             title = stringResource(R.string.upload_meal_type),
-            options = mealTypeStrings,
-            selectedOptions = selectedMealTypes,
+            options = mealTypeStrings,                           // String labels ✓
+            selectedOptions = selectedMealTypes.map { mealTypeLabel(it) }.toSet(),  // String labels ✓
             expanded = mealTypeExpanded,
             onHeaderToggle = { mealTypeExpanded = !mealTypeExpanded },
-            onOptionToggle = { option ->
-                // single-select gedrag
-                selectedMealTypes = if (selectedMealTypes.contains(option)) emptySet() else setOf(option)
+            onOptionToggle = { label ->                          // Receives String label
+                val enum = mealLabelToEnum[label] ?: return@FilterSection
+                selectedMealTypes = if (selectedMealTypes.contains(enum))
+                    emptySet()
+                else
+                    setOf(enum)
             }
         )
-
         Spacer(modifier = Modifier.height(24.dp))
 
         // Allergens Section
@@ -463,10 +527,10 @@ fun UploadScreen(
                         val request = RecipeUploadRequest(
                             title = recipeName,
                             description = description,
-                            instructions = "Instructions Needed",
+                            instructions = instructions,
                             prepTime = getValue(selectedPrepTime),
                             cookingTime = getValue(selectedCookingDuration),
-                            difficulty = Difficulty.valueOf(selectedDifficulty.uppercase()),
+                            difficulty = selectedDifficulty.firstOrNull() ?: Difficulty.EASY,
                             images = if (coverPhotoUri != null) {
                                 listOf(RecipeImageEntry(
                                     id = 0,
@@ -474,8 +538,8 @@ fun UploadScreen(
                                     imageUrl = coverPhotoUri.toString()
                                 ))
                             } else emptyList(),
-                            mealType = MealType.valueOf((selectedMealTypes.firstOrNull() ?: "").uppercase()),
-                            kitchenStyle = KitchenStyle.valueOf((selectedKitchenStyles.firstOrNull() ?: "").uppercase()),
+                            mealType = selectedMealTypes.firstOrNull(),
+                            kitchenStyle = selectedKitchenStyles.firstOrNull(),
                             diets = selectedDiets.map {
                                 DietEntry(id = 0, displayName = it, description = "")
                             },
@@ -623,79 +687,79 @@ fun PhotoPicker(
     }
 }
 
-@Composable
-fun DifficultySelector(
-    selectedDifficulty: String,
-    onDifficultySelected: (String) -> Unit
-) {
-    val difficulties = listOf(
-        stringResource(R.string.upload_difficulty_easy),
-        stringResource(R.string.upload_difficulty_medium),
-        stringResource(R.string.upload_difficulty_hard))
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        difficulties.forEach { difficulty ->
-            val isSelected = difficulty == selectedDifficulty
-            val selectedColor = when (difficulty) {
-                "Easy" -> BrandGreen
-                "Medium" -> BrandYellow
-                "Hard" -> Color.Red
-                else -> BrandOrange
-            }
-            FilterChip(
-                selected = isSelected,
-                onClick = {
-                    if (isSelected) onDifficultySelected("") else onDifficultySelected(difficulty)
-                },
-                label = { Text(difficulty) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = selectedColor,
-                    selectedLabelColor = Color.White,
-                    containerColor = Color.White,
-                    labelColor = DarkText
-                ),
-                border = FilterChipDefaults.filterChipBorder(
-                    enabled = true,
-                    selected = isSelected,
-                    borderColor = BrandGrey,
-                    selectedBorderColor = selectedColor,
-                    borderWidth = 1.dp,
-                    selectedBorderWidth = 1.dp
-                )
-            )
-        }
-    }
-}
-
 //@Composable
-//fun PrepTime(
-//    selectedPrepTime: String,
-//    onPrepTimeSelected: (String) -> Unit
+//fun DifficultySelector(
+//    selectedDifficulty: String,
+//    onDifficultySelected: (String) -> Unit
 //) {
-//    val PrepTime = listOf(
-//        stringResource(R.string.upload_prep_time_10),
-//        stringResource(R.string.upload_prep_time_15),
-//        stringResource(R.string.upload_prep_time_30),
-//        stringResource(R.string.upload_prep_time_45),
-//        stringResource(R.string.upload_prep_time_60),
-//
+//    val difficulties = listOf(
+//        stringResource(R.string.upload_difficulty_easy),
+//        stringResource(R.string.upload_difficulty_medium),
+//        stringResource(R.string.upload_difficulty_hard))
 //
 //    Row(
 //        modifier = Modifier.fillMaxWidth(),
 //        horizontalArrangement = Arrangement.spacedBy(8.dp)
 //    ) {
-//        PrepTime.forEach { PrepTime ->
-//            val isSelected = PrepTime == selectedPrepTime
+//        difficulties.forEach { difficulty ->
+//            val isSelected = difficulty == selectedDifficulty
+//            val selectedColor = when (difficulty) {
+//                "Easy" -> BrandGreen
+//                "Medium" -> BrandYellow
+//                "Hard" -> Color.Red
+//                else -> BrandOrange
+//            }
+//            FilterChip(
+//                selected = isSelected,
+//                onClick = {
+//                    if (isSelected) onDifficultySelected("") else onDifficultySelected(difficulty)
+//                },
+//                label = { Text(difficulty) },
+//                colors = FilterChipDefaults.filterChipColors(
+//                    selectedContainerColor = selectedColor,
+//                    selectedLabelColor = Color.White,
+//                    containerColor = Color.White,
+//                    labelColor = DarkText
+//                ),
+//                border = FilterChipDefaults.filterChipBorder(
+//                    enabled = true,
+//                    selected = isSelected,
+//                    borderColor = BrandGrey,
+//                    selectedBorderColor = selectedColor,
+//                    borderWidth = 1.dp,
+//                    selectedBorderWidth = 1.dp
+//                )
+//            )
+//        }
+//    }
+//}
+
+//@Composable
+//fun CookingDuration(
+//    selectedCookingDuration: String,
+//    onCookingDurationSelected: (String) -> Unit
+//) {
+//    val cookingDuration = listOf(
+//        stringResource(R.string.upload_cooking_duration_10),
+//        stringResource(R.string.upload_cooking_duration_15),
+//        stringResource(R.string.upload_cooking_duration_30),
+//        stringResource(R.string.upload_cooking_duration_45),
+//        stringResource(R.string.upload_cooking_duration_60),
+//    )
+//
+//    Row(
+//        modifier = Modifier.fillMaxWidth(),
+//        horizontalArrangement = Arrangement.spacedBy(8.dp)
+//    ) {
+//        cookingDuration.forEach { cookingDuration ->
+//            val isSelected = cookingDuration == selectedCookingDuration
 //
 //            FilterChip(
 //                selected = isSelected,
 //                onClick = {
-//                    if (isSelected) onPrepTimeSelected("") else onPrepTimeSelected(PrepTime)
+//                    if (isSelected) onCookingDurationSelected("") else onCookingDurationSelected(cookingDuration)
 //                },
-//                label = { Text(PrepTime) },
+//                label = { Text(cookingDuration) },
 //                colors = FilterChipDefaults.filterChipColors(
 //                    selectedLabelColor = Color.White,
 //                    containerColor = Color.White,
@@ -710,103 +774,6 @@ fun DifficultySelector(
 //                )
 //            )
 //        }
-//    }
-//}
-
-@Composable
-fun CookingDuration(
-    selectedCookingDuration: String,
-    onCookingDurationSelected: (String) -> Unit
-) {
-    val cookingDuration = listOf(
-        stringResource(R.string.upload_cooking_duration_10),
-        stringResource(R.string.upload_cooking_duration_15),
-        stringResource(R.string.upload_cooking_duration_30),
-        stringResource(R.string.upload_cooking_duration_45),
-        stringResource(R.string.upload_cooking_duration_60),
-    )
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        cookingDuration.forEach { cookingDuration ->
-            val isSelected = cookingDuration == selectedCookingDuration
-
-            FilterChip(
-                selected = isSelected,
-                onClick = {
-                    if (isSelected) onCookingDurationSelected("") else onCookingDurationSelected(cookingDuration)
-                },
-                label = { Text(cookingDuration) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedLabelColor = Color.White,
-                    containerColor = Color.White,
-                    labelColor = DarkText
-                ),
-                border = FilterChipDefaults.filterChipBorder(
-                    enabled = true,
-                    selected = isSelected,
-                    borderColor = BrandGrey,
-                    borderWidth = 1.dp,
-                    selectedBorderWidth = 1.dp
-                )
-            )
-        }
-    }
-}
-
-//@Composable
-//fun CookingDurationSlider(
-//    index: Int,
-//    onIndexChange: (Int) -> Unit,
-//    options: List<Int>
-//) {
-//    val min = 0f
-//    val max = (options.size - 1).toFloat()
-//
-//    // Only show labels at <10, 30, and 60
-//    val labelRow = List(options.size) { i ->
-//        when (i) {
-//            0 -> "<10 min"
-//            options.indexOf(30) -> "30 min"
-//            options.lastIndex -> "60 min"
-//            else -> ""
-//        }
-//    }
-//
-//    Column {
-//        // Labels row aligned with slider positions
-//        Row(modifier = Modifier.fillMaxWidth()) {
-//            labelRow.forEach { label ->
-//                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-//                    if (label.isNotEmpty()) {
-//                        Text(label, color = BrandOrange, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-//                    }
-//                }
-//            }
-//        }
-//
-//        Spacer(modifier = Modifier.height(6.dp))
-//
-//        // Slider zonder extra tick marks; oranje track en groene thumb
-//        Slider(
-//            value = index.toFloat(),
-//            onValueChange = { raw ->
-//                val snapped = raw.coerceIn(min, max).toInt()
-//                onIndexChange(snapped)
-//            },
-//            valueRange = min..max,
-//            steps = (options.size - 2).coerceAtLeast(0),
-//            colors = SliderDefaults.colors(
-//                thumbColor = BrandGreen,
-//                activeTrackColor = BrandOrange,
-//                inactiveTrackColor = BrandOrange.copy(alpha = 0.25f)
-//            ),
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(32.dp)
-//        )
 //    }
 //}
 
