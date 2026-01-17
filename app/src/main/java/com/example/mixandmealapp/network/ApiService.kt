@@ -141,7 +141,7 @@ object ApiService {
         token: String?,
         ingredientId: IngredientIDRequest
     ): List<UserFridgeEntry> =
-        client.post("$domain/fridge/add-ingredient-to-fridge") {
+        client.post("$domain/fridge/add-ingredient") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(ingredientId)

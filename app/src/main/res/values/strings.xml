@@ -169,8 +169,8 @@
     <string name="fridge_title">Fridge</string>
     <string name="my_fridge">My Fridge</string>
     <string name="items_count">%1$d Item</string>
-    <string name="fridge_enter_ingredient">Enter ingredient</string>
-    <string name="fridge_add_ingredient">Add ingredient</string>
+    <string name="fridge_enter_ingredient">Enasdter ingredient</string>
+    <string name="fridge_add_ingredient">Add insdfasfagredient</string>
 
     <!-- Auth / Account -->
     <string name="username">Username</string>
