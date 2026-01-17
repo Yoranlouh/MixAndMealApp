@@ -82,14 +82,6 @@ fun SettingsScreen(
 
         val dynamicMessage = messages.random()
 
-        SettingsButton(
-            title = stringResource(R.string.favourites),
-            description = dynamicMessage,
-            onClick = {
-                // TODO
-            }
-        )
-
         // Allergies
         SettingsButton(
             title = stringResource(R.string.allergies),

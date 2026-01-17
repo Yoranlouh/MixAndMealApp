@@ -78,6 +78,7 @@ import com.example.mixandmealapp.ui.theme.DarkText
 import kotlinx.coroutines.async
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
+import java.io.File
 
 data class Ingredient(
     val name: String,
@@ -627,13 +628,13 @@ fun UploadScreen(
                             prepTime = getValue(selectedPrepTime),
                             cookingTime = getValue(selectedCookingDuration),
                             difficulty = selectedDifficulty.firstOrNull() ?: Difficulty.EASY,
-                            images = if (coverPhotoUri != null) {
-                                listOf(RecipeImageEntry(
-                                    id = 0,
-                                    recipeId = 0,
-                                    imageUrl = coverPhotoUri.toString()
-                                ))
-                            } else emptyList(),
+//                            images = if (coverPhotoUri != null) {
+//                                listOf(RecipeImageEntry(
+//                                    id = 0,
+//                                    recipeId = 0,
+//                                    imageUrl = coverPhotoUri.toString()
+//                                ))
+//                            } else emptyList(),
                             mealType = selectedMealTypes.firstOrNull(),
                             kitchenStyle = selectedKitchenStyles.firstOrNull(),
                             diets = selectedDiets.map { dietName ->
@@ -654,7 +655,11 @@ fun UploadScreen(
                             }
                         )
 
-                        ApiService.uploadRecipe(tokenToUse.toString(), coverPhotoUri?.toString(), request)
+                        ApiService.updateRecipe(
+                            tokenToUse.toString(),
+                            recipe = request,
+                            images = mutableListOf<File>(),
+                        )
                         showSuccessDialog = true
 
                     } catch (e: Exception) {

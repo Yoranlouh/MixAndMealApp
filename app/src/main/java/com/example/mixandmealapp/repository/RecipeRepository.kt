@@ -7,6 +7,7 @@ import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import com.example.mixandmealapp.models.responses.RecipeResponse
 import com.example.mixandmealapp.network.ApiService
+import io.ktor.client.statement.HttpResponse
 
 class RecipeRepository {
     suspend fun getFeaturedRecipeCard(): RecipeCardResponse {
@@ -44,8 +45,26 @@ class RecipeRepository {
         return ApiService.uploadRecipe(token, imageUri, request)
     }
 
-    suspend fun deleteRecipe(token: String?, recipeId: Int) {
-        ApiService.deleteRecipe(token, recipeId)
+    suspend fun deleteRecipe(token: String?, recipeId: Int): HttpResponse {
+        return ApiService.deleteRecipe(token, recipeId)
+    }
+
+    suspend fun searchRecipes(
+        query: String,
+        kitchens: Set<String>,
+        meals: Set<String>,
+        allergens: Set<String>,
+        diets: Set<String>
+    ): List<RecipeCardResponse> {
+        val queryParams = mutableMapOf<String, String>()
+        if (query.isNotBlank()) queryParams["query"] = query
+        // Assuming your backend expects a single value for these filters
+        if (kitchens.isNotEmpty()) queryParams["kitchen"] = kitchens.joinToString(",")
+        if (meals.isNotEmpty()) queryParams["meal"] = meals.joinToString(",")
+        if (allergens.isNotEmpty()) queryParams["allergens"] = allergens.joinToString(",")
+        if (diets.isNotEmpty()) queryParams["diets"] = diets.joinToString(",")
+
+        return ApiService.searchRecipes(queryParams)
     }
 
 }

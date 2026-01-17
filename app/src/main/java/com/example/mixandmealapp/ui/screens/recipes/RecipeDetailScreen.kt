@@ -100,7 +100,6 @@ fun RecipeDetailScreen(
 
 
     val scope = rememberCoroutineScope()
-    val user by homeViewModel.role.collectAsState()
     val recipeRepository = remember { RecipeRepository() }
 
     // State for the confirmation dialog
@@ -121,9 +120,12 @@ fun RecipeDetailScreen(
                             tokenToUse.await()
                             Log.d("Token", tokenToUse.toString())
 
+
                             try {
+                                Log.d("RecipeId", recipeId.toString())
                                 recipeRepository.deleteRecipe(tokenToUse.toString(), recipeId)
                                 // Navigate back after successful deletion
+                                Log.d("RecipeId", recipeId.toString())
                                 onBack()
                             } catch (e: Exception) {
                                 // Handle error, e.g., show a toast message
@@ -406,7 +408,6 @@ fun RecipeDetailScreen(
                                 onEditRecipe(recipeId)
                             },
                             onDelete = {
-                                // Show the confirmation dialog instead of deleting directly
                                 showDeleteDialog = true
                             }
                         )

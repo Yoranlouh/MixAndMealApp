@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.ui.screens.search
 
+import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,56 +23,70 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.DarkText
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
+import com.example.mixandmealapp.ui.navigation.Navigation
 
 @Composable
-fun SearchResultItem(recipe: Recipe, onClick: (Recipe) -> Unit = {}) {
+fun SearchResultItem(
+    navController: NavHostController,
+    recipe: RecipeCardResponse
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(recipe) },
+            .clickable {
+                // Navigate to the detail screen when the card is clicked
+                navController.navigate("${Navigation.RECIPE_DETAIL}/${recipe.recipeId}")
+            },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-        Row(modifier = Modifier.padding(12.dp)) {
-            // Small thumbnail
-            Box(
+        Row(
+            modifier = Modifier.height(120.dp), // Set a fixed height for each item
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Image on the left
+            Image(
+                painter = rememberAsyncImagePainter(model = recipe.image),
+                contentDescription = recipe.title,
                 modifier = Modifier
-                    .size(72.dp)
-                    .background(BrandGrey, RoundedCornerShape(8.dp))
+                    .fillMaxHeight()
+                    .width(120.dp)
+                    .clip(RoundedCornerShape(topStart = 12.dp, bottomStart = 12.dp)),
+                contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.size(12.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = recipe.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                if (recipe.description.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = recipe.description.take(80) + if (recipe.description.length > 80) "…" else "",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = DarkText
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Meta: duration and difficulty
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "${recipe.durationMinutes} min", style = MaterialTheme.typography.labelMedium, color = DarkText)
-                    Text(text = "•", style = MaterialTheme.typography.labelMedium, color = BrandGrey)
-                    Text(text = recipe.difficulty, style = MaterialTheme.typography.labelMedium, color = DarkText)
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    recipe.kitchenStyle?.let { Pill(text = it) }
-                    recipe.mealType?.let { Pill(text = it) }
-                }
+            // Text content on the right
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = recipe.title,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "${recipe.readyInMinutes} min",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }

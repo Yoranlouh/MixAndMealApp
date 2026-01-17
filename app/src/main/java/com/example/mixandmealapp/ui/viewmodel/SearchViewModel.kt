@@ -1,52 +1,41 @@
+// In app/src/main/java/com/example/mixandmealapp/ui/viewmodel/SearchViewModel.kt
 package com.example.mixandmealapp.ui.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mixandmealapp.data.RecipesRepository
-import com.example.mixandmealapp.data.ServiceLocator
-import com.example.mixandmealapp.common.toggle
+import com.example.mixandmealapp.models.responses.RecipeCardResponse
+import com.example.mixandmealapp.network.ApiService
+import com.example.mixandmealapp.repository.RecipeRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class SearchUiState(
-    val query: String = "",
-    val kitchens: Set<String> = emptySet(),
-    val meals: Set<String> = emptySet(),
-    val allergens: Set<String> = emptySet(),
-    val diets: Set<String> = emptySet(),
-    val results: List<String> = emptyList(),
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
+class SearchViewModel(private val recipeRepository: RecipeRepository = RecipeRepository()) : ViewModel() {
 
-class SearchViewModel(
-    private val repository: RecipesRepository = ServiceLocator.recipesRepository
-) : ViewModel() {
-    var uiState by mutableStateOf(SearchUiState())
-        private set
+    private val _searchResults = MutableStateFlow<List<RecipeCardResponse>>(emptyList())
+    val searchResults: StateFlow<List<RecipeCardResponse>> = _searchResults.asStateFlow()
 
-    fun onQueryChange(q: String) { uiState = uiState.copy(query = q) }
-    fun toggleKitchen(k: String) { uiState = uiState.copy(kitchens = uiState.kitchens.toggle(k)) }
-    fun toggleMeal(m: String) { uiState = uiState.copy(meals = uiState.meals.toggle(m)) }
-    fun toggleAllergen(a: String) { uiState = uiState.copy(allergens = uiState.allergens.toggle(a)) }
-    fun toggleDiet(d: String) { uiState = uiState.copy(diets = uiState.diets.toggle(d)) }
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    fun search() {
-        uiState = uiState.copy(isLoading = true, error = null)
+    fun searchRecipes(
+        query: String,
+        kitchens: Set<String>,
+        meals: Set<String>,
+        allergens: Set<String>,
+        diets: Set<String>
+    ) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
-                val results = repository.search(
-                    query = uiState.query,
-                    kitchens = uiState.kitchens,
-                    meals = uiState.meals,
-                    allergens = uiState.allergens,
-                    diets = uiState.diets
-                )
-                uiState = uiState.copy(results = results, isLoading = false)
-            } catch (t: Throwable) {
-                uiState = uiState.copy(error = t.message, isLoading = false)
+                val results = recipeRepository.searchRecipes(query, kitchens, meals, allergens, diets)
+                _searchResults.value = results
+            } catch (e: Exception) {
+                // Handle exceptions, e.g., log the error or show a message to the user
+                _searchResults.value = emptyList() // Clear results on error
+            } finally {
+                _isLoading.value = false
             }
         }
     }

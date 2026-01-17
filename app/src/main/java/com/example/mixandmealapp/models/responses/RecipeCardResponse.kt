@@ -9,5 +9,7 @@ data class RecipeCardResponse(
     val title: String,
     val description: String,
     val cookingTime: Int,
-    val imageUrl: List<RecipeImageEntry>
+    val imageUrl: List<RecipeImageEntry>,
+    val image: String = "", // Default to an empty string
+    val readyInMinutes: Int = 0 // Default to 0
 )
