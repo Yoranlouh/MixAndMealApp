@@ -71,13 +71,13 @@ fun AccountScreen(
     onGoToLogin: () -> Unit = {},
     onNavigateToAllergens: () -> Unit = {},
     onNavigateToDiets: () -> Unit = {},
-    fridgeViewModel: FridgeViewModel? = null,
+    fridgeViewModel: FridgeViewModel = koinViewModel(),
     favouritesViewModel: FavouritesViewModel = koinViewModel(),
     navController: NavHostController,
     isLoggedIn: Boolean = true, // Default to true to show logged-in state
     accountViewModel: AccountViewModel = koinViewModel()
 ) {
-    val vm = fridgeViewModel ?: remember { FridgeViewModel() }
+    val vm = fridgeViewModel
     val accountState by accountViewModel.uiState.collectAsState()
 
     LaunchedEffect(favouritesViewModel) { favouritesViewModel.load() }

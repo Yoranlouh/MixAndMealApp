@@ -64,7 +64,7 @@ fun AppNavigation(
     val navController = rememberNavController()
     
     // Shared ViewModel instances
-    val fridgeViewModel = remember { FridgeViewModel() }
+    val fridgeViewModel : FridgeViewModel = koinViewModel()
     val favouritesViewModel : FavouritesViewModel = koinViewModel()
     val homeViewModel: HomeViewModel = koinInject()
     val accountViewModel: AccountViewModel = koinInject()

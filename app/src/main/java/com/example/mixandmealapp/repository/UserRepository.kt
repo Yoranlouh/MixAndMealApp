@@ -90,11 +90,11 @@ class UserRepository() {
         return ApiService.getFridge(token)
     }
 
-    suspend fun addIngredientToFridge(token: String, ingredientId: IngredientIDRequest) : List<RecipeCardResponse> {
+    suspend fun addIngredientToFridge(token: String, ingredientId: IngredientIDRequest) : List<UserFridgeEntry> {
         return ApiService.addIngredientToFridge(token, ingredientId)
     }
 
-    suspend fun removeIngredientFromFridge(token: String, ingredientId: IngredientIDRequest) : List<RecipeCardResponse> {
+    suspend fun removeIngredientFromFridge(token: String, ingredientId: IngredientIDRequest) : List<UserFridgeEntry> {
         return ApiService.removeIngredientFromFridge(token, ingredientId)
     }
 

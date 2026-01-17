@@ -140,7 +140,7 @@ object ApiService {
     suspend fun addIngredientToFridge(
         token: String?,
         ingredientId: IngredientIDRequest
-    ): List<RecipeCardResponse> =
+    ): List<UserFridgeEntry> =
         client.post("$domain/fridge/add-ingredient") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
@@ -150,7 +150,7 @@ object ApiService {
     suspend fun removeIngredientFromFridge(
         token: String?,
         ingredientId: IngredientIDRequest
-    ): List<RecipeCardResponse> =
+    ): List<UserFridgeEntry> =
         client.delete("$domain/fridge/remove-ingredient") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)

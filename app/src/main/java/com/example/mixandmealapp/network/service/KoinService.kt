@@ -3,11 +3,13 @@ package com.example.mixandmealapp.network.service
 import android.content.Context
 import com.example.mixandmealapp.data.TokenRepository
 import com.example.mixandmealapp.data.dataStore
+import com.example.mixandmealapp.repository.FridgeRepository
 import com.example.mixandmealapp.repository.RecipeRepository
 import com.example.mixandmealapp.repository.UserRepository
 import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
+import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import com.example.mixandmealapp.ui.viewmodel.RecipeDetailViewModel
 import org.koin.core.module.dsl.bind
@@ -23,8 +25,10 @@ val appModule = module {
     single{ UserRepository() }
     single{ HomeViewModel(get(), get()) }
     single{ RecipeRepository() }
+    single{ FridgeRepository() }
     viewModel{ AuthViewModel(get(), get(), get()) }
     viewModel { FavouritesViewModel(get(),get()) }
     viewModel { RecipeDetailViewModel(get(), get()) }
     single { AccountViewModel(get(), get()) }
+    viewModel { FridgeViewModel(get(), get()) }
 }

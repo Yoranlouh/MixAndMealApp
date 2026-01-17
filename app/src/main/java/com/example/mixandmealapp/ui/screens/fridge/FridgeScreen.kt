@@ -53,6 +53,7 @@ import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +61,9 @@ import org.koin.compose.koinInject
 fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? = null, homeViewModel: HomeViewModel = koinInject()) {
     // Shared repository-backed ViewModel is provided by caller (AppNavigation).
     // In previews, fall back to a local instance.
-    val vm = viewModel ?: remember { FridgeViewModel() }
+
+    val vm : FridgeViewModel = koinViewModel()
+
     val uiState = vm.uiState
     var newIngredient by remember { mutableStateOf("") }
     val user by homeViewModel.role.collectAsState()
@@ -119,8 +122,8 @@ fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? =
             // Ingrediëntenlijst (use items from ViewModel)
             uiState.items.forEach { item ->
                 LabelFridge(
-                    label = item.name,
-                    onRemove = { vm.removeItem(item.id) }
+                    label = item.ingredientName,
+                    onRemove = { vm.removeItem(item) }
                 )
             }
 
@@ -140,7 +143,7 @@ fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? =
             OutlinedButton(
                 onClick = {
                     if (newIngredient.isNotBlank()) {
-                        vm.addItem(newIngredient.trim(), "1")
+                        vm.addItem(newIngredient.trim())
                         newIngredient = ""
                     }
                 },
