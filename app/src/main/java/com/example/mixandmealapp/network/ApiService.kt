@@ -3,9 +3,13 @@ package com.example.mixandmealapp.network
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.TokenClaim
+import com.example.mixandmealapp.models.entries.UserAllergenEntry
+import com.example.mixandmealapp.models.entries.UserDietEntry
 import com.example.mixandmealapp.models.entries.UserFridgeEntry
 import com.example.mixandmealapp.models.enums.Difficulty
 import com.example.mixandmealapp.models.enums.Role
+import com.example.mixandmealapp.models.requests.AllergenIDRequest
+import com.example.mixandmealapp.models.requests.DietsIDRequest
 import com.example.mixandmealapp.models.requests.IngredientIDRequest
 import com.example.mixandmealapp.models.requests.Login
 import com.example.mixandmealapp.models.requests.RecipeIDRequest
@@ -75,18 +79,18 @@ object ApiService {
             header("Authorization", "Bearer $token")
         }.body()
 
-    suspend fun addDietForUser(token: String?, diet: DietEntry): List<DietEntry> =
+    suspend fun addDietForUser(token: String?, diet: DietsIDRequest): List<DietEntry> =
         client.post("$domain/user/diets") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
-            setBody(diet.id)
+            setBody(diet)
         }.body()
 
-    suspend fun removeDietForUser(token: String?, diet: DietEntry): List<DietEntry> =
+    suspend fun removeDietForUser(token: String?, diet: DietsIDRequest): List<DietEntry> =
         client.delete("$domain/user/diets") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
-            setBody(diet.id)
+            setBody(diet)
         }.body()
 
     suspend fun getAllergensForUser(token: String?): List<AllergenEntry> =
@@ -94,21 +98,21 @@ object ApiService {
             header("Authorization", "Bearer $token")
         }.body()
 
-    suspend fun addAllergenForUser(token: String?, allergen: AllergenEntry): List<AllergenEntry> =
+    suspend fun addAllergenForUser(token: String?, allergen: AllergenIDRequest): List<AllergenEntry> =
         client.post("$domain/user/allergens") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
-            setBody(allergen.id)
+            setBody(allergen)
         }.body()
 
     suspend fun removeAllergenForUser(
         token: String?,
-        allergen: AllergenEntry
+        allergen: AllergenIDRequest
     ): List<AllergenEntry> =
         client.delete("$domain/user/allergens") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
-            setBody(allergen.id)
+            setBody(allergen)
         }.body()
 
     suspend fun getAllAllergens(): List<AllergenEntry> =

@@ -45,18 +45,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.mixandmealapp.ui.components.LabelFridge
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
-import com.example.mixandmealapp.ui.theme.BrandGrey
-import com.example.mixandmealapp.ui.theme.BrandOrange
-import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.example.mixandmealapp.ui.components.Labels
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -126,7 +123,7 @@ fun FridgeScreen(
 
             // Ingrediëntenlijst (use items from ViewModel)
             uiState.items.forEach { item ->
-                LabelFridge(
+                Labels(
                     label = item.ingredientName,
                     onRemove = { vm.removeItem(item) }
                 )
@@ -165,12 +162,3 @@ fun FridgeScreen(
     }
 }
 
-
-@Suppress("ViewModelLeak")
-@Preview(showBackground = true)
-@Composable
-fun FridgeScreenPreview() {
-    MixAndMealAppTheme {
-        FridgeScreen(navController = rememberNavController())
-    }
-}

@@ -30,15 +30,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.foundation.layout.FlowRow
-import com.example.mixandmealapp.ui.components.LabelFridge
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,6 +54,7 @@ import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.requests.RecipeIDRequest
+import com.example.mixandmealapp.ui.components.Labels
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,16 +109,14 @@ fun AccountScreen(
         ) {
             if (isLoggedIn) {
                 MyAllergensSection(
-                    userAllergens = accountState.userAllergens,
-                    onEdit = onNavigateToAllergens,
-                    onRemove = { accountViewModel.removeAllergen(it) }
+                    count = accountState.userAllergens.size,
+                    onNavigateToAllergens = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.MY_ALLERGENS) }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
                 MyDietsSection(
-                    userDiets = accountState.userDiets,
-                    onEdit = onNavigateToDiets,
-                    onRemove = { accountViewModel.removeDiet(it) }
+                    count = accountState.userDiets.size,
+                    onNavigateToDiets = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.MY_DIETS) }
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -197,9 +190,8 @@ private fun ProfileCard(name: String, onEditProfile: () -> Unit) {
 
 @Composable
 fun MyAllergensSection(
-    userAllergens: List<AllergenEntry>,
-    onEdit: () -> Unit,
-    onRemove: (AllergenEntry) -> Unit
+    count: Int,
+    onNavigateToAllergens: () -> Unit = {}
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
@@ -207,40 +199,28 @@ fun MyAllergensSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "My Allergens", style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(text = stringResource(id = com.example.mixandmealapp.R.string.my_allergens), style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.width(8.dp))
+                Text(text = stringResource(id = com.example.mixandmealapp.R.string.items_count, count), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            }
             Text(
-                text = "Edit",
+                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
                 color = BrandOrange,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { onEdit() }
+                modifier = Modifier.clickable { onNavigateToAllergens() }
             )
         }
 
-        if (userAllergens.isEmpty()) {
-            Text(
-                text = "Geen allergenen geselecteerd",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
-            )
-        } else {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                userAllergens.forEach { allergen ->
-                    LabelFridge(
-                        label = allergen.displayName,
-                        onRemove = { onRemove(allergen) }
-                    )
-                }
-            }
-        }
     }
 }
+
 
 @Composable
 fun MyDietsSection(
-    userDiets: List<DietEntry>,
-    onEdit: () -> Unit,
-    onRemove: (DietEntry) -> Unit
+    count: Int,
+    onNavigateToDiets: () -> Unit = {}
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(
@@ -248,34 +228,23 @@ fun MyDietsSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "My Diets", style = MaterialTheme.typography.titleLarge)
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(text = stringResource(id = com.example.mixandmealapp.R.string.my_diets), style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.width(8.dp))
+                Text(text = stringResource(id = com.example.mixandmealapp.R.string.items_count, count), style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            }
             Text(
-                text = "Edit",
+                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
                 color = BrandOrange,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { onEdit() }
+                modifier = Modifier.clickable { onNavigateToDiets() }
             )
         }
 
-        if (userDiets.isEmpty()) {
-            Text(
-                text = "Geen dieetvoorkeuren ingesteld",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
-            )
-        } else {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                userDiets.forEach { diet ->
-                    LabelFridge(
-                        label = diet.displayName,
-                        onRemove = { onRemove(diet) }
-                    )
-                }
-            }
-        }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -358,8 +327,6 @@ private fun MyFridgeSection(
             )
         }
 
-        // Show only the count.
-        // Individual items and the open fridge button are no longer shown here as per requirements.
     }
 }
 

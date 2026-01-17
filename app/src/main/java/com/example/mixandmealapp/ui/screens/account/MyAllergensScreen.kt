@@ -1,269 +1,148 @@
-package com.example.mixandmealapp.ui.screens.account
+package com.example.mixandmealapp.ui.screens.allergen
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.mixandmealapp.ui.theme.BrandOrange
-import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
-import org.koin.androidx.compose.koinViewModel
-
-import androidx.compose.material.icons.filled.Add
-import com.example.mixandmealapp.ui.components.LabelFridge
-import com.example.mixandmealapp.ui.theme.DarkText
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.runtime.collectAsState
+import androidx.navigation.NavHostController
+import com.example.mixandmealapp.ui.components.BackButton
+import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
+import com.example.mixandmealapp.ui.components.Labels
+import com.example.mixandmealapp.ui.viewmodel.AllergensViewModel
+import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyAllergensScreen(
-    onBack: () -> Unit,
-    accountViewModel: AccountViewModel = koinViewModel()
+fun AllergensScreen(
+    navController: NavHostController,
+    viewModel: AllergensViewModel? = null,
+    homeViewModel: HomeViewModel = koinInject(),
 ) {
-    val state by accountViewModel.uiState.collectAsState()
-    var query by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        accountViewModel.load()
-    }
+    val vm : AllergensViewModel = koinViewModel()
+
+    val uiState by vm.uiState.collectAsState()
+    var newAllergen by remember { mutableStateOf("") }
+    val user by homeViewModel.role.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mijn Allergenen", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Terug")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
-            )
-        }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            when {
-                state.error != null -> {
-                    AllergenErrorState(
-                        message = state.error ?: "Onbekende fout",
-                        onRetry = { accountViewModel.load() }
-                    )
-                }
-                else -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Text(
-                            text = "Beheer je allergenen. We zullen recepten filteren die deze bevatten.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-
-                        // Actieve allergenen lijst
-                        state.userAllergens.sortedBy { it.displayName }.forEach { allergen ->
-                            LabelFridge(
-                                label = allergen.displayName,
-                                onRemove = { accountViewModel.removeAllergen(allergen) }
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Autocomplete veld voor nieuwe allergenen
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            OutlinedTextField(
-                                value = query,
-                                onValueChange = { 
-                                    query = it
-                                    expanded = it.isNotBlank()
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                placeholder = { Text("Voeg een allergeen toe...", color = Color.Gray) },
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = Color.LightGray,
-                                    focusedBorderColor = BrandOrange,
-                                    unfocusedContainerColor = Color.White,
-                                    focusedContainerColor = Color.White
-                                ),
-                                shape = RoundedCornerShape(24.dp),
-                                singleLine = true
-                            )
-
-                            if (expanded) {
-                                val suggestions = state.allAvailableAllergens
-                                    .filter { it.displayName.contains(query, ignoreCase = true) }
-                                    .filter { allergen -> state.userAllergens.none { it.id == allergen.id } }
-                                    .sortedBy { it.displayName }
-
-                                if (suggestions.isNotEmpty()) {
-                                    Surface(
-                                        tonalElevation = 2.dp,
-                                        shadowElevation = 4.dp,
-                                        shape = RoundedCornerShape(12.dp),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 56.dp)
-                                    ) {
-                                        Column(modifier = Modifier.background(Color.White)) {
-                                            suggestions.forEach { suggestion ->
-                                                Text(
-                                                    text = suggestion.displayName,
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .clickable {
-                                                            accountViewModel.addAllergen(suggestion)
-                                                            query = ""
-                                                            expanded = false
-                                                        }
-                                                        .padding(12.dp)
-                                                )
-                                            }
-                                        }
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        BackButton(
+                            navController = navController,
+                            modifier = Modifier.padding(end = 8.dp),
+                            onClick = {
+                                navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.HOME) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        inclusive = true
                                     }
                                 }
                             }
-                        }
-
-                        if (query.isNotBlank() && expanded) {
-                             // Optioneel: toon melding als er geen suggesties zijn
-                             val suggestions = state.allAvailableAllergens
-                                .filter { it.displayName.contains(query, ignoreCase = true) }
-                                .filter { allergen -> state.userAllergens.none { it.id == allergen.id } }
-                             
-                             if (suggestions.isEmpty()) {
-                                 Text(
-                                     text = "Geen beschikbare allergenen gevonden voor \"$query\"",
-                                     style = MaterialTheme.typography.bodySmall,
-                                     color = Color.Gray,
-                                     modifier = Modifier.padding(horizontal = 12.dp)
-                                 )
-                             }
-                        }
+                        )
+                        Text(
+                            text = stringResource(id = com.example.mixandmealapp.R.string.allergens_title),
+                            style = MaterialTheme.typography.headlineSmall
+                        )
                     }
                 }
-            }
-            
-            if (state.isSaving) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.1f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = BrandOrange)
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(text = stringResource(id = com.example.mixandmealapp.R.string.my_allergens), style = MaterialTheme.typography.titleLarge)
+                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                    Text(
+                        text = stringResource(id = com.example.mixandmealapp.R.string.items_count, uiState.items.size),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray
+                    )
                 }
             }
-        }
-    }
-}
 
-@Composable
-fun AllergenPreferenceItem(
-    title: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Surface(
-        onClick = onClick,
-        shape = MaterialTheme.shapes.medium,
-        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
-        border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        tonalElevation = if (isSelected) 2.dp else 0.dp,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
-            )
-            Checkbox(
-                checked = isSelected,
-                onCheckedChange = null,
-                colors = CheckboxDefaults.colors(
-                    checkedColor = BrandOrange,
-                    checkmarkColor = Color.White
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Allergenenlijst (use items from ViewModel)
+            uiState.items.forEach { item ->
+                Labels(
+                    label = item.displayName,
+                    onRemove = { vm.removeItem(item.toString()) }
                 )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+
+            val onAddItem = {
+                if (newAllergen.isNotBlank()) {
+                    vm.addItem(newAllergen.trim())
+                    newAllergen = ""
+                }
+            }
+
+            IngredientAutoCompleteField(
+                value = newAllergen,
+                onValueChange = { newAllergen = it },
+                onSelected = { selected -> newAllergen = selected },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = stringResource(id = com.example.mixandmealapp.R.string.allergens_enter_allergen),
             )
-        }
-    }
-}
 
-@Composable
-fun AllergenLoadingState() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(color = BrandOrange)
-    }
-}
-
-@Composable
-fun AllergenErrorState(message: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.Close,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.error,
-            modifier = Modifier.size(48.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Oeps! Er ging iets mis.",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(
-            onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(containerColor = BrandOrange)
-        ) {
-            Text("Opnieuw proberen")
+            Button(
+                onClick = onAddItem,
+                enabled = newAllergen.isNotBlank(),
+                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier.height(56.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(id = com.example.mixandmealapp.R.string.allergens_add_allergen)
+                )
+            }
         }
     }
 }

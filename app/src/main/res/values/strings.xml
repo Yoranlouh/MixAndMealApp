@@ -140,6 +140,11 @@
     <string name="upload_allergens_lupin">Lupin</string>
     <string name="upload_allergens_molluscs">Molluscs</string>
     <string name="upload_allergens_corn">Corn</string>
+    <string name="my_allergens">My Allergens</string>
+    <string name="allergens_enter_allergen">Enter Allergen</string>
+    <string name="allergens_add_allergen">add Allergen</string>
+    <string name="allergens_title">Allergens</string>
+
 
     <string name="upload_diets">Diets</string>
     <string name="upload_diets_vegan">Vegan</string>
@@ -205,4 +210,8 @@
     <string name="read_instructions">Read instructions</string>
     <string name="no_instructions_found">No instructions found</string>
     <string name="R.string.upload_difficulty_60">60%gt</string>
+    <string name="my_diets">My Diets</string>
+    <string name="diet_title">Diet Title</string>
+    <string name="diet_enter_diet">Enter Diet</string>
+    <string name="diet_add_diet">Add Diet</string>
 </resources>

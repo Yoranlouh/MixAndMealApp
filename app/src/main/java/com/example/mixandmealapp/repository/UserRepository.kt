@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.UserFridgeEntry
+import com.example.mixandmealapp.models.requests.AllergenIDRequest
+import com.example.mixandmealapp.models.requests.DietsIDRequest
 import com.example.mixandmealapp.models.requests.IngredientIDRequest
 import com.example.mixandmealapp.models.requests.Login
 import com.example.mixandmealapp.models.requests.RecipeIDRequest
@@ -50,11 +52,11 @@ class UserRepository() {
         return ApiService.getDietsForUser(token)
     }
 
-    suspend fun addDiet(token: String, diet: DietEntry) : List<DietEntry> {
+    suspend fun addDiet(token: String, diet: DietsIDRequest) : List<DietEntry> {
         return ApiService.addDietForUser(token, diet)
     }
 
-    suspend fun removeDiet(token: String, diet: DietEntry) : List<DietEntry> {
+    suspend fun removeDiet(token: String, diet: DietsIDRequest) : List<DietEntry> {
         return ApiService.removeDietForUser(token, diet)
     }
 
@@ -62,11 +64,11 @@ class UserRepository() {
         return ApiService.getAllergensForUser(token)
     }
 
-    suspend fun addAllergen(token: String, allergen: AllergenEntry) : List<AllergenEntry> {
+    suspend fun addAllergen(token: String, allergen: AllergenIDRequest) : List<AllergenEntry> {
         return ApiService.addAllergenForUser(token, allergen)
     }
 
-    suspend fun removeAllergen(token: String, allergen: AllergenEntry) : List<AllergenEntry> {
+    suspend fun removeAllergen(token: String, allergen: AllergenIDRequest) : List<AllergenEntry> {
         return ApiService.removeAllergenForUser(token, allergen)
     }
 
@@ -86,17 +88,6 @@ class UserRepository() {
         return ApiService.toggleFavourite(token, recipeId)
     }
 
-    suspend fun getFridge(token: String?): List<UserFridgeEntry> {
-        return ApiService.getFridge(token)
-    }
-
-    suspend fun addIngredientToFridge(token: String, ingredientId: IngredientIDRequest) : List<UserFridgeEntry> {
-        return ApiService.addIngredientToFridge(token, ingredientId)
-    }
-
-    suspend fun removeIngredientFromFridge(token: String, ingredientId: IngredientIDRequest) : List<UserFridgeEntry> {
-        return ApiService.removeIngredientFromFridge(token, ingredientId)
-    }
 
 }
 

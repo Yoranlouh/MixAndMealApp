@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixandmealapp.data.TokenRepository
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
+import com.example.mixandmealapp.models.requests.AllergenIDRequest
+import com.example.mixandmealapp.models.requests.DietsIDRequest
 import com.example.mixandmealapp.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -62,7 +64,7 @@ class AccountViewModel(
         }
     }
 
-    fun addAllergen(allergen: AllergenEntry) {
+    fun addAllergen(allergen: AllergenIDRequest) {
         _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
             try {
@@ -75,7 +77,7 @@ class AccountViewModel(
         }
     }
 
-    fun removeAllergen(allergen: AllergenEntry) {
+    fun removeAllergen(allergen: AllergenIDRequest) {
         _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
             try {
@@ -88,7 +90,7 @@ class AccountViewModel(
         }
     }
 
-    fun addDiet(diet: DietEntry) {
+    fun addDiet(diet: DietsIDRequest) {
         _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
             try {
@@ -101,7 +103,7 @@ class AccountViewModel(
         }
     }
 
-    fun removeDiet(diet: DietEntry) {
+    fun removeDiet(diet: DietsIDRequest) {
         _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
             try {
