@@ -67,6 +67,8 @@ fun AppNavigation(
     
     // Shared ViewModel instances
     val fridgeViewModel : FridgeViewModel = koinViewModel()
+    val AllergensViewModel : AllergensViewModel = koinViewModel()
+    val MyDietViewModel : MyDietViewModel = koinViewModel()
     val favouritesViewModel : FavouritesViewModel = koinViewModel()
     val homeViewModel: HomeViewModel = koinInject()
     val accountViewModel: AccountViewModel = koinInject()
@@ -298,15 +300,21 @@ fun AppNavigation(
             composable(Navigation.MY_ALLERGENS) {
                 AllergensScreen(
                     navController = navController,
-                    viewModel = koinViewModel<AllergensViewModel>()
+                    viewModel = AllergensViewModel
                 )
             }
 
             composable(Navigation.MY_DIETS) {
                 DietScreen(
                     navController = navController,
-                    viewModel = koinViewModel<MyDietViewModel>()
+                    viewModel = MyDietViewModel
                 )
+            }
+
+            composable(Navigation.FRIDGE) {
+                FridgeScreen(
+                    navController = navController,
+                    viewModel = fridgeViewModel)
             }
 
             // --- ADMIN ROUTES ---

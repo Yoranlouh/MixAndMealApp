@@ -67,7 +67,6 @@ fun FridgeScreen(
 
     val uiState by vm.uiState.collectAsState()
     var newIngredient by remember { mutableStateOf("") }
-    val user by homeViewModel.role.collectAsState()
 
     Scaffold(
         topBar = {

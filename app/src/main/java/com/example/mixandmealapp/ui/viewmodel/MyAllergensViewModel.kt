@@ -41,12 +41,12 @@ class AllergensViewModel(
         }
     }
 
-    fun addItem(allergen: String) {
+    fun addItem(allergen: AllergenEntry) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             try {
                 val token = tokenRepo.getTokenOrDefault()
-                val updatedList = repo.addAllergen(token, AllergenIDRequest(allergen))
+                val updatedList = repo.addAllergen(token, AllergenIDRequest(allergen.displayName))
                 _uiState.value = _uiState.value.copy(items = updatedList, isLoading = false, error = null)
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(error = t.message, isLoading = false)
@@ -54,12 +54,12 @@ class AllergensViewModel(
         }
     }
 
-    fun removeItem(allergen: String) {
+    fun removeItem(allergen: AllergenEntry) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             try {
                 val token = tokenRepo.getTokenOrDefault()
-                val updatedList = repo.removeAllergen(token, AllergenIDRequest(allergen))
+                val updatedList = repo.removeAllergen(token, AllergenIDRequest(allergen.displayName))
                 _uiState.value = _uiState.value.copy(items = updatedList, isLoading = false, error = null)
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(error = t.message, isLoading = false)

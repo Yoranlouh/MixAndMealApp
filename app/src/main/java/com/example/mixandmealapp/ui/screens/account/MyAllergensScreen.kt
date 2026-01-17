@@ -52,7 +52,6 @@ fun AllergensScreen(
 
     val uiState by vm.uiState.collectAsState()
     var newAllergen by remember { mutableStateOf("") }
-    val user by homeViewModel.role.collectAsState()
 
     Scaffold(
         topBar = {
@@ -110,7 +109,7 @@ fun AllergensScreen(
             uiState.items.forEach { item ->
                 Labels(
                     label = item.displayName,
-                    onRemove = { vm.removeItem(item.toString()) }
+                    onRemove = { vm.removeItem(item) }
                 )
             }
 
@@ -119,7 +118,7 @@ fun AllergensScreen(
 
             val onAddItem = {
                 if (newAllergen.isNotBlank()) {
-                    vm.addItem(newAllergen.trim())
+                    vm.addItem(newAllergen)
                     newAllergen = ""
                 }
             }

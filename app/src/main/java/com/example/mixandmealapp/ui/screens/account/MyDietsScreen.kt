@@ -102,7 +102,7 @@ fun DietScreen(
             uiState.items.forEach { item ->
                 Labels(
                     label = item.displayName,
-                    onRemove = { vm.removeItem(item.toString()) }
+                    onRemove = { vm.removeItem(item.displayName) }
                 )
             }
 
