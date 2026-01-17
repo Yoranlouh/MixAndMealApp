@@ -16,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mixandmealapp.models.enums.Role
+import com.example.mixandmealapp.models.requests.RecipeSearchRequest
 import com.example.mixandmealapp.ui.components.AdminBottomNavBar
 import com.example.mixandmealapp.ui.components.GuestBottomNavBar
 import com.example.mixandmealapp.ui.components.UserBottomNavBar
@@ -210,24 +211,12 @@ fun AppNavigation(
                     onSpeechRecognize = onSpeechRecognize
                 )
             }
-            composable(
-                route = "${Navigation.SEARCH_RESULTS}?query={query}&kitchens={kitchens}&meals={meals}&allergens={allergens}&diets={diets}",
-                arguments = listOf(
-                    navArgument("query") { type = NavType.StringType; defaultValue = "" },
-                    navArgument("kitchens") { type = NavType.StringType; defaultValue = "" },
-                    navArgument("meals") { type = NavType.StringType; defaultValue = "" },
-                    navArgument("allergens") { type = NavType.StringType; defaultValue = "" },
-                    navArgument("diets") { type = NavType.StringType; defaultValue = "" }
-                )
-            ) { backStackEntry ->
+            composable(Navigation.SEARCH_RESULTS)
+            {
                 SearchResultScreen(
                     navController = navController,
                     searchViewModel = koinViewModel(), // Assuming you use Koin
-                    query = backStackEntry.arguments?.getString("query"),
-                    kitchens = backStackEntry.arguments?.getString("kitchens"),
-                    meals = backStackEntry.arguments?.getString("meals"),
-                    allergens = backStackEntry.arguments?.getString("allergens"),
-                    diets = backStackEntry.arguments?.getString("diets")
+
                 )
             }
 

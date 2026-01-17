@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.mixandmealapp.models.requests.RecipeSearchRequest
+import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
@@ -41,42 +43,26 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SearchResultScreen(
     navController: NavHostController,
     searchViewModel: SearchViewModel = koinViewModel(),
-    query: String?,
-    kitchens: String?,
-    meals: String?,
-    allergens: String?,
-    diets: String?
 ) {
-    // ✅ Use derivedStateOf to prevent recomposition issues
-    var initialQuery by remember(query) { mutableStateOf(query ?: "") }
-    var initialKitchens by remember(kitchens) { mutableStateOf(kitchens?.split(',')?.filter { it.isNotBlank() }?.toSet() ?: emptySet()) }
-    var initialMeals by remember(meals) { mutableStateOf(meals?.split(',')?.filter { it.isNotBlank() }?.toSet() ?: emptySet()) }
-    var initialAllergens by remember(allergens) { mutableStateOf(allergens?.split(',')?.filter { it.isNotBlank() }?.toSet() ?: emptySet()) }
-    var initialDiets by remember(diets) { mutableStateOf(diets?.split(',')?.filter { it.isNotBlank() }?.toSet() ?: emptySet()) }
+    // VERWIJDER de searchViewModel.load(...) uit de LaunchedEffect die alles leegmaakt!
+    // De data is al geladen door de actie in SearchScreen.
 
-    // ✅ Separate mutable states that don't trigger ViewModel calls
-    var searchQuery by remember { mutableStateOf(initialQuery) }
+    val uiState = searchViewModel.uiState
+    val items = uiState.recipes
+    val currentRequest = uiState.searchRequest
+
+    // Gebruik de waarden uit de ViewModel voor de UI
+    var searchQuery by remember { mutableStateOf(currentRequest.partialTitle) }
     var showFilters by remember { mutableStateOf(false) }
 
-    val results by searchViewModel.searchResults.collectAsState()
-    val isLoading by searchViewModel.isLoading.collectAsState()
-
-    // ✅ Only trigger search when filters actually change
-    LaunchedEffect(searchQuery, initialKitchens, initialMeals, initialAllergens, initialDiets) {
-        searchViewModel.searchRecipes(searchQuery, initialKitchens, initialMeals, initialAllergens, initialDiets)
-    }
-
-    // ✅ Debounced search for query changes
-    LaunchedEffect(searchQuery) {
-        searchViewModel.searchRecipes(searchQuery, initialKitchens, initialMeals, initialAllergens, initialDiets)
-    }
-
-
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        // ... (Top search field is correct)
         OutlinedTextField(
             value = searchQuery,
-            onValueChange = { searchQuery = it },
+            onValueChange = {
+                searchQuery = it
+                // Optioneel: direct zoeken bij typen
+                searchViewModel.load(currentRequest.copy(partialTitle = it))
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
@@ -98,17 +84,19 @@ fun SearchResultScreen(
         )
 
         CompactFilterSummary(
-            selectedKitchenStyles = initialKitchens,
-            selectedMealTypes = initialMeals,
-            selectedAllergens = initialAllergens,
-            selectedDiets = initialDiets,
+            selectedKitchenStyles = currentRequest.kitchenStyle,
+            selectedMealTypes = currentRequest.mealType,
+            selectedAllergens = currentRequest.allergens,
+            selectedDiets = currentRequest.diets,
             onOpenFilters = { showFilters = true },
-            onClearAll = { initialKitchens = emptySet(); initialMeals = emptySet(); initialAllergens = emptySet(); initialDiets = emptySet() }
+            onClearAll = {
+                searchViewModel.load(RecipeSearchRequest("", "EASY", "", "", 100, emptyList(), emptyList(), emptyList()))
+            }
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Found ${results.size} result(s)",
+            text = "Found ${items.size} result(s)",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .align(Alignment.Start)
@@ -122,27 +110,36 @@ fun SearchResultScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // FIX: Ensure the variable name matches ('recipe' in this case)
-            items(results, key = { it.recipeId }) { recipe ->
+            items(items, key = { it.recipeId }) { recipe ->
                 // Now that it's imported, this call should be valid.
                 SearchResultItem(navController = navController, recipe = recipe)
             }
         }
     }
 
-    // ... (SearchFilterBottomSheet is unchanged)
-    SearchFilterBottomSheet(
-        show = showFilters,
-        selectedKitchenStyles = initialKitchens,
-        selectedMealTypes = initialMeals,
-        selectedAllergens = initialAllergens,
-        selectedDiets = initialDiets,
-        onToggleKitchen = { opt -> initialKitchens = if (initialKitchens.contains(opt)) emptySet() else setOf(opt) },
-        onToggleMealType = { opt -> initialMeals = if (initialMeals.contains(opt)) emptySet() else setOf(opt) },
-        onToggleAllergen = { initialAllergens = initialAllergens.toggle(it) },
-        onToggleDiet = { opt -> initialDiets = if (initialDiets.contains(opt)) emptySet() else setOf(opt) },
-        onApply = { showFilters = false },
-        onClearAll = { initialKitchens = emptySet(); initialMeals = emptySet(); initialAllergens = emptySet(); initialDiets = emptySet() },
-        onDismiss = { showFilters = false }
-    )
-}
-private fun <T> Set<T>.toggle(item: T): Set<T> = if (contains(item)) this - item else this + item
+    if (showFilters) {
+        SearchFilterBottomSheet(
+            show = showFilters,
+            selectedKitchenStyles = currentRequest.kitchenStyle,
+            selectedMealTypes = currentRequest.mealType,
+            selectedAllergens = currentRequest.allergens,
+            selectedDiets = currentRequest.diets,
+            onToggleKitchen = { opt ->
+                searchViewModel.load(currentRequest.copy(kitchenStyle = if(currentRequest.kitchenStyle == opt) "" else opt))
+            },
+            onToggleMealType = { opt ->
+                searchViewModel.load(currentRequest.copy(mealType = if(currentRequest.mealType == opt) "" else opt))
+            },
+            onToggleAllergen = { opt ->
+                val newList = if (currentRequest.allergens.contains(opt)) currentRequest.allergens - opt else currentRequest.allergens + opt
+                searchViewModel.load(currentRequest.copy(allergens = newList))
+            },
+            onToggleDiet = {opt ->
+                val newList = if (currentRequest.diets.contains(opt)) currentRequest.diets - opt else currentRequest.diets + opt
+                searchViewModel.load(currentRequest.copy(allergens = newList))
+            },
+            onApply = { showFilters = false },
+            onDismiss = { showFilters = false },
+            onClearAll = { navController.navigate(Navigation.SEARCH) }
+        )
+    }}

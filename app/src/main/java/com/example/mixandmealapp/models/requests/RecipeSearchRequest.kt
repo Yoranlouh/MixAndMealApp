@@ -8,6 +8,6 @@ data class RecipeSearchRequest(
     val kitchenStyle: String,
     val maxCookingTime: Int,
     val diets : List<String>,
-    val allergens: List<Int>,
+    val allergens: List<String>,
     val ingredients: List<String>
     )

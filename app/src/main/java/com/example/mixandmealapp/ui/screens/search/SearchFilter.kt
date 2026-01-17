@@ -28,10 +28,10 @@ import com.example.mixandmealapp.ui.screens.upload.FilterSection
 @Composable
 fun SearchFilterBottomSheet(
     show: Boolean,
-    selectedKitchenStyles: Set<String>,
-    selectedMealTypes: Set<String>,
-    selectedAllergens: Set<String>,
-    selectedDiets: Set<String>,
+    selectedKitchenStyles: String,
+    selectedMealTypes: String,
+    selectedAllergens: List<String>,
+    selectedDiets: List<String>,
     onToggleKitchen: (String) -> Unit,
     onToggleMealType: (String) -> Unit,
     onToggleAllergen: (String) -> Unit,
@@ -66,7 +66,7 @@ fun SearchFilterBottomSheet(
             FilterSection(
                 title = "Kitchen Styles",
                 options = kitchenStylesStrings,
-                selectedOptions = selectedKitchenStyles,
+                selectedOptions = setOf(selectedKitchenStyles),
                 expanded = kitchenExpanded,
                 onHeaderToggle = { kitchenExpanded = !kitchenExpanded },
                 onOptionToggle = { opt ->
@@ -80,7 +80,7 @@ fun SearchFilterBottomSheet(
             FilterSection(
                 title = "Meal Types",
                 options = mealTypeStrings,
-                selectedOptions = selectedMealTypes,
+                selectedOptions = setOf(selectedMealTypes),
                 expanded = mealTypeExpanded,
                 onHeaderToggle = { mealTypeExpanded = !mealTypeExpanded },
                 onOptionToggle = { opt ->
@@ -94,7 +94,7 @@ fun SearchFilterBottomSheet(
             FilterSection(
                 title = "Allergens",
                 options = allergensStrings,
-                selectedOptions = selectedAllergens,
+                selectedOptions = selectedAllergens.toSet(),
                 expanded = allergensExpanded,
                 onHeaderToggle = { allergensExpanded = !allergensExpanded },
                 onOptionToggle = { opt ->
@@ -108,7 +108,7 @@ fun SearchFilterBottomSheet(
             FilterSection(
                 title = "Diets",
                 options = dietsStrings,
-                selectedOptions = selectedDiets,
+                selectedOptions = selectedDiets.toSet(),
                 expanded = dietsExpanded,
                 onHeaderToggle = { dietsExpanded = !dietsExpanded },
                 onOptionToggle = { opt ->
@@ -140,14 +140,14 @@ fun SearchFilterBottomSheet(
 
 @Composable
 fun CompactFilterSummary(
-    selectedKitchenStyles: Set<String>,
-    selectedMealTypes: Set<String>,
-    selectedAllergens: Set<String>,
-    selectedDiets: Set<String>,
+    selectedKitchenStyles: String,
+    selectedMealTypes: String,
+    selectedAllergens: List<String>,
+    selectedDiets: List<String>,
     onOpenFilters: () -> Unit,
     onClearAll: () -> Unit
 ) {
-    val total = selectedKitchenStyles.size + selectedMealTypes.size + selectedAllergens.size + selectedDiets.size
+    val total = selectedAllergens.size + selectedDiets.size
     val expanded = remember { mutableStateOf(false) }
 
     androidx.compose.material3.OutlinedButton(
@@ -164,13 +164,13 @@ fun CompactFilterSummary(
         } else {
             if (selectedKitchenStyles.isNotEmpty()) {
                 DropdownMenuItem(
-                    text = { Text("Kitchen: " + selectedKitchenStyles.joinToString(limit = 3)) },
+                    text = { Text("Kitchen: " + selectedKitchenStyles) },
                     onClick = { }
                 )
             }
             if (selectedMealTypes.isNotEmpty()) {
                 DropdownMenuItem(
-                    text = { Text("Meal: " + selectedMealTypes.joinToString(limit = 3)) },
+                    text = { Text("Meal: " + selectedMealTypes) },
                     onClick = { }
                 )
             }
