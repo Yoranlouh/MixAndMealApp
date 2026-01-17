@@ -152,7 +152,7 @@ object ApiService {
         token: String?,
         ingredientId: IngredientIDRequest
     ): List<UserFridgeEntry> =
-        client.delete("$domain/fridge/remove-ingredient") {
+        client.delete("$domain/fridge/remove-ingredient-from-fridge") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(ingredientId)

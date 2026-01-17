@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
@@ -55,16 +56,19 @@ import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? = null, homeViewModel: HomeViewModel = koinInject()) {
-    // Shared repository-backed ViewModel is provided by caller (AppNavigation).
-    // In previews, fall back to a local instance.
+fun FridgeScreen(
+    navController: NavHostController,
+    viewModel: FridgeViewModel? = null,
+    homeViewModel: HomeViewModel = koinInject()
+) {
 
     val vm : FridgeViewModel = koinViewModel()
 
-    val uiState = vm.uiState
+    val uiState by vm.uiState.collectAsState()
     var newIngredient by remember { mutableStateOf("") }
     val user by homeViewModel.role.collectAsState()
 
@@ -101,6 +105,7 @@ fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? =
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -127,41 +132,39 @@ fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? =
                 )
             }
 
-            // Inputveld + knop direct onder de laatste ingrediëntkaart
             Spacer(modifier = Modifier.height(8.dp))
+
+
+            val onAddItem = {
+                if (newIngredient.isNotBlank()) {
+                    vm.addItem(newIngredient.trim())
+                    newIngredient = ""
+                }
+            }
 
             IngredientAutoCompleteField(
                 value = newIngredient,
                 onValueChange = { newIngredient = it },
                 onSelected = { selected -> newIngredient = selected },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = stringResource(id = com.example.mixandmealapp.R.string.fridge_enter_ingredient)
+                placeholder = stringResource(id = com.example.mixandmealapp.R.string.fridge_enter_ingredient),
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedButton(
-                onClick = {
-                    if (newIngredient.isNotBlank()) {
-                        vm.addItem(newIngredient.trim())
-                        newIngredient = ""
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
+            Button(
+                onClick = onAddItem,
                 enabled = newIngredient.isNotBlank(),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = DarkText
-                ),
                 shape = RoundedCornerShape(24.dp),
-                border = BorderStroke(1.dp, BrandGrey)
+                modifier = Modifier.height(56.dp)
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add", tint = DarkText)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(id = com.example.mixandmealapp.R.string.fridge_add_ingredient))
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(id = com.example.mixandmealapp.R.string.fridge_add_ingredient)
+                )
             }
         }
     }
 }
+
 
 @Suppress("ViewModelLeak")
 @Preview(showBackground = true)

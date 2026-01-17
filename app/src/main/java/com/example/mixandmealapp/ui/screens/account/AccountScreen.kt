@@ -78,6 +78,7 @@ fun AccountScreen(
     accountViewModel: AccountViewModel = koinViewModel()
 ) {
     val vm = fridgeViewModel
+    val fridgeState by fridgeViewModel.uiState.collectAsState()
     val accountState by accountViewModel.uiState.collectAsState()
 
     LaunchedEffect(favouritesViewModel) { favouritesViewModel.load() }
@@ -136,7 +137,7 @@ fun AccountScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 MyFridgeSection(
-                    count = vm.uiState.items.size,
+                    count = fridgeState.items.size,
                     onNavigateToFridge = { navController.navigate(com.example.mixandmealapp.ui.navigation.Navigation.FRIDGE) }
                 )
             } else {
