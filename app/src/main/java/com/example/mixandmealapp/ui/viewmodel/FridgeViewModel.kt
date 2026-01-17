@@ -42,9 +42,10 @@ class FridgeViewModel(
         viewModelScope.launch {
             try {
                 val tokenToUse = tokenRepo.getTokenOrDefault()
-                val added = repo.addIngredientToFridge(tokenToUse, IngredientIDRequest(ingredient) )
-                val next = uiState.items + added
+                repo.addIngredientToFridge(tokenToUse, IngredientIDRequest(ingredient) )
+                val next = repo.getFridgeItems(tokenToUse)
                 uiState = uiState.copy(items = next)
+                refresh()
             } catch (t: Throwable) {
                 uiState = uiState.copy(error = t.message)
             }
@@ -58,6 +59,7 @@ class FridgeViewModel(
                 repo.removeIngredientFromFridge(tokenToUse, IngredientIDRequest(id.ingredientName))
                 val next = uiState.items.filterNot { it == id }
                 uiState = uiState.copy(items = next)
+                refresh()
             } catch (t: Throwable) {
                 uiState = uiState.copy(error = t.message)
             }
