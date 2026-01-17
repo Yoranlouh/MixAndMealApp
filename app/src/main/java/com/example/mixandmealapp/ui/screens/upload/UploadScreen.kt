@@ -93,6 +93,7 @@ fun UploadScreen(
     repo: TokenRepository,
     onPhotoPick: (callback: (Uri?) -> Unit) -> Unit,
     onCameraClick: (callback: (Uri?) -> Unit) -> Unit,
+    recipeId: Int?
 ) {
 
 
@@ -105,12 +106,16 @@ fun UploadScreen(
     var description by remember { mutableStateOf("") }
     var instructions by remember { mutableStateOf("") }
 
+    // Prep time States
+    var selectedPrepTime by remember { mutableIntStateOf(0) }
+
     // Discrete cooking time options (in minutes) for slider steps
     // index 0 represents "<10"; show labels only for first, middle (30), and last
     val durationOptions = listOf(9, 15, 30, 45, 60)
     var cookingDuration by remember { mutableIntStateOf(2) } // default 30 min
     val ingredients = remember { mutableStateListOf<Ingredient>() }
     var newIngredientName by remember { mutableStateOf("") }
+    var selectedCookingDuration by remember { mutableIntStateOf(0) }
 
     // Difficulty states
     var selectedDifficulty by remember { mutableStateOf(setOf<Difficulty>()) }
@@ -138,6 +143,67 @@ fun UploadScreen(
     var showSuccessDialog by remember { mutableStateOf(false) }
     var showCameraPermissionDialog by rememberSaveable { mutableStateOf(false) }
     var cameraPermissionAccepted by rememberSaveable { mutableStateOf(false) }
+
+    // --- NEW LOGIC: FETCH DATA FOR EDITING ---
+    LaunchedEffect(recipeId) {
+        if (recipeId != null) {
+            scope.launch {
+                try {
+                    // Use a repository to get the recipe data
+                    val recipeToEdit = ApiService.getFullRecipe(recipeId)
+
+                    // Pre-fill all the state variables
+                    recipeName = recipeToEdit.title
+                    description = recipeToEdit.description
+                    instructions = recipeToEdit.instructions
+                    selectedDifficulty = setOf(recipeToEdit.difficulty)
+                    selectedPrepTime = when (recipeToEdit.prepTime) {
+                        in 0..14 -> 1
+                        in 15..29 -> 2
+                        in 30..44 -> 3
+                        in 45..59 -> 4
+                        else -> 5
+                    }
+
+                    ingredients.clear()
+                    // 2. Map the server response to the local Ingredient data class
+                    val fetchedIngredients = recipeToEdit.ingredients.map { ingredientFromServer ->
+                        Ingredient(
+                            name = ingredientFromServer.ingredientName,
+                            amount = ingredientFromServer.amount,
+                            unitType = ingredientFromServer.unitType,
+                            isConfirmed = true // Mark them as confirmed since they come from the server
+                        )
+                    }
+                    ingredients.addAll(fetchedIngredients)
+
+                    selectedKitchenStyles = setOf(recipeToEdit.kitchenStyle)
+                    selectedMealTypes = setOf(recipeToEdit.mealType)
+                    selectedAllergens = recipeToEdit.allergens.map { it.name }.toSet()
+                    selectedDiets = recipeToEdit.diets.map { it.displayName }.toSet()
+
+                    // Map the cooking time to your segmented button index
+                    selectedCookingDuration = when (recipeToEdit.cookingTime) {
+                        in 0..14 -> 1
+                        in 15..29 -> 2
+                        in 30..44 -> 3
+                        in 45..59 -> 4
+                        else -> 5
+                    }
+
+                    if (recipeToEdit.images.isNotEmpty()) {
+                        coverPhotoUri = Uri.parse(recipeToEdit.images.first().imageUrl)
+                    }
+
+
+
+                } catch (e: Exception) {
+                    Log.e("UploadScreen", "Failed to load recipe for editing", e)
+                    // Optionally show an error message to the user
+                }
+            }
+        }
+    }
 
     if (showSuccessDialog) {
         UploadSuccessDialog(
@@ -221,8 +287,6 @@ fun UploadScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Recipe Name
-        var recipeName by remember { mutableStateOf("") }
-
         InputFieldSmall(
             value = recipeName,
             onValueChange = { recipeName = it },
@@ -280,9 +344,6 @@ fun UploadScreen(
         )
 
         Spacer(modifier = Modifier.height(20.dp))
-
-        var selectedPrepTime by remember { mutableIntStateOf(0) }
-        var selectedCookingDuration by remember { mutableIntStateOf(0) }
 
         fun getValue(selectedCookingDuration: Int): Int {
             var result = 0
@@ -536,8 +597,11 @@ fun UploadScreen(
             expanded = dietExpanded,
             onHeaderToggle = { dietExpanded = !dietExpanded },
             onOptionToggle = { option ->
-                // single-select gedrag
-                selectedDiets = if (selectedDiets.contains(option)) emptySet() else setOf(option)
+                selectedDiets = if (selectedDiets.contains(option)) {
+                    selectedDiets - option
+                } else {
+                    selectedDiets + option
+                }
             }
         )
 
@@ -556,6 +620,7 @@ fun UploadScreen(
 
                     try {
                         val request = RecipeUploadRequest(
+                            recipeId = recipeId,
                             title = recipeName,
                             description = description,
                             instructions = instructions,
@@ -571,11 +636,11 @@ fun UploadScreen(
                             } else emptyList(),
                             mealType = selectedMealTypes.firstOrNull(),
                             kitchenStyle = selectedKitchenStyles.firstOrNull(),
-                            diets = selectedDiets.map {
-                                DietEntry(id = 0, displayName = it, description = "")
+                            diets = selectedDiets.map { dietName ->
+                                DietEntry(id = 0, displayName = dietName, description = "")
                             },
-                            allergens = selectedAllergens.map {
-                                AllergenEntry(name = it, id = 0, displayName = it, description = "")
+                            allergens = selectedAllergens.map { allergenName ->
+                                AllergenEntry(name = allergenName, id = 0, displayName = allergenName, description = "")
                             },
                             ingredients = ingredients.mapNotNull { ingredient ->
                                 if (ingredient.isConfirmed && ingredient.name.isNotBlank() && ingredient.amount != null) {

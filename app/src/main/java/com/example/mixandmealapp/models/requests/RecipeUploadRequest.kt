@@ -11,6 +11,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RecipeUploadRequest(
+    val recipeId: Int? = null,
     val title: String,
     val description: String,
     val instructions: String,

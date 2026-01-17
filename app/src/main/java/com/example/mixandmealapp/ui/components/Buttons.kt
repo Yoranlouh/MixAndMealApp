@@ -103,7 +103,7 @@ fun EditDeleteButtons(
     ) {
         // Edit button - Green
         Button(
-            onClick = { },
+            onClick = onEdit,
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(
                 containerColor = BrandGreen,

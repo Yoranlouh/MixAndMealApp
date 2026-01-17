@@ -212,16 +212,26 @@ fun AppNavigation(
             composable(Navigation.SEARCH_RESULTS) { SearchResultScreen(navController = navController) }
 
 
-            composable(Navigation.UPLOAD) {
-                UploadScreen(
-                    navController = navController,
-                    onPhotoPick = onPhotoPick,
-                    onCameraClick = onCameraClick,
-                    token = "",
-                    repo = koinInject()
+            composable(
+                // 1. Define the route with an OPTIONAL query parameter
+                route = "${Navigation.UPLOAD}?recipeId={recipeId}",
+                arguments = listOf(
+                    navArgument("recipeId") {
+                        type = NavType.IntType
+                        defaultValue = -1 // Use -1 to signify "no ID passed" / "create new"
+                    }
                 )
+            ) { backStackEntry ->
+                val recipeId = backStackEntry.arguments?.getInt("recipeId")
+                    UploadScreen(
+                        navController = navController,
+                        onPhotoPick = onPhotoPick,
+                        onCameraClick = onCameraClick,
+                        token = "",
+                        repo = koinInject(),
+                        recipeId = if (recipeId == -1) null else recipeId
+                    )
             }
-
             composable(Navigation.FRIDGE) { 
                 FridgeScreen(navController = navController, viewModel = fridgeViewModel) 
             }
@@ -235,7 +245,11 @@ fun AppNavigation(
                     recipeId = recipeId,
                     onBack = { navController.popBackStack() },
                     userRole = user.role,
-                    repo = koinInject()
+                    repo = koinInject(),
+                    onEditRecipe = { id ->
+                        navController.navigate("${Navigation.UPLOAD}?recipeId=$id")
+                    }
+
                 )
             }
             
