@@ -209,8 +209,26 @@ fun AppNavigation(
                     onSpeechRecognize = onSpeechRecognize
                 )
             }
-            composable(Navigation.SEARCH_RESULTS) { SearchResultScreen(navController = navController) }
-
+            composable(
+                route = "${Navigation.SEARCH_RESULTS}?query={query}&kitchens={kitchens}&meals={meals}&allergens={allergens}&diets={diets}",
+                arguments = listOf(
+                    navArgument("query") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("kitchens") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("meals") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("allergens") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("diets") { type = NavType.StringType; defaultValue = "" }
+                )
+            ) { backStackEntry ->
+                SearchResultScreen(
+                    navController = navController,
+                    searchViewModel = koinViewModel(), // Assuming you use Koin
+                    query = backStackEntry.arguments?.getString("query"),
+                    kitchens = backStackEntry.arguments?.getString("kitchens"),
+                    meals = backStackEntry.arguments?.getString("meals"),
+                    allergens = backStackEntry.arguments?.getString("allergens"),
+                    diets = backStackEntry.arguments?.getString("diets")
+                )
+            }
 
             composable(
                 // 1. Define the route with an OPTIONAL query parameter
@@ -249,7 +267,6 @@ fun AppNavigation(
                     onEditRecipe = { id ->
                         navController.navigate("${Navigation.UPLOAD}?recipeId=$id")
                     }
-
                 )
             }
             

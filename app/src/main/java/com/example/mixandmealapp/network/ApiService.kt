@@ -209,4 +209,17 @@ object ApiService {
             contentType(ContentType.Application.Json)
             setBody(RecipeIDRequest(recipeId))
         }.body()
+
+
+    suspend fun searchRecipes(queryParams: Map<String, String>): List<RecipeCardResponse> =
+        client.get("$domain/search") {
+            url {
+                queryParams.forEach { (key, value) ->
+                    if (value.isNotBlank()) { // Ensure not to send empty parameters
+                        parameters.append(key, value)
+                    }
+                }
+            }
+        }.body()
+
 }
