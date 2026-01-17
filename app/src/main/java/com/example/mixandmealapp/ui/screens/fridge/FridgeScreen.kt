@@ -58,13 +58,15 @@ import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? = null, homeViewModel: HomeViewModel = koinInject()) {
-    // Shared repository-backed ViewModel is provided by caller (AppNavigation).
-    // In previews, fall back to a local instance.
+fun FridgeScreen(
+    navController: NavHostController,
+    viewModel: FridgeViewModel? = null,
+    homeViewModel: HomeViewModel = koinInject()
+) {
 
     val vm : FridgeViewModel = koinViewModel()
 
-    val uiState = vm.uiState
+    val uiState by vm.uiState.collectAsState()
     var newIngredient by remember { mutableStateOf("") }
     val user by homeViewModel.role.collectAsState()
 
@@ -162,6 +164,7 @@ fun FridgeScreen(navController: NavHostController, viewModel: FridgeViewModel? =
         }
     }
 }
+
 
 @Suppress("ViewModelLeak")
 @Preview(showBackground = true)
