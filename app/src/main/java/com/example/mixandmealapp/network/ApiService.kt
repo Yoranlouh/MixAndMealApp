@@ -24,6 +24,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -202,9 +203,10 @@ object ApiService {
         }.body()
     }
 
-    suspend fun deleteRecipe(token: String?, recipeId: Int) {
-        client.delete("$domain/recipes/$recipeId") {
+    suspend fun deleteRecipe(token: String?, recipeId: Int) : HttpResponse =
+        client.delete("$domain/delete-recipe") {
             header("Authorization", "Bearer $token")
-        }
-    }
+            contentType(ContentType.Application.Json)
+            setBody(RecipeIDRequest(recipeId))
+        }.body()
 }
