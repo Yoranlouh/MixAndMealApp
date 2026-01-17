@@ -17,13 +17,19 @@ import com.example.mixandmealapp.models.responses.RecipeResponse
 import com.example.mixandmealapp.models.responses.RoleResponse
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
+import io.ktor.client.request.forms.formData
+import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import kotlinx.serialization.json.Json
+import java.io.File
 
 object ApiService {
     private val client = ApiClient.client
@@ -161,6 +167,39 @@ object ApiService {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()!!
+    }
+
+    suspend fun updateRecipe(
+        token: String?,
+        recipe: RecipeUploadRequest,
+        images: List<File>
+    ): RecipeResponse {
+        return client.submitFormWithBinaryData(
+            url = "$domain/update-recipe",
+            formData = formData {
+                // JSON part
+                append(
+                    "recipe",
+                    Json.encodeToString(recipe),
+                    Headers.build {
+                        append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    }
+                )
+                // Image parts
+                images.forEachIndexed { index, bytes ->
+                    append(
+                        "file$index", // name doesn't matter for your backend
+                        bytes.readBytes(),
+                        Headers.build {
+                            append(HttpHeaders.ContentType, "image/jpeg")
+                            append(HttpHeaders.ContentDisposition, "filename=\"image_$index.jpg\"")
+                        }
+                    )
+                }
+            }
+        ) {
+            header("Authorization", "Bearer $token")
+        }.body()
     }
 
     suspend fun deleteRecipe(token: String?, recipeId: Int) {
