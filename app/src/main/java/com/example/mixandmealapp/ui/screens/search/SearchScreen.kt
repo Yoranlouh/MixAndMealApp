@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.mixandmealapp.models.requests.RecipeSearchRequest
 import com.example.mixandmealapp.ui.components.BottomNavBar
 import com.example.mixandmealapp.ui.components.truncate
 import com.example.mixandmealapp.ui.navigation.Navigation
@@ -42,24 +43,22 @@ import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.DarkText
 import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.screens.search.CompactFilterSummary
+import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SearchScreen(
     navController: NavHostController,
-    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
+    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit,
 ) {
+    val searchViewModel: SearchViewModel = koinViewModel()
+
     Scaffold { paddingValues ->
         MinimalSearchContent(
             modifier = Modifier.padding(paddingValues),
             onSpeechRecognize = onSpeechRecognize,
-            onSearch = { query, kitchens, meals, allergens, diets ->
-                navController.currentBackStackEntry?.savedStateHandle?.apply {
-                    set("query", query)
-                    set("kitchenStyles", kitchens.toList())
-                    set("mealTypes", meals.toList())
-                    set("allergens", allergens.toList())
-                    set("diets", diets.toList())
-                }
+            onSearch = { request ->
+                searchViewModel.load(request)
                 navController.navigate(Navigation.SEARCH_RESULTS)
             }
         )
@@ -70,34 +69,21 @@ fun SearchScreen(
 fun MinimalSearchContent(
     modifier: Modifier = Modifier,
     onSearch: (
-        query: String,
-        kitchenStyles: Set<String>,
-        mealTypes: Set<String>,
-        allergens: Set<String>,
-        diets: Set<String>
+        searchRequest : RecipeSearchRequest
     ) -> Unit,
     onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
 ) {
+
     var searchQuery by remember { mutableStateOf("") }
     var showFilters by remember { mutableStateOf(false) }
-    var selKitchens by remember { mutableStateOf(setOf<String>()) }
-    var selMeals by remember { mutableStateOf(setOf<String>()) }
-    var selAllergens by remember { mutableStateOf(setOf<String>()) }
-    var selDiets by remember { mutableStateOf(setOf<String>()) }
+    var selKitchens by remember { mutableStateOf("" )}
+    var selMeals by remember { mutableStateOf("") }
+    var selAllergens by remember { mutableStateOf(listOf<String>()) }
+    var ingredients by remember {mutableStateOf(listOf<String>())}
+    var selDiets by remember { mutableStateOf(listOf<String>()) }
     val context = LocalContext.current
-
-//    val speechLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.StartActivityForResult(),
-//        onResult = { result ->
-//            if (result.resultCode == Activity.RESULT_OK) {
-//                val data = result.data
-//                val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-//                if (!results.isNullOrEmpty()) {
-//                    searchQuery = results[0]
-//                }
-//            }
-//        }
-//    )
+    var searchRequest by remember{ mutableStateOf(RecipeSearchRequest(searchQuery, "EASY", selMeals, selKitchens,
+        100, selDiets, selAllergens, ingredients))}
 
     val voicePrompt = stringResource(id = com.example.mixandmealapp.R.string.voice_search_content_description)
 
@@ -136,7 +122,7 @@ fun MinimalSearchContent(
                 Icon(imageVector = Icons.Filled.Search, contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search), tint = BrandGrey)
             },
             trailingIcon = {
-                val activeCount = selKitchens.size + selMeals.size + selAllergens.size + selDiets.size
+                val activeCount = selAllergens.size + selDiets.size
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { startVoiceRecognition() }) {
                         Icon(
@@ -178,9 +164,9 @@ fun MinimalSearchContent(
                 FilterChip(
                     selected = selMeals.contains(label),
                     onClick = {
-                        selMeals = setOf(label)
+                        selMeals = label
                         // navigate immediately to results for this meal type
-                        onSearch(searchQuery, selKitchens, selMeals, selAllergens, selDiets)
+                        onSearch(RecipeSearchRequest("","","","",100,listOf(),listOf(),listOf()))
                     },
                     label = { Text(label) }
                 )
@@ -194,10 +180,20 @@ fun MinimalSearchContent(
             selectedAllergens = selAllergens,
             selectedDiets = selDiets,
             onOpenFilters = { showFilters = true },
-            onClearAll = { selKitchens = emptySet(); selMeals = emptySet(); selAllergens = emptySet(); selDiets = emptySet() }
+            onClearAll = { selKitchens = ""; selMeals = ""; selAllergens = listOf(); selDiets = listOf() }
         )
 
-        Button(onClick = { onSearch(searchQuery, selKitchens, selMeals, selAllergens, selDiets) }) {
+        Button(onClick = { val currentRequest = RecipeSearchRequest(
+            partialTitle = searchQuery,
+            difficulty = "EASY",
+            mealType = selMeals,
+            kitchenStyle = selKitchens,
+            maxCookingTime = 100,
+            diets = selDiets,
+            allergens = selAllergens,
+            ingredients = ingredients
+        )
+            onSearch(currentRequest) }) {
             Icon(imageVector = Icons.Filled.Search, contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text("Search")
@@ -207,26 +203,26 @@ fun MinimalSearchContent(
     // Filters bottom sheet
     SearchFilterBottomSheet(
         show = showFilters,
-        selectedKitchenStyles = selKitchens,
-        selectedMealTypes = selMeals,
-        selectedAllergens = selAllergens,
-        selectedDiets = selDiets,
+        selectedKitchenStyles = "selKitchens",
+        selectedMealTypes = "selMeals",
+        selectedAllergens = selAllergens.toList(),
+        selectedDiets = selDiets.toList(),
         // Single-select for kitchen styles: select one or deselect if clicking the same
-        onToggleKitchen = { opt -> selKitchens = if (selKitchens.contains(opt)) emptySet() else setOf(opt) },
+        onToggleKitchen = { opt -> selKitchens },
         // Single-select for meal types
-        onToggleMealType = { opt -> selMeals = if (selMeals.contains(opt)) emptySet() else setOf(opt) },
+        onToggleMealType = { opt -> selMeals  },
         onToggleAllergen = { opt -> selAllergens = selAllergens.toggle(opt) },
         // Single-select for diets
-        onToggleDiet = { opt -> selDiets = if (selDiets.contains(opt)) emptySet() else setOf(opt) },
+        onToggleDiet = { opt -> selDiets },
         onApply = { showFilters = false },
         onClearAll = {
-            selKitchens = emptySet(); selMeals = emptySet(); selAllergens = emptySet(); selDiets = emptySet()
+            selKitchens = ""; selMeals = ""; selAllergens = listOf(); selDiets = listOf()
         },
         onDismiss = { showFilters = false }
     )
 }
 
-private fun <T> Set<T>.toggle(item: T): Set<T> = if (contains(item)) this - item else this + item
+private fun <T> List<T>.toggle(item: T): List<T> = if (contains(item)) this - item else this + item
 
 @Composable
 private fun ActiveFilterChips(
@@ -298,201 +294,3 @@ fun SearchBarComponent(query: String, onQueryChange: (String) -> Unit) {
         singleLine = true
     )
 }
-
-//@Composable
-//fun CategoryFilterSection(selectedCategory: String, onCategorySelected: (String) -> Unit) {
-//    val categories = listOf(
-//        stringResource(id = com.example.mixandmealapp.R.string.search_filter_breakfast),
-//        stringResource(id = com.example.mixandmealapp.R.string.search_filter_lunch),
-//        stringResource(id = com.example.mixandmealapp.R.string.search_filter_dinner)
-//    )
-//
-//    LazyRow(
-//        horizontalArrangement = Arrangement.spacedBy(12.dp)
-//    ) {
-//        items(categories) { category ->
-//            val isSelected = category == selectedCategory
-//            Button(
-//                onClick = { onCategorySelected(category) },
-//                colors = ButtonDefaults.buttonColors(
-//                    containerColor = if (isSelected) BrandOrange else BrandGrey,
-//                    contentColor = if (isSelected) Color.White else DarkText
-//                ),
-//                shape = RoundedCornerShape(24.dp),
-//                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
-//            ) {
-//                Text(category)
-//            }
-//        }
-//    }
-//}
-
-//@Composable
-//fun PopularRecipesSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit = {}) {
-//    val recipes = listOf(
-//        "Egg & Avocado".truncate(10),
-//        "Bowl of rice".truncate(10),
-//        "Chicken Soup".truncate(10)
-//    )
-//
-//
-//    Column {
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//            Text(
-//                text = stringResource(id = com.example.mixandmealapp.R.string.popular_recipes),
-//                style = MaterialTheme.typography.titleLarge,
-//                fontWeight = FontWeight.Bold
-//            )
-//            Text(
-//                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
-//                style = MaterialTheme.typography.bodyMedium,
-//                color = BrandOrange,
-//                modifier = Modifier.clickable { onViewAll() }
-//            )
-//        }
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        LazyRow(
-//            horizontalArrangement = Arrangement.spacedBy(16.dp)
-//        ) {
-//            items(recipes) { recipe ->
-//                PopularRecipeCard(recipe, onClick = onRecipeClick)
-//            }
-//        }
-//    }
-//}
-
-@Composable
-fun PopularRecipeCard(recipeName: String, onClick: () -> Unit = {}) {
-    Card(
-        modifier = Modifier
-            .size(120.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(BrandGrey, RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                Text(
-                    text = recipeName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-        }
-    }
-}
-
-//@Composable
-//fun EditorsChoiceSection(onViewAll: () -> Unit = {}, onRecipeClick: () -> Unit = {}) {
-//    val recipes = listOf(
-//        EditorRecipe("Easy homemade beef burger"),
-//        EditorRecipe("Blueberry with egg for breakfast")
-//    )
-//
-//    Column {
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//            Text(
-//                text = stringResource(id = com.example.mixandmealapp.R.string.editors_choice),
-//                style = MaterialTheme.typography.titleLarge,
-//                fontWeight = FontWeight.Bold
-//            )
-//            Text(
-//                text = stringResource(id = com.example.mixandmealapp.R.string.view_all),
-//                style = MaterialTheme.typography.bodyMedium,
-//                color = BrandOrange,
-//                modifier = Modifier.clickable { onViewAll() }
-//            )
-//        }
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        recipes.forEach { recipe ->
-//            EditorChoiceCard(recipe = recipe, onClick = onRecipeClick)
-//            Spacer(modifier = Modifier.height(16.dp))
-//        }
-//    }
-//}
-
-//data class EditorRecipe(val title: String)
-//
-//@Composable
-//fun EditorChoiceCard(recipe: EditorRecipe, onClick: () -> Unit = {}) {
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .clickable { onClick() },
-//        shape = RoundedCornerShape(16.dp)
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(12.dp),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            // Recipe Image
-//            Box(
-//                modifier = Modifier
-//                    .size(80.dp)
-//                    .background(BrandGrey, RoundedCornerShape(12.dp))
-//            )
-//
-//            Spacer(modifier = Modifier.width(16.dp))
-//
-//            // Recipe Info
-//            Column(
-//                modifier = Modifier.weight(1f)
-//            ) {
-//                Text(
-//                    text = recipe.title,
-//                    style = MaterialTheme.typography.titleMedium,
-//                    fontWeight = FontWeight.SemiBold
-//                )
-//                // Removed author avatar placeholder as per design
-//            }
-//
-//            // Small arrow in orange rounded square
-//            IconButton(
-//                onClick = onClick,
-//                modifier = Modifier
-//                    .size(36.dp)
-//                    .background(BrandOrange, shape = RoundedCornerShape(8.dp))
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Filled.ArrowForward,
-//                    contentDescription = stringResource(id = com.example.mixandmealapp.R.string.go_to_details),
-//                    tint = Color.White
-//                )
-//            }
-//        }
-//    }
-//}
-
-//@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
-//@Composable
-//fun SearchScreenPreview() {
-//    MixAndMealAppTheme {
-//        androidx.navigation.compose.rememberNavController().let { navController ->
-//            SearchScreen(navController)
-//        }
-//    }
-//}

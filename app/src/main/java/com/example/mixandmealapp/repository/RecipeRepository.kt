@@ -2,6 +2,7 @@ package com.example.mixandmealapp.repository
 
 import android.net.Uri
 import com.example.mixandmealapp.models.enums.Difficulty
+import com.example.mixandmealapp.models.requests.RecipeSearchRequest
 import com.example.mixandmealapp.models.requests.RecipeUploadRequest
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
@@ -49,6 +50,9 @@ class RecipeRepository {
         return ApiService.deleteRecipe(token, recipeId)
     }
 
+    suspend fun searchRecipeRequest(request: RecipeSearchRequest) : List<RecipeCardResponse>{
+        return ApiService.recipeSearchRequest(request)
+    }
     suspend fun searchRecipes(
         query: String,
         kitchens: Set<String>,

@@ -12,6 +12,7 @@ import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import com.example.mixandmealapp.ui.viewmodel.RecipeDetailViewModel
+import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
@@ -31,4 +32,5 @@ val appModule = module {
     viewModel { RecipeDetailViewModel(get(), get()) }
     single { AccountViewModel(get(), get()) }
     viewModel { FridgeViewModel(get(), get()) }
+    single { SearchViewModel() }
 }

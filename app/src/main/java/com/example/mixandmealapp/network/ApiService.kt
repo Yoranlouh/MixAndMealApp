@@ -9,6 +9,7 @@ import com.example.mixandmealapp.models.enums.Role
 import com.example.mixandmealapp.models.requests.IngredientIDRequest
 import com.example.mixandmealapp.models.requests.Login
 import com.example.mixandmealapp.models.requests.RecipeIDRequest
+import com.example.mixandmealapp.models.requests.RecipeSearchRequest
 import com.example.mixandmealapp.models.requests.RecipeUploadRequest
 import com.example.mixandmealapp.models.responses.AuthResponse
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
@@ -210,6 +211,12 @@ object ApiService {
             setBody(RecipeIDRequest(recipeId))
         }.body()
 
+
+    suspend fun recipeSearchRequest(request : RecipeSearchRequest) : List<RecipeCardResponse> =
+        client.post("$domain/search-recipes") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }.body()
 
     suspend fun searchRecipes(queryParams: Map<String, String>): List<RecipeCardResponse> =
         client.get("$domain/search") {
