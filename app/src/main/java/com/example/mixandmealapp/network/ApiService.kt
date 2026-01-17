@@ -20,6 +20,7 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -30,15 +31,20 @@ object ApiService {
 
     suspend fun getAllRecipes(): List<RecipeCardResponse> =
         client.get("$domain/recipes").body()
+
     suspend fun getFeaturedRecipe(): RecipeCardResponse =
         client.get("$domain/recipes/featured/1").body()
 
-    suspend fun getFullRecipe(id : Int) : FullRecipeScreenResponse =
+    suspend fun getFullRecipe(id: Int): FullRecipeScreenResponse =
         client.get("$domain/fullrecipe/$id").body()
+
     suspend fun getPopularRecipes(limit: Int): List<RecipeCardResponse> =
         client.get("$domain/popular-recipes/$limit").body()
 
-    suspend fun getRecipesByDificulty(limit: Int, difficulty: Difficulty): List<RecipeCardResponse> =
+    suspend fun getRecipesByDificulty(
+        limit: Int,
+        difficulty: Difficulty
+    ): List<RecipeCardResponse> =
         client.get("$domain/recipes/$difficulty/$limit").body()
 
     suspend fun getQuickRecipes(limit: Int): List<RecipeCardResponse> =
@@ -63,14 +69,14 @@ object ApiService {
         }.body()
 
     suspend fun addDietForUser(token: String?, diet: DietEntry): List<DietEntry> =
-        client.post("$domain/user/diets"){
+        client.post("$domain/user/diets") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(diet.id)
         }.body()
 
-    suspend fun removeDietForUser(token: String?, diet: DietEntry) : List<DietEntry> =
-        client.delete("$domain/user/diets"){
+    suspend fun removeDietForUser(token: String?, diet: DietEntry): List<DietEntry> =
+        client.delete("$domain/user/diets") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(diet.id)
@@ -82,14 +88,17 @@ object ApiService {
         }.body()
 
     suspend fun addAllergenForUser(token: String?, allergen: AllergenEntry): List<AllergenEntry> =
-        client.post("$domain/user/allergens"){
+        client.post("$domain/user/allergens") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(allergen.id)
         }.body()
 
-    suspend fun removeAllergenForUser(token: String?, allergen: AllergenEntry) : List<AllergenEntry> =
-        client.delete("$domain/user/allergens"){
+    suspend fun removeAllergenForUser(
+        token: String?,
+        allergen: AllergenEntry
+    ): List<AllergenEntry> =
+        client.delete("$domain/user/allergens") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(allergen.id)
@@ -106,8 +115,11 @@ object ApiService {
             header("Authorization", "Bearer $token")
         }.body()
 
-    suspend fun toggleFavourite(token: String?, recipeId: RecipeIDRequest): List<RecipeCardResponse> =
-        client.post("$domain/favourites/add-remove-favourite-recipe"){
+    suspend fun toggleFavourite(
+        token: String?,
+        recipeId: RecipeIDRequest
+    ): List<RecipeCardResponse> =
+        client.post("$domain/favourites/add-remove-favourite-recipe") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(recipeId)
@@ -118,15 +130,21 @@ object ApiService {
             header("Authorization", "Bearer $token")
         }.body()
 
-    suspend fun addIngredientToFridge(token: String?, ingredientId: IngredientIDRequest): List<RecipeCardResponse> =
-        client.post("$domain/fridge/add-ingredient"){
+    suspend fun addIngredientToFridge(
+        token: String?,
+        ingredientId: IngredientIDRequest
+    ): List<RecipeCardResponse> =
+        client.post("$domain/fridge/add-ingredient") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(ingredientId)
         }.body()
 
-    suspend fun removeIngredientFromFridge(token: String?, ingredientId: IngredientIDRequest): List<RecipeCardResponse> =
-        client.delete("$domain/fridge/remove-ingredient"){
+    suspend fun removeIngredientFromFridge(
+        token: String?,
+        ingredientId: IngredientIDRequest
+    ): List<RecipeCardResponse> =
+        client.delete("$domain/fridge/remove-ingredient") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(ingredientId)
@@ -135,13 +153,19 @@ object ApiService {
     suspend fun uploadRecipe(
         token: String?,
         imageUri: String?,
-        request: RecipeUploadRequest
-    ): RecipeResponse {  // Replace with your actual response type
+        request: RecipeUploadRequest,
+        recipeId: Int? = null
+    ): RecipeResponse {
         return client.post("$domain/recipes") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()!!
     }
-}
 
+    suspend fun deleteRecipe(token: String?, recipeId: Int) {
+        client.delete("$domain/recipes/$recipeId") {
+            header("Authorization", "Bearer $token")
+        }
+    }
+}

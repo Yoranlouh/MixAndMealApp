@@ -29,6 +29,9 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,10 +61,12 @@ import com.example.mixandmealapp.models.enums.KitchenStyle
 import com.example.mixandmealapp.models.enums.MealType
 import com.example.mixandmealapp.models.requests.RecipeUploadRequest
 import com.example.mixandmealapp.ui.components.BackButton
+import com.example.mixandmealapp.ui.components.CameraPermissionPopUp
 import com.example.mixandmealapp.ui.components.InputFieldSmall
 import com.example.mixandmealapp.ui.components.InputFieldTextBox
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
+import com.example.mixandmealapp.ui.components.PrivacyDialog
 import com.example.mixandmealapp.ui.components.SingleChoiceSegmentedButton
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.screens.search.FilterOptions
@@ -87,8 +92,7 @@ fun UploadScreen(
     token: String?,
     repo: TokenRepository,
     onPhotoPick: (callback: (Uri?) -> Unit) -> Unit,
-    onCameraClick: (callback: (Uri?) -> Unit) -> Unit, // <<< 1. ADD THIS PARAMETER
-    viewModel: AuthViewModel = koinViewModel<AuthViewModel>()
+    onCameraClick: (callback: (Uri?) -> Unit) -> Unit,
 ) {
 
 
@@ -130,7 +134,11 @@ fun UploadScreen(
     var dietExpanded by remember { mutableStateOf(true) }
     val dietsStrings = FilterOptions.diets.map { stringResource(it) }
 
+    // Camera popup
     var showSuccessDialog by remember { mutableStateOf(false) }
+    var showCameraPermissionDialog by rememberSaveable { mutableStateOf(false) }
+    var cameraPermissionAccepted by rememberSaveable { mutableStateOf(false) }
+
     if (showSuccessDialog) {
         UploadSuccessDialog(
             onDismiss = { showSuccessDialog = false },
@@ -177,15 +185,38 @@ fun UploadScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Camera permission dialog
+        if (showCameraPermissionDialog) {
+            CameraPermissionPopUp(
+                onAccept = {
+                    showCameraPermissionDialog = false
+                    cameraPermissionAccepted = true
+                    onCameraClick { uri ->
+                        coverPhotoUri = uri
+                    }
+                },
+                onDecline = {
+                    showCameraPermissionDialog = false
+
+                }
+            )
+        }
+
         PrimaryButton(
-            text = stringResource(R.string.upload_take_photo), // Add this string to your strings.xml
+            text = stringResource(R.string.upload_take_photo),
             onClick = {
-                // This now calls the logic in MainActivity
-                onCameraClick { uri ->
-                    coverPhotoUri = uri
+                if (!cameraPermissionAccepted) {
+                    showCameraPermissionDialog = true
+                } else {
+                    onCameraClick { uri ->
+                        coverPhotoUri = uri
+                    }
                 }
             }
         )
+
+
+
 
         Spacer(modifier = Modifier.height(24.dp))
 

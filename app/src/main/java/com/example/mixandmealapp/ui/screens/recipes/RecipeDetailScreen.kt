@@ -59,8 +59,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.speech.tts.TextToSpeech
+import android.util.Log
+import androidx.activity.result.launch
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.semantics.role
 import com.example.mixandmealapp.R
 import com.example.mixandmealapp.models.responses.FullRecipeScreenResponse
 import com.example.mixandmealapp.models.responses.RecipeCardResponse
@@ -76,20 +83,76 @@ import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 import com.example.mixandmealapp.models.requests.RecipeIDRequest
 import org.koin.compose.viewmodel.koinViewModel
 import coil.compose.AsyncImage
+import com.example.mixandmealapp.data.TokenRepository
 import com.example.mixandmealapp.models.entries.IngredientUnitEntry
+import com.example.mixandmealapp.models.enums.Role
+import com.example.mixandmealapp.ui.components.EditDeleteButtons
+import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+import kotlin.String
 
 
 data class Ingredient(val name: String, val qty: String)
 
 @Composable
 fun RecipeDetailScreen(
-    recipeId: Int = 1,
-    onBack: () -> Unit = {},
+    recipeId: Int,
+    onBack: () -> Unit,
     onToggleFavorite: (Boolean) -> Unit = {},
-    onSave: () -> Unit = {},
-    favouritesViewModel: FavouritesViewModel = koinViewModel()
+    userRole: String = Role.GUEST.name,
+    favouritesViewModel: FavouritesViewModel = koinViewModel(),
+    homeViewModel: HomeViewModel = koinInject(),
+    repo: TokenRepository
 ) {
-    val recipeRepository = RecipeRepository()
+
+
+
+    val scope = rememberCoroutineScope()
+    val user by homeViewModel.role.collectAsState()
+    val recipeRepository = remember { RecipeRepository() }
+
+    // State for the confirmation dialog
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Confirm Deletion") },
+            text = { Text("Are you sure you want to delete this recipe? This action cannot be undone.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+
+                        scope.launch {
+
+                            val tokenToUse = async {repo.getTokenOrDefault() }
+                            tokenToUse.await()
+                            Log.d("Token", tokenToUse.toString())
+
+                            try {
+                                recipeRepository.deleteRecipe(tokenToUse.toString(), recipeId)
+                                // Navigate back after successful deletion
+                                onBack()
+                            } catch (e: Exception) {
+                                // Handle error, e.g., show a toast message
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+                ) {
+                    Text("Delete", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
     var recipe by remember { mutableStateOf<FullRecipeScreenResponse?>(null) }
     LaunchedEffect(recipeId) {
         try {
@@ -113,7 +176,7 @@ fun RecipeDetailScreen(
     
     val isFavorite = favouritesViewModel.uiState.favourites.any { it.recipeId == recipeId }
     
-    var selectedTab by remember { mutableStateOf(0) } // 0 = Ingredients, 1 = Instructions
+    var selectedTab by remember { mutableStateOf(0) }
     var descExpanded by remember { mutableStateOf(false) }
     var ingredients = listOf<IngredientUnitEntry>()
     val context = LocalContext.current
@@ -345,8 +408,17 @@ fun RecipeDetailScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    PrimaryButton(text = "Save Recipe", onClick = onSave)
+                    // Conditionally display the buttons
+                    if (userRole.equals(Role.ADMIN.name, ignoreCase = true)) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        EditDeleteButtons(
+                            onEdit = {},
+                            onDelete = {
+                                // Show the confirmation dialog instead of deleting directly
+                                showDeleteDialog = true
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -484,13 +556,5 @@ private fun IngredientRow(ingredient: IngredientUnitEntry) {
             Text(ingredient.ingredientName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
             Text("${ingredient.amount} ${ingredient.unitType}", color = BrandGrey)
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RecipeDetailScreenPreview() {
-    MixAndMealAppTheme {
-        RecipeDetailScreen()
     }
 }

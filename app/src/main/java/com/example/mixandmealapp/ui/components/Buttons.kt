@@ -92,6 +92,53 @@ fun PrimaryButton(
 }
 
 @Composable
+fun EditDeleteButtons(
+    onEdit: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Edit button - Green
+        Button(
+            onClick = { },
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = BrandGreen,
+                contentColor = MixAndMealColours.buttonText
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                text = "Edit",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        // Delete button - Red
+        Button(
+            onClick = onDelete,
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Red,
+                contentColor = MixAndMealColours.buttonText
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                text = "Delete",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+
+@Composable
 fun TextOnlyButton(
     text: String,
     onClick: () -> Unit,

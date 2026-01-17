@@ -40,8 +40,12 @@ class RecipeRepository {
         return ApiService.getAllRecipes()
     }
 
-    suspend fun uploadRecipe(token: String?, imageUri: String?, request: RecipeUploadRequest): RecipeResponse {
+    suspend fun uploadRecipe(token: String?, imageUri: String?, request: RecipeUploadRequest, recipeId: Int?): RecipeResponse {
         return ApiService.uploadRecipe(token, imageUri, request)
+    }
+
+    suspend fun deleteRecipe(token: String?, recipeId: Int) {
+        ApiService.deleteRecipe(token, recipeId)
     }
 
 }

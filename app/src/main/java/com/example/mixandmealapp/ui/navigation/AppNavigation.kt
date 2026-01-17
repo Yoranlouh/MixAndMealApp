@@ -216,7 +216,7 @@ fun AppNavigation(
                 UploadScreen(
                     navController = navController,
                     onPhotoPick = onPhotoPick,
-                    onCameraClick = onCameraClick, // <<< 2. PASS IT TO THE SCREEN
+                    onCameraClick = onCameraClick,
                     token = "",
                     repo = koinInject()
                 )
@@ -233,7 +233,9 @@ fun AppNavigation(
                 val recipeId = backStackEntry.arguments?.getInt("recipeId") ?: 1
                 RecipeDetailScreen(
                     recipeId = recipeId,
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    userRole = user.role,
+                    repo = koinInject()
                 )
             }
             

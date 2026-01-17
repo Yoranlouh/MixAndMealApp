@@ -72,11 +72,34 @@ fun PrivacyDialog(
             }
             Button(onClick = { exitProcess(0) }) {
                 Text("Decline")
-//                modifier = Modifier.background(color.BrandOrange)
             }
         }
 
 
+    )
+}
+
+@Composable
+fun CameraPermissionPopUp(
+    onAccept: () -> Unit,
+    onDecline: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = { /* block outside dismiss */ },
+        title = { Text("Camera Preferences") },
+        text = { Text("We need your permissions to access the camera.") },
+        confirmButton = {
+            Button(onClick = onAccept) {
+                Text("Accept")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDecline) {
+                Text("Decline")
+            }
+        },
+        modifier = modifier
     )
 }
 
