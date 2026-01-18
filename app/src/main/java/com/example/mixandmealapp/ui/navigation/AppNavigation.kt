@@ -44,6 +44,7 @@ import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import com.example.mixandmealapp.ui.viewmodel.LocaleViewModel
 import com.example.mixandmealapp.ui.viewmodel.MyDietViewModel
+import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
@@ -208,16 +209,26 @@ fun AppNavigation(
             }
 
             composable(Navigation.SEARCH) {
+                val viewModel: SearchViewModel = koinViewModel()
+
                 SearchScreen(
                     navController = navController,
-                    onSpeechRecognize = onSpeechRecognize
+//                    onSpeechRecognize = onSpeechRecognize,
+                    onSearch = { searchQuery ->
+                        viewModel.searchRecipes(searchQuery)
+                        navController.navigate(Navigation.SEARCH_RESULTS)
+                    }
                 )
             }
+
             composable(Navigation.SEARCH_RESULTS)
             {
                 SearchResultScreen(
                     navController = navController,
-                    searchViewModel = koinViewModel(), // Assuming you use Koin
+                    searchViewModel = koinViewModel(),
+                    onItemClick = { recipeId ->
+                        navController.navigate("${Navigation.RECIPE_DETAIL}/$recipeId")
+                    },
 
                 )
             }

@@ -41,12 +41,12 @@ class AllergensViewModel(
         }
     }
 
-    fun addItem(allergen: AllergenEntry) {
+    fun addItem(allergen: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             try {
                 val token = tokenRepo.getTokenOrDefault()
-                val updatedList = repo.addAllergen(token, AllergenIDRequest(allergen.displayName))
+                val updatedList = repo.addAllergen(token, AllergenIDRequest(allergen))
                 _uiState.value = _uiState.value.copy(items = updatedList, isLoading = false, error = null)
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(error = t.message, isLoading = false)

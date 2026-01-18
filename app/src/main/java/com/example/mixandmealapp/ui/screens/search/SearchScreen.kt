@@ -6,291 +6,221 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import android.content.Intent
-import android.speech.RecognizerIntent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import android.app.Activity
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.mixandmealapp.models.requests.RecipeSearchRequest
-import com.example.mixandmealapp.ui.components.BottomNavBar
-import com.example.mixandmealapp.ui.components.truncate
-import com.example.mixandmealapp.ui.navigation.Navigation
-import com.example.mixandmealapp.ui.theme.BrandGrey
-import com.example.mixandmealapp.ui.theme.BrandOrange
-import com.example.mixandmealapp.ui.theme.DarkText
-import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
-import com.example.mixandmealapp.ui.screens.search.CompactFilterSummary
+import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+
 
 @Composable
 fun SearchScreen(
-    navController: NavHostController,
-    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit,
-) {
-    val searchViewModel: SearchViewModel = koinViewModel()
-
-    Scaffold { paddingValues ->
-        MinimalSearchContent(
-            modifier = Modifier.padding(paddingValues),
-            onSpeechRecognize = onSpeechRecognize,
-            onSearch = { request ->
-                searchViewModel.load(request)
-                navController.navigate(Navigation.SEARCH_RESULTS)
-            }
-        )
-    }
-}
-
-@Composable
-fun MinimalSearchContent(
+    onSearch: (String) -> Unit,
     modifier: Modifier = Modifier,
-    onSearch: (
-        searchRequest : RecipeSearchRequest
-    ) -> Unit,
-    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
+    viewModel: SearchViewModel = koinViewModel(),
+    navController: NavController,
+//    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
+
 ) {
-
+    var scope = rememberCoroutineScope()
+//    val recipes by viewModel.filteredRecipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
-    var showFilters by remember { mutableStateOf(false) }
-    var selKitchens by remember { mutableStateOf("" )}
-    var selMeals by remember { mutableStateOf("") }
-    var selAllergens by remember { mutableStateOf(listOf<String>()) }
-    var ingredients by remember {mutableStateOf(listOf<String>())}
-    var selDiets by remember { mutableStateOf(listOf<String>()) }
-    val context = LocalContext.current
-    var searchRequest by remember{ mutableStateOf(RecipeSearchRequest(searchQuery, "EASY", selMeals, selKitchens,
-        100, selDiets, selAllergens, ingredients))}
-
-    val voicePrompt = stringResource(id = com.example.mixandmealapp.R.string.voice_search_content_description)
-
-    fun startVoiceRecognition() {
-        onSpeechRecognize { resultText ->
-            if (resultText != null) {
-                searchQuery = resultText
-            }
-        }
-    }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(id = com.example.mixandmealapp.R.string.search_title),
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.SemiBold
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Modern search bar with leading search icon and trailing filter icon with badge when active
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
+//    val searchQuery by viewModel.searchQuery.collectAsState()
+//    val maxCookingTime by viewModel.maxCookingTime.collectAsState()
+//    val selectedFilters by viewModel.selectedFilters.collectAsState()
+//    var isLoading by viewModel.isLoading.collectAsState()
+//
+    Column(modifier = modifier.fillMaxSize()) {
+        // Search and Max Time inputs
+        Row(
             modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .height(56.dp),
-            placeholder = { Text(text = stringResource(id = com.example.mixandmealapp.R.string.search)) },
-            singleLine = true,
-            leadingIcon = {
-                Icon(imageVector = Icons.Filled.Search, contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search), tint = BrandGrey)
-            },
-            trailingIcon = {
-                val activeCount = selAllergens.size + selDiets.size
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { startVoiceRecognition() }) {
-                        Icon(
-                            imageVector = Icons.Filled.Mic,
-                            contentDescription = stringResource(id = com.example.mixandmealapp.R.string.voice_search_content_description),
-                            tint = BrandGrey
-                        )
-                    }
-                    Box {
-                        IconButton(onClick = { showFilters = true }) {
-                            Icon(imageVector = Icons.Filled.FilterList, contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search_filter_button))
-                        }
-                        if (activeCount > 0) {
-                            // tiny orange dot to indicate active filters
-                            Box(
-                                modifier = Modifier
-                                    .size(8.dp)
-                                    .align(Alignment.TopEnd)
-                                    .background(BrandOrange, shape = RoundedCornerShape(50))
-                            )
-                        }
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Search recipes") },
+                modifier = Modifier.weight(1f),
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+            )
+            Button(
+                onClick = {
+                    scope.launch {
+                        onSearch(searchQuery)
                     }
                 }
-            },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = BrandOrange,
-                unfocusedBorderColor = BrandGrey,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
-            ),
-            shape = RoundedCornerShape(16.dp)
-        )
-
-        // Suggested quick labels
-        Spacer(modifier = Modifier.height(10.dp))
-        val suggested = listOf("Breakfast", "Lunch", "Dinner", "Dessert")
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(suggested) { label ->
-                FilterChip(
-                    selected = selMeals.contains(label),
-                    onClick = {
-                        selMeals = label
-                        // navigate immediately to results for this meal type
-                        onSearch(RecipeSearchRequest("","","","",100,listOf(),listOf(),listOf()))
-                    },
-                    label = { Text(label) }
-                )
+            ) {
+                Text("Search")
             }
         }
-
-        // Compact filter dropdown summary
-        CompactFilterSummary(
-            selectedKitchenStyles = selKitchens,
-            selectedMealTypes = selMeals,
-            selectedAllergens = selAllergens,
-            selectedDiets = selDiets,
-            onOpenFilters = { showFilters = true },
-            onClearAll = { selKitchens = ""; selMeals = ""; selAllergens = listOf(); selDiets = listOf() }
-        )
-
-        Button(onClick = { val currentRequest = RecipeSearchRequest(
-            partialTitle = searchQuery,
-            difficulty = "EASY",
-            mealType = selMeals,
-            kitchenStyle = selKitchens,
-            maxCookingTime = 100,
-            diets = selDiets,
-            allergens = selAllergens,
-            ingredients = ingredients
-        )
-            onSearch(currentRequest) }) {
-            Icon(imageVector = Icons.Filled.Search, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text("Search")
-        }
+        Spacer(modifier = Modifier.width(8.dp))
+//            OutlinedTextField(
+//                value = maxCookingTime.toString(),
+//                onValueChange = {
+//                    val time = it.toIntOrNull() ?: 0
+//                    viewModel.updateMaxCookingTime(time)
+//                },
+//                label = { Text("Max time (min)") },
+//                modifier = Modifier.width(120.dp),
+//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+//            )
+//        }
+//
+//        // Filter chips sections
+//        FilterSection(
+//            title = "Kitchen Styles",
+//            options = FilterOptions.kitchenStyles,
+//            selectedFilters = selectedFilters,
+//            onFilterToggle = { resId -> viewModel.toggleFilter(resId) }
+//        )
+//        FilterSection(
+//            title = "Meal Types",
+//            options = FilterOptions.mealTypes,
+//            selectedFilters = selectedFilters,
+//            onFilterToggle = { resId -> viewModel.toggleFilter(resId) }
+//        )
+//        FilterSection(
+//            title = "Allergens",
+//            options = FilterOptions.allergens,
+//            selectedFilters = selectedFilters,
+//            onFilterToggle = { resId -> viewModel.toggleFilter(resId) }
+//        )
+//        FilterSection(
+//            title = "Diets",
+//            options = FilterOptions.diets,
+//            selectedFilters = selectedFilters,
+//            onFilterToggle = { resId -> viewModel.toggleFilter(resId) }
+//        )
+//
+//        // Clear filters button
+//        TextButton(
+//            onClick = { viewModel.clearAllFilters() },
+//            modifier = Modifier.padding(horizontal = 16.dp)
+//        ) {
+//            Text("Clear all filters")
+//        }
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(horizontal = 16.dp),
+//            horizontalArrangement = Arrangement.spacedBy(8.dp)
+//        ) {
+//            TextButton(
+//                onClick = { viewModel.clearAllFilters() },
+//                modifier = Modifier.weight(1f)
+//            ) {
+//                Text("Clear all filters")
+//            }
+//
+//            Button(
+//                onClick = {
+//                    isLoading = true
+//                    viewModel.loadFilteredRecipes()
+//                    // Reset loading state after a short delay (or handle via ViewModel callback)
+//                    coroutineScope.launch(Unit) {
+//                        kotlinx.coroutines.delay(1000)
+//                        isLoading = false
+//                    }
+//                },
+//                modifier = Modifier.weight(1f),
+//                enabled = !isLoading
+//            ) {
+//                if (isLoading) {
+//                    Row(verticalAlignment = Alignment.CenterVertically) {
+//                        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+//                        Spacer(modifier = Modifier.width(8.dp))
+//                        Text("Loading...")
+//                    }
+//                } else {
+//                    Text("Load Filtered Recipes")
+//                }
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(8.dp))
+//
+//        // Recipes grid
+//        LazyVerticalGrid(
+//            columns = GridCells.Fixed(2),
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .weight(1f),
+//            contentPadding = PaddingValues(16.dp),
+//            horizontalArrangement = Arrangement.spacedBy(12.dp),
+//            verticalArrangement = Arrangement.spacedBy(12.dp)
+//        ) {
+//            items(recipes) { recipe ->
+//                PopularRecipeCard(
+//                    recipe = recipe,
+//                    onClick = { /* Navigate to recipe details */ }
+//                )
+//            }
+//
+//            if (recipes.isEmpty()) {
+//                item {
+//                    Box(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .fillMaxHeight(),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Text(
+//                            text = "No recipes found",
+//                            style = MaterialTheme.typography.bodyLarge
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
     }
-
-    // Filters bottom sheet
-    SearchFilterBottomSheet(
-        show = showFilters,
-        selectedKitchenStyles = "selKitchens",
-        selectedMealTypes = "selMeals",
-        selectedAllergens = selAllergens.toList(),
-        selectedDiets = selDiets.toList(),
-        // Single-select for kitchen styles: select one or deselect if clicking the same
-        onToggleKitchen = { opt -> selKitchens },
-        // Single-select for meal types
-        onToggleMealType = { opt -> selMeals  },
-        onToggleAllergen = { opt -> selAllergens = selAllergens.toggle(opt) },
-        // Single-select for diets
-        onToggleDiet = { opt -> selDiets },
-        onApply = { showFilters = false },
-        onClearAll = {
-            selKitchens = ""; selMeals = ""; selAllergens = listOf(); selDiets = listOf()
-        },
-        onDismiss = { showFilters = false }
-    )
 }
 
-private fun <T> List<T>.toggle(item: T): List<T> = if (contains(item)) this - item else this + item
-
-@Composable
-private fun ActiveFilterChips(
-    kitchens: Set<String>,
-    meals: Set<String>,
-    allergens: Set<String>,
-    diets: Set<String>,
-    onRemove: (category: String, value: String) -> Unit,
-    onClearAll: () -> Unit
-) {
-    Column(modifier = Modifier.fillMaxWidth(0.95f)) {
-        // Clear all action
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Active filters", style = MaterialTheme.typography.labelMedium, color = BrandGrey)
-            TextButton(onClick = onClearAll) { Text("Clear all") }
-        }
-
-        Spacer(modifier = Modifier.height(4.dp))
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(kitchens.toList()) { k -> FilterChipPill(text = k) { onRemove("kitchen", k) } }
-            items(meals.toList()) { m -> FilterChipPill(text = m) { onRemove("meal", m) } }
-            items(allergens.toList()) { a -> FilterChipPill(text = a) { onRemove("allergen", a) } }
-            items(diets.toList()) { d -> FilterChipPill(text = d) { onRemove("diet", d) } }
-        }
-    }
-}
-
-@Composable
-private fun FilterChipPill(text: String, onRemove: () -> Unit) {
-    Surface(
-        shape = RoundedCornerShape(50),
-        color = BrandGrey,
-        contentColor = DarkText
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) {
-            Text(text)
-            Spacer(modifier = Modifier.width(6.dp))
-            IconButton(onClick = onRemove, modifier = Modifier.size(18.dp)) {
-                Icon(imageVector = Icons.Filled.Close, contentDescription = "Remove filter", tint = DarkText)
-            }
-        }
-    }
-}
-
-@Composable
-fun SearchBarComponent(query: String, onQueryChange: (String) -> Unit) {
-    TextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        placeholder = { Text(stringResource(id = com.example.mixandmealapp.R.string.search_placeholder), color = BrandGrey) },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = stringResource(id = com.example.mixandmealapp.R.string.search),
-                tint = BrandGrey
-            )
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = BrandGrey,
-            unfocusedContainerColor = BrandGrey,
-            disabledContainerColor = BrandGrey,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-        ),
-        shape = RoundedCornerShape(16.dp),
-        singleLine = true
-    )
-}
+//
+//@Composable
+//private fun FilterSection(
+//    title: String,
+//    options: List<Int>,
+//    selectedFilters: Set<Int>,
+//    onFilterToggle: (Int) -> Unit
+//) {
+//    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+//        Text(
+//            text = title,
+//            style = MaterialTheme.typography.titleMedium,
+//            modifier = Modifier.padding(vertical = 8.dp)
+//        )
+//        LazyRow(
+//            horizontalArrangement = Arrangement.spacedBy(8.dp)
+//        ) {
+//            items(options) { resId ->
+//                val text = stringResource(resId)
+//                FilterChip(
+//                    selected = selectedFilters.contains(resId),
+//                    onClick = { onFilterToggle(resId) },
+//                    label = { Text(text) },
+//                    modifier = Modifier
+//                )
+//            }
+//        }
+//        Spacer(modifier = Modifier.height(12.dp))
+//    }
+//}

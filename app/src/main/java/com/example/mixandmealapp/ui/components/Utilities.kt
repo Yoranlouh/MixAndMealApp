@@ -137,3 +137,15 @@ fun ErrorBanner(
         }
     }
 }
+
+@Composable
+fun StartVoiceRecognition(
+    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
+) {
+    var searchQuery by remember { mutableStateOf("") }
+    onSpeechRecognize { resultText ->
+        if (resultText != null) {
+            searchQuery = resultText
+        }
+    }
+}
