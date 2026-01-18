@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.network
 
+import android.util.Log
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.TokenClaim
@@ -34,6 +35,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
 import java.io.File
 
@@ -99,8 +101,11 @@ object ApiService {
             header("Authorization", "Bearer $token")
         }.body()
 
-    suspend fun addAllergenForUser(token: String?, allergen: AllergenIDRequest): List<AllergenEntry> =
-        client.post("$domain/user/allergens") {
+    suspend fun addAllergenForUser(
+        token: String?,
+        allergen: AllergenIDRequest
+    ): List<AllergenEntry> =
+        client.post("$domain/user/add-allergen") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(allergen)
@@ -110,7 +115,7 @@ object ApiService {
         token: String?,
         allergen: AllergenIDRequest
     ): List<AllergenEntry> =
-        client.delete("$domain/user/allergens") {
+        client.delete("$domain/user/remove-allergen") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(allergen)
@@ -208,7 +213,7 @@ object ApiService {
         }.body()
     }
 
-    suspend fun deleteRecipe(token: String?, recipeId: Int) : HttpResponse =
+    suspend fun deleteRecipe(token: String?, recipeId: Int): HttpResponse =
         client.delete("$domain/delete-recipe") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
@@ -216,21 +221,23 @@ object ApiService {
         }.body()
 
 
-    suspend fun recipeSearchRequest(request : RecipeSearchRequest) : List<RecipeCardResponse> =
-        client.post("$domain/search-recipes") {
+    suspend fun recipeSearchRequest(request: RecipeSearchRequest): List<RecipeCardResponse> {
+        val response: HttpResponse = client.post("$domain/search-recipes") {
             contentType(ContentType.Application.Json)
             setBody(request)
-        }.body()
+        }
 
-    suspend fun searchRecipes(queryParams: Map<String, String>): List<RecipeCardResponse> =
-        client.get("$domain/search") {
-            url {
-                queryParams.forEach { (key, value) ->
-                    if (value.isNotBlank()) { // Ensure not to send empty parameters
-                        parameters.append(key, value)
-                    }
-                }
+        return if (response.status.isSuccess()) {
+            try {
+                response.body()
+            } catch (e: Exception) {
+                Log.e("ApiService", "Failed to decode successful response: ${e.message}")
+                emptyList()
             }
-        }.body()
-
+        } else {
+            Log.e("ApiService", "Search request failed with status: ${response.status}")
+            emptyList()
+        }
+    }
 }
+
