@@ -35,26 +35,24 @@ fun SearchScreen(
     onSearch: (RecipeSearchRequest) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = koinViewModel(),
-    navController: NavController,
-//    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
-
+    navController: NavController
 ) {
-    var scope = rememberCoroutineScope()
-//    val recipes by viewModel.filteredRecipes.collectAsState()
+    val scope = rememberCoroutineScope()
     var searchQuery by remember { mutableStateOf("") }
-//    val searchQuery by viewModel.searchQuery.collectAsState()
-    var maxCookingTime: Int? by remember { mutableStateOf(0) }
-//    val selectedFilters by viewModel.selectedFilters.collectAsState()
-//    var isLoading by viewModel.isLoading.collectAsState()
-//
+    var maxCookingTime: Int? by remember { mutableStateOf(null) }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        // Search and Max Time inputs
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // First row: search field + search button
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             OutlinedTextField(
                 value = searchQuery,
@@ -63,33 +61,49 @@ fun SearchScreen(
                 modifier = Modifier.weight(1f),
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
             )
+
             Button(
                 onClick = {
                     scope.launch {
-                        onSearch(RecipeSearchRequest(
-                            searchQuery,
-                            null,
-                            null,
-                            null,
-                            maxCookingTime,
-                            emptyList(),
-                            emptyList(),
-                            emptyList()
-                        ))
+                        onSearch(
+                            RecipeSearchRequest(
+                                searchQuery,
+                                null,
+                                null,
+                                null,
+                                maxCookingTime,
+                                emptyList(),
+                                emptyList(),
+                                emptyList()
+                            )
+                        )
                     }
-                }
+                },
+                modifier = Modifier.height(56.dp)
             ) {
                 Text("Search")
             }
         }
+
+        // Second row: max cooking time
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             OutlinedTextField(
-                value = maxCookingTime.toString(),
+                value = if (maxCookingTime == 0) "" else maxCookingTime.toString(),
                 onValueChange = { maxCookingTime = it.toIntOrNull() },
                 label = { Text("Max time (min)") },
-                modifier = Modifier.width(120.dp),
+                modifier = Modifier.width(150.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
         }
+    }
+}
+
 //
 //        // Filter chips sections
 //        FilterSection(
@@ -198,7 +212,7 @@ fun SearchScreen(
 //            }
 //        }
 //    }
-    }
+
 
 
 //
