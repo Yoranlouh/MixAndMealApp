@@ -126,7 +126,7 @@
 
     <string name="upload_allergens">Allergens</string>
     <string name="upload_allergens_gluten">Gluten</string>
-    <string name="upload_allergens_shellfish">Shellfish</string>
+    <string name="upload_allergens_shellfish">Crustaceans</string>
     <string name="upload_allergens_eggs">Eggs</string>
     <string name="upload_allergens_fish">Fish</string>
     <string name="upload_allergens_peanuts">Peanuts</string>

@@ -4,6 +4,7 @@ import com.example.mixandmealapp.R
 
 // Shared filter option source (mirrors UploadScreen options)
 object FilterOptions {
+
     val kitchenStyles = listOf(
         R.string.upload_kitchen_style_asian,
         R.string.upload_kitchen_style_dutch,
@@ -85,3 +86,4 @@ data class SearchArgs(
     val allergens: Set<String> = emptySet(),
     val diets: Set<String> = emptySet()
 )
+
