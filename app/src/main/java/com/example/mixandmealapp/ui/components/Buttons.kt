@@ -211,7 +211,7 @@ fun BackButton(
 
 // Fridge label component with an orange trash button on the right.
 @Composable
-fun LabelFridge(
+fun Labels(
     label: String,
     modifier: Modifier = Modifier,
     // Do not auto-hide by default. Let the parent state drive UI removal to avoid
@@ -258,6 +258,7 @@ fun LabelFridge(
         }
     }
 }
+
 
 @Composable
 fun SettingsButton(

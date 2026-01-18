@@ -7,10 +7,12 @@ import com.example.mixandmealapp.repository.FridgeRepository
 import com.example.mixandmealapp.repository.RecipeRepository
 import com.example.mixandmealapp.repository.UserRepository
 import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
+import com.example.mixandmealapp.ui.viewmodel.AllergensViewModel
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
+import com.example.mixandmealapp.ui.viewmodel.MyDietViewModel
 import com.example.mixandmealapp.ui.viewmodel.RecipeDetailViewModel
 import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
 import org.koin.core.module.dsl.bind
@@ -33,4 +35,6 @@ val appModule = module {
     single { AccountViewModel(get(), get()) }
     viewModel { FridgeViewModel(get(), get()) }
     single { SearchViewModel() }
+    viewModel { AllergensViewModel(get(),get()) }
+    viewModel { MyDietViewModel(get(), get()) }
 }

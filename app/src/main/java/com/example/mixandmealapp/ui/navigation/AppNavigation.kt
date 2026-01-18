@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -22,9 +21,9 @@ import com.example.mixandmealapp.ui.components.AdminBottomNavBar
 import com.example.mixandmealapp.ui.components.GuestBottomNavBar
 import com.example.mixandmealapp.ui.components.UserBottomNavBar
 import com.example.mixandmealapp.ui.screens.account.AccountScreen
-import com.example.mixandmealapp.ui.screens.account.MyAllergensScreen
-import com.example.mixandmealapp.ui.screens.account.MyDietsScreen
+import com.example.mixandmealapp.ui.screens.account.DietScreen
 import com.example.mixandmealapp.ui.screens.admin.AdminAnalyticsScreen
+import com.example.mixandmealapp.ui.screens.allergen.AllergensScreen
 import com.example.mixandmealapp.ui.screens.auth.LoginScreen
 import com.example.mixandmealapp.ui.screens.auth.RegisterScreen
 import com.example.mixandmealapp.ui.screens.favorites.FavouritesScreen
@@ -38,11 +37,13 @@ import com.example.mixandmealapp.ui.screens.settings.options.LanguageChoiceScree
 import com.example.mixandmealapp.ui.screens.splash.LoginSplashScreen
 import com.example.mixandmealapp.ui.screens.upload.UploadScreen
 import com.example.mixandmealapp.ui.viewmodel.AccountViewModel
+import com.example.mixandmealapp.ui.viewmodel.AllergensViewModel
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import com.example.mixandmealapp.ui.viewmodel.FavouritesViewModel
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import com.example.mixandmealapp.ui.viewmodel.LocaleViewModel
+import com.example.mixandmealapp.ui.viewmodel.MyDietViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
@@ -66,6 +67,8 @@ fun AppNavigation(
     
     // Shared ViewModel instances
     val fridgeViewModel : FridgeViewModel = koinViewModel()
+    val AllergensViewModel : AllergensViewModel = koinViewModel()
+    val MyDietViewModel : MyDietViewModel = koinViewModel()
     val favouritesViewModel : FavouritesViewModel = koinViewModel()
     val homeViewModel: HomeViewModel = koinInject()
     val accountViewModel: AccountViewModel = koinInject()
@@ -240,7 +243,9 @@ fun AppNavigation(
                     )
             }
             composable(Navigation.FRIDGE) { 
-                FridgeScreen(navController = navController, viewModel = fridgeViewModel) 
+                FridgeScreen(
+                    navController = navController,
+                    viewModel = fridgeViewModel)
             }
             
             composable(
@@ -275,7 +280,6 @@ fun AppNavigation(
                         navController.navigate(Navigation.LOGIN) { launchSingleTop = true }
                     },
                     onLogout = {
-                        // Clear role on logout
                         homeViewModel.logout()
                         navController.navigate(Navigation.LOGIN) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
@@ -289,22 +293,28 @@ fun AppNavigation(
                     onNavigateToAllergens = { navController.navigate(Navigation.MY_ALLERGENS) },
                     onNavigateToDiets = { navController.navigate(Navigation.MY_DIETS) },
                     navController = navController,
-                    isLoggedIn = user.role != "Guest" // Pass isLoggedIn state
+                    isLoggedIn = user.role != "Guest"
                 )
             }
 
             composable(Navigation.MY_ALLERGENS) {
-                MyAllergensScreen(
-                    onBack = { navController.popBackStack() },
-                    accountViewModel = accountViewModel
+                AllergensScreen(
+                    navController = navController,
+                    viewModel = AllergensViewModel
                 )
             }
 
             composable(Navigation.MY_DIETS) {
-                MyDietsScreen(
-                    onBack = { navController.popBackStack() },
-                    accountViewModel = accountViewModel
+                DietScreen(
+                    navController = navController,
+                    viewModel = MyDietViewModel
                 )
+            }
+
+            composable(Navigation.FRIDGE) {
+                FridgeScreen(
+                    navController = navController,
+                    viewModel = fridgeViewModel)
             }
 
             // --- ADMIN ROUTES ---
