@@ -1,6 +1,5 @@
 package com.example.mixandmealapp.ui.screens.fridge
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,19 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Text
@@ -35,19 +27,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.mixandmealapp.ui.components.BackButton
 import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
-import com.example.mixandmealapp.ui.theme.MixAndMealAppTheme
 import com.example.mixandmealapp.ui.viewmodel.FridgeViewModel
 import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -67,6 +54,7 @@ fun FridgeScreen(
 
     val uiState by vm.uiState.collectAsState()
     var newIngredient by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(
         topBar = {
@@ -135,15 +123,19 @@ fun FridgeScreen(
                 if (newIngredient.isNotBlank()) {
                     vm.addItem(newIngredient.trim())
                     newIngredient = ""
+                    keyboardController?.hide() // Hide keyboard
                 }
             }
 
             IngredientAutoCompleteField(
                 value = newIngredient,
                 onValueChange = { newIngredient = it },
-                onSelected = { selected -> newIngredient = selected },
+                onSelected = { selected ->
+                    newIngredient = selected
+                    onAddItem() // <<< FIX: Call onAddItem here
+                },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = stringResource(id = com.example.mixandmealapp.R.string.fridge_enter_ingredient),
+                keyboardActions = KeyboardActions(onDone = { onAddItem() })
             )
 
             Button(

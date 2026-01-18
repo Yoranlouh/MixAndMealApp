@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -43,7 +44,8 @@ fun IngredientAutoCompleteField(
     onSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
     repository: IngredientCatalogRepository = ServiceLocator.ingredientCatalogRepository,
-    placeholder: String = stringResource(id = R.string.upload_enter_ingredient)
+    placeholder: String = stringResource(id = R.string.upload_enter_ingredient),
+    keyboardActions: KeyboardActions,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val suggestions = remember { mutableStateListOf<String>() }
@@ -157,6 +159,7 @@ fun IngredientAutoCompleteField(
             }
         }
     }
+
 
     if (showAddDialog) {
         AlertDialog(

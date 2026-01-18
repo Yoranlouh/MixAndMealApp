@@ -55,8 +55,6 @@ import com.example.mixandmealapp.data.TokenRepository
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.IngredientUnitEntry
-import com.example.mixandmealapp.models.entries.RecipeImageEntry
-import com.example.mixandmealapp.models.entries.UserDietEntry
 import com.example.mixandmealapp.models.enums.Difficulty
 import com.example.mixandmealapp.models.enums.KitchenStyle
 import com.example.mixandmealapp.models.enums.MealType
@@ -67,19 +65,14 @@ import com.example.mixandmealapp.ui.components.InputFieldSmall
 import com.example.mixandmealapp.ui.components.InputFieldTextBox
 import com.example.mixandmealapp.ui.components.PrimaryButton
 import com.example.mixandmealapp.ui.components.IngredientAutoCompleteField
-import com.example.mixandmealapp.ui.components.PrivacyDialog
 import com.example.mixandmealapp.ui.components.SingleChoiceSegmentedButton
 import com.example.mixandmealapp.ui.navigation.Navigation
 import com.example.mixandmealapp.ui.screens.search.FilterOptions
-import com.example.mixandmealapp.ui.theme.BrandGreen
 import com.example.mixandmealapp.ui.theme.BrandGrey
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.theme.BrandYellow
 import com.example.mixandmealapp.ui.theme.DarkText
 import kotlinx.coroutines.async
-import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
-import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 import java.io.File
 
 data class Ingredient(
@@ -916,7 +909,7 @@ fun SimpleIngredientItem(
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
-                placeholder = stringResource(id = R.string.upload_enter_ingredient)
+                keyboardActions = KeyboardActions(onDone = { }),
             )
         }
 
