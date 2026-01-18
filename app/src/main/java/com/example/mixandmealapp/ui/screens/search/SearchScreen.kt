@@ -47,6 +47,7 @@ fun SearchScreen(
 //    val selectedFilters by viewModel.selectedFilters.collectAsState()
 //    var isLoading by viewModel.isLoading.collectAsState()
 //
+    
     Column(modifier = modifier.fillMaxSize()) {
         // Search and Max Time inputs
         Row(
