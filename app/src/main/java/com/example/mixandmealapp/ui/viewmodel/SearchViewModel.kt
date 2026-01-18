@@ -34,21 +34,10 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     var uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
-    fun searchRecipes(query: String, maxCookingTime: Int?) {
+    fun searchRecipes(search: RecipeSearchRequest) {
         viewModelScope.launch {
-            val request = RecipeSearchRequest(
-                query, 
-                null, 
-                null, 
-                null, 
-                maxCookingTime,
-                emptyList(),
-                emptyList(),
-                emptyList()
-            )
-            
             try {
-                    val recipeCardsDeferred = async { repository.searchRecipeRequest(request) }
+                    val recipeCardsDeferred = async { repository.searchRecipeRequest(search) }
                     val recipeCards = recipeCardsDeferred.await()
                     _uiState.value = _uiState.value.copy(
                         recipes = recipeCards,

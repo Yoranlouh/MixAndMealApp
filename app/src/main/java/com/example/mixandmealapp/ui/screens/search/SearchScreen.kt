@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.mixandmealapp.models.requests.RecipeSearchRequest
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
 import kotlinx.coroutines.coroutineScope
@@ -31,7 +32,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SearchScreen(
-    onSearch: (String, Int?) -> Unit,
+    onSearch: (RecipeSearchRequest) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = koinViewModel(),
     navController: NavController,
@@ -43,10 +44,10 @@ fun SearchScreen(
     var searchQuery by remember { mutableStateOf("") }
 //    val searchQuery by viewModel.searchQuery.collectAsState()
     var maxCookingTime: Int? by remember { mutableStateOf(0) }
-
 //    val selectedFilters by viewModel.selectedFilters.collectAsState()
 //    var isLoading by viewModel.isLoading.collectAsState()
 //
+
     Column(modifier = modifier.fillMaxSize()) {
         // Search and Max Time inputs
         Row(
@@ -65,11 +66,16 @@ fun SearchScreen(
             Button(
                 onClick = {
                     scope.launch {
-                        onSearch(
+                        onSearch(RecipeSearchRequest(
                             searchQuery,
+                            null,
+                            null,
+                            null,
                             maxCookingTime,
-
-                            )
+                            emptyList(),
+                            emptyList(),
+                            emptyList()
+                        ))
                     }
                 }
             ) {

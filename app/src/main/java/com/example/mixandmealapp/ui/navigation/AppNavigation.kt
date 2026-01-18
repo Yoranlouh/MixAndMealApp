@@ -214,8 +214,8 @@ fun AppNavigation(
                 SearchScreen(
                     navController = navController,
 //                    onSpeechRecognize = onSpeechRecognize,
-                    onSearch = { searchQuery, maxCookingTime ->
-                        viewModel.searchRecipes(searchQuery, maxCookingTime)
+                    onSearch = { RecipeSearchRequest ->
+                        viewModel.searchRecipes(RecipeSearchRequest)
                         navController.navigate(Navigation.SEARCH_RESULTS)
                     }
                 )
