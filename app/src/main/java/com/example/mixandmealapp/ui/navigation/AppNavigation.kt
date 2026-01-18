@@ -209,12 +209,15 @@ fun AppNavigation(
                 )
             }
 
-            composable(Navigation.SEARCH) {
+            composable(Navigation.SEARCH) { backStackEntry -> // Capture the backStackEntry
                 val viewModel: SearchViewModel = koinViewModel()
 
+                LaunchedEffect(backStackEntry) {
+                    viewModel.reloadSearchScreen()
+                }
                 SearchScreen(
                     navController = navController,
-//                    onSpeechRecognize = onSpeechRecognize,
+                    onSpeechRecognize = onSpeechRecognize,
                     onSearch = { recipeSearchRequest ->
                         viewModel.searchRecipes(recipeSearchRequest)
                         navController.navigate(Navigation.SEARCH_RESULTS)

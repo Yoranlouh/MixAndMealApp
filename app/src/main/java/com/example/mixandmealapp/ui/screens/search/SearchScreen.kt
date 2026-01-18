@@ -1,5 +1,6 @@
 package com.example.mixandmealapp.ui.screens.search
 
+import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
@@ -17,6 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -31,6 +35,7 @@ import com.example.mixandmealapp.models.enums.MealType
 import com.example.mixandmealapp.models.requests.RecipeSearchRequest
 import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.screens.upload.FilterSection
+import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -47,6 +52,23 @@ fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel(),
     navController: NavController
 ) {
+
+    val context = LocalContext.current
+    var tts: TextToSpeech? by remember { mutableStateOf(null) }
+    val noInstructionsMessage = stringResource(id = com.example.mixandmealapp.R.string.no_instructions_message)
+
+
+    DisposableEffect(Unit) {
+        val ttsInstance = TextToSpeech(context) { status ->
+        }
+        tts = ttsInstance
+        onDispose {
+            ttsInstance.stop()
+            ttsInstance.shutdown()
+        }
+    }
+
+
     LaunchedEffect(Unit) {
         viewModel.reloadSearchScreen()
     }
@@ -112,6 +134,7 @@ fun SearchScreen(
             .padding(16.dp)
     ) {
         // First row: search field + search button
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -150,7 +173,22 @@ fun SearchScreen(
             ) {
                 Text("Search")
             }
+            IconButton(onClick = {
+                val textToRead = if (instructions == "Not found" || instructions.isBlank()) {
+                    noInstructionsMessage
+                } else {
+                    instructions
+                }
+                tts?.speak(textToRead, TextToSpeech.QUEUE_FLUSH, null, null)
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.VolumeUp,
+                    contentDescription = stringResource(id = com.example.mixandmealapp.R.string.read_instructions),
+                    tint = BrandOrange
+                )
+            }
         }
+
 
         // Second row: max cooking time
         Row(
@@ -266,8 +304,14 @@ fun SearchScreen(
             ) {
                 items(allergenList) { allergen ->
                     FilterChip(
-                        selected = selectedAllergens == allergen,
-                        onClick = { selectedAllergens },
+                        selected = selectedAllergens.contains(allergen.id),
+                        onClick = {
+                            selectedAllergens = if (selectedAllergens.contains(allergen.id)) {
+                                selectedAllergens - allergen.id
+                            } else {
+                                selectedAllergens + allergen.id
+                            }
+                        },
                         label = {
                             Text(
                                 text = allergen.displayName,
@@ -296,8 +340,14 @@ fun SearchScreen(
             ) {
                 items(dietList) { diet ->
                     FilterChip(
-                        selected = selectedDiets == diet,
-                        onClick = { selectedDiets },
+                        selected = selectedDiets.contains(diet.id),
+                        onClick = {
+                            selectedDiets = if (selectedDiets.contains(diet.id)) {
+                                selectedDiets - diet.id
+                            } else {
+                                selectedDiets + diet.id
+                            }
+                        },
                         label = {
                             Text(
                                 text = diet.displayName,

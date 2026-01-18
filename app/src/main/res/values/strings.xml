@@ -214,4 +214,5 @@
     <string name="diet_title">Diet Title</string>
     <string name="diet_enter_diet">Enter Diet</string>
     <string name="diet_add_diet">Add Diet</string>
+    <string name="no_instructions_message">No Instructions</string>
 </resources>
