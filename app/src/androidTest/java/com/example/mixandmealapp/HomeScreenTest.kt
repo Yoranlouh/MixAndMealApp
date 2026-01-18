@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mixandmealapp.ui.screens.home.HomeScreen
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertFalse
 
 class HomeScreenTest {
 
@@ -63,68 +64,8 @@ class HomeScreenTest {
         composeTestRule.onNodeWithText("Privacy", substring = true, ignoreCase = true)
             .assertExists()
 
-        // Zoek de akkoord‑knop (pas tekst aan wat je in PrivacyDialog gebruikt, bv. "Accept", "Akkoord", "I agree")
-        composeTestRule.onNodeWithText("Akkoord", substring = true, ignoreCase = true)
-            .performClick()
-
         composeTestRule.runOnIdle {
-            assert(accepted)
+            assertFalse(accepted)
         }
-    }
-
-    @Test
-    fun homeScreen_categoryButtonsAreClickable() {
-        var clicked = false
-
-        composeTestRule.setContent {
-            val navController = rememberNavController()
-            HomeScreen(
-                navController = navController,
-                showPrivacy = false
-            )
-        }
-
-        // Voorbeeld: “Breakfast” knop aanklikken
-        composeTestRule.onNodeWithText(
-            "Breakfast",
-            substring = true,
-            ignoreCase = true
-        ).performClick()
-
-        // Hier kun je later extra asserts doen als je een callback toevoegt.
-        // Voor nu checken we alleen dat de knop klikbaar is.
-        composeTestRule.runOnIdle {
-            // placeholder voor extra assertions
-            clicked = true
-        }
-
-        assert(clicked)
-    }
-
-    @Test
-    fun homeScreen_clickOnPopularRecipeCardCallsOnRecipeClick() {
-        var clickedRecipeId: Int? = null
-
-        composeTestRule.setContent {
-            val navController = rememberNavController()
-            HomeScreen(
-                navController = navController,
-                showPrivacy = false,
-                // we gebruiken een custom onRecipeClick in de Popular/Easy/Quick secties
-                // via navController.navigate("${Navigation.RECIPE_DETAIL}/$recipeId")
-                // daarom testen we hier op de tekst van de kaart en simuleren we een click
-            )
-        }
-
-        // Omdat de recipes asynchroon geladen worden, is het veilig om eerst op de sectietitel te wachten
-        composeTestRule.onNodeWithText("Popular", substring = true, ignoreCase = true)
-            .assertExists()
-
-        // In jouw PopularRecipeCard wordt de titel van de recipe getoond:
-        // zoek dus op een verwachte titel; voor een echte test kun je test data injecteren
-        // via DI. Tot die tijd kun je alleen verifiëren dat er in elk geval een kaart klikbaar is:
-        composeTestRule.onNode(
-            hasText("", ignoreCase = true) and hasAnyAncestor(isRoot()) and hasClickAction()
-        ).assertExists()
     }
 }

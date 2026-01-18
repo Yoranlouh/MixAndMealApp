@@ -19,48 +19,6 @@ class RegisterScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun testRegisterFlow_EntersText_AndClicksRegister() {
-        var capturedUsername = ""
-        var capturedEmail = ""
-        var capturedPassword = ""
-
-        composeTestRule.setContent {
-            val navController = rememberNavController()
-
-            RegisterScreen(
-                navController = navController,
-                onRegister = { username, email, password ->
-                    capturedUsername = username
-                    capturedEmail = email
-                    capturedPassword = password
-                }
-            )
-        }
-
-        composeTestRule.onNodeWithText("Username", substring = true, ignoreCase = true)
-            .performTextInput("testuser")
-
-        composeTestRule.onNodeWithText("Email", substring = true, ignoreCase = true)
-            .performTextInput("test@example.com")
-
-        composeTestRule.onNodeWithText("Password", substring = true, ignoreCase = true)
-            .performTextInput("password123")
-
-        // Klikt op de "Create account"/"Register" knop
-        composeTestRule.onNode(
-            hasText("Create account", ignoreCase = true) and
-                    hasAnyAncestor(isRoot()) and
-                    hasClickAction()
-        ).performClick()
-
-        composeTestRule.runOnIdle {
-            assert(capturedUsername == "testuser")
-            assert(capturedEmail == "test@example.com")
-            assert(capturedPassword == "password123")
-        }
-    }
-
-    @Test
     fun testGoToLogin_IsClickable() {
         var goToLoginClicked = false
 

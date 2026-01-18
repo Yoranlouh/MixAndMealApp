@@ -66,8 +66,6 @@ dependencies {
     // Coroutines for async repository calls and viewModelScope
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation(libs.ui)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.compose.foundation)
 //    implementation(libs.androidx.datastore.preferences.core)
 //    implementation(libs.firebase.appdistribution.gradle)
     testImplementation(libs.junit)
