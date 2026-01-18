@@ -32,6 +32,15 @@ data class SearchUiState(
 class SearchViewModel @Inject constructor(
     private val repository: RecipeRepository
 ) : ViewModel() {
+
+    fun reloadSearchScreen()
+    {
+        viewModelScope.launch{
+            _uiState.value = _uiState.value.copy(
+                recipes = emptyList()
+            )
+        }
+    }
     private val _uiState = MutableStateFlow(SearchUiState())
     var uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
     fun searchRecipes(search: RecipeSearchRequest) {

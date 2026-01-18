@@ -151,7 +151,7 @@ object ApiService {
         token: String?,
         ingredientId: IngredientIDRequest
     ): List<UserFridgeEntry> =
-        client.post("$domain/fridge/add-ingredient") {
+        client.post("$domain/fridge/add-ingredient-to-fridge") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(ingredientId)
@@ -223,23 +223,11 @@ object ApiService {
         }.body()
 
 
-    suspend fun recipeSearchRequest(request: RecipeSearchRequest): List<RecipeCardResponse> {
-        val response: HttpResponse = client.post("$domain/search-recipes") {
-            contentType(ContentType.Application.Json)
+    // In ApiService.kt
+    suspend fun recipeSearchRequest(request : RecipeSearchRequest) : List<RecipeCardResponse> =
+        client.post("$domain/search-recipes") {contentType(ContentType.Application.Json)
             setBody(request)
-        }
+        }.body()
 
-        return if (response.status.isSuccess()) {
-            try {
-                response.body()
-            } catch (e: Exception) {
-                Log.e("ApiService", "Failed to decode successful response: ${e.message}")
-                emptyList()
-            }
-        } else {
-            Log.e("ApiService", "Search request failed with status: ${response.status}")
-            emptyList()
-        }
-    }
 }
 

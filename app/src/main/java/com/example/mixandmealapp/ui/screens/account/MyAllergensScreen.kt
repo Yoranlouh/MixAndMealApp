@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
@@ -128,7 +129,7 @@ fun AllergensScreen(
                 onValueChange = { newAllergen = it },
                 onSelected = { selected -> newAllergen = selected },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = stringResource(id = com.example.mixandmealapp.R.string.allergens_enter_allergen),
+                keyboardActions = KeyboardActions(onDone = { onAddItem() })
             )
 
             Button(

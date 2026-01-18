@@ -201,4 +201,8 @@
     <string name="upload_prep_time_45">45</string>
     <string name="upload_prep_time_60">60%gt;</string>
     <string name="upload_tell_about_recipe_instruction">Instructies</string>
+    <string name="my_diets">Mijn Diëten</string>
+    <string name="diet_title">Diëet titel</string>
+    <string name="diet_enter_diet">Voer diëet in</string>
+    <string name="diet_add_diet">Voeg diëet toe</string>
 </resources>
