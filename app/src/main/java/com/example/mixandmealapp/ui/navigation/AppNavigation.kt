@@ -45,6 +45,7 @@ import com.example.mixandmealapp.ui.viewmodel.HomeViewModel
 import com.example.mixandmealapp.ui.viewmodel.LocaleViewModel
 import com.example.mixandmealapp.ui.viewmodel.MyDietViewModel
 import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
+import kotlinx.coroutines.async
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.io.File
