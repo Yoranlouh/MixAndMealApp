@@ -47,6 +47,7 @@ import com.example.mixandmealapp.ui.viewmodel.MyDietViewModel
 import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import java.io.File
 
 private val noBottomBarRoutes = listOf(
     Navigation.LOGIN,
@@ -60,8 +61,8 @@ private val noBottomBarRoutes = listOf(
 @Composable
 fun AppNavigation(
     localeViewModel: LocaleViewModel,
-    onPhotoPick: (callback: (Uri?) -> Unit) -> Unit,
-    onCameraClick: (callback: (Uri?) -> Unit) -> Unit,
+    onPhotoPick: (callback: (Uri?, File?) -> Unit) -> Unit,
+    onCameraClick: (callback: (Uri?, File?) -> Unit) -> Unit,
     onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
 ) {
     val navController = rememberNavController()
@@ -214,8 +215,8 @@ fun AppNavigation(
                 SearchScreen(
                     navController = navController,
 //                    onSpeechRecognize = onSpeechRecognize,
-                    onSearch = { RecipeSearchRequest ->
-                        viewModel.searchRecipes(RecipeSearchRequest)
+                    onSearch = { recipeSearchRequest ->
+                        viewModel.searchRecipes(recipeSearchRequest)
                         navController.navigate(Navigation.SEARCH_RESULTS)
                     }
                 )

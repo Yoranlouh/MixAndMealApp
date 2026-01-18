@@ -43,11 +43,11 @@ fun SearchScreen(
 //    val recipes by viewModel.filteredRecipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 //    val searchQuery by viewModel.searchQuery.collectAsState()
-    val maxCookingTime: Int? by remember { mutableStateOf(0) }
+    val maxCookingTime: Int? by remember { mutableStateOf(null) }
 //    val selectedFilters by viewModel.selectedFilters.collectAsState()
 //    var isLoading by viewModel.isLoading.collectAsState()
 //
-    
+
     Column(modifier = modifier.fillMaxSize()) {
         // Search and Max Time inputs
         Row(

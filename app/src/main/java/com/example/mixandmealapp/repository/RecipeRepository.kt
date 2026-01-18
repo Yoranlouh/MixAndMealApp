@@ -9,6 +9,7 @@ import com.example.mixandmealapp.models.responses.RecipeCardResponse
 import com.example.mixandmealapp.models.responses.RecipeResponse
 import com.example.mixandmealapp.network.ApiService
 import io.ktor.client.statement.HttpResponse
+import java.io.File
 
 class RecipeRepository {
     suspend fun getFeaturedRecipeCard(): RecipeCardResponse {
@@ -42,8 +43,8 @@ class RecipeRepository {
         return ApiService.getAllRecipes()
     }
 
-    suspend fun uploadRecipe(token: String?, imageUri: String?, request: RecipeUploadRequest, recipeId: Int?): RecipeResponse {
-        return ApiService.uploadRecipe(token, imageUri, request)
+    suspend fun uploadRecipe(token: String?, request: RecipeUploadRequest, images: List<File>): RecipeResponse {
+        return ApiService.updateRecipe(token, request, images)
     }
 
     suspend fun deleteRecipe(token: String?, recipeId: Int): HttpResponse {
@@ -52,23 +53,6 @@ class RecipeRepository {
 
     suspend fun searchRecipeRequest(request: RecipeSearchRequest) : List<RecipeCardResponse>{
         return ApiService.recipeSearchRequest(request)
-    }
-    suspend fun searchRecipes(
-        query: String,
-        kitchens: Set<String>,
-        meals: Set<String>,
-        allergens: Set<String>,
-        diets: Set<String>
-    ): List<RecipeCardResponse> {
-        val queryParams = mutableMapOf<String, String>()
-        if (query.isNotBlank()) queryParams["query"] = query
-        // Assuming your backend expects a single value for these filters
-        if (kitchens.isNotEmpty()) queryParams["kitchen"] = kitchens.joinToString(",")
-        if (meals.isNotEmpty()) queryParams["meal"] = meals.joinToString(",")
-        if (allergens.isNotEmpty()) queryParams["allergens"] = allergens.joinToString(",")
-        if (diets.isNotEmpty()) queryParams["diets"] = diets.joinToString(",")
-
-        return ApiService.searchRecipes(queryParams)
     }
 
 }

@@ -47,7 +47,8 @@ class MainActivity : ComponentActivity() {
 
 
     private var tempImageUri: Uri? = null
-    private var onImagePicked: ((Uri?) -> Unit)? = null
+    private var onImagePicked: ((Uri?, File?) -> Unit)? = null
+    private var tempImageFile: File? = null
     private var onSpeechResult: ((String?) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,12 +82,12 @@ class MainActivity : ComponentActivity() {
         }
         // Photo Picker launcher
         photoPickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            onImagePicked?.invoke(uri)
+            onImagePicked?.invoke(uri, null)
         }
         // Camera launcher
         cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
             if (success) {
-                onImagePicked?.invoke(tempImageUri)
+                onImagePicked?.invoke(tempImageUri, tempImageFile)
             }
         }
         // Permission launcher
@@ -109,11 +110,11 @@ class MainActivity : ComponentActivity() {
         speechLauncher.launch(intent)
     }
 
-    private fun openPhotoPicker(callback: (Uri?) -> Unit) {
+    private fun openPhotoPicker(callback: (Uri?, File?) -> Unit) {
         onImagePicked = callback
         photoPickerLauncher.launch("image/*")
     }
-    private fun launchCameraWithPermissionCheck(callback: (Uri?) -> Unit) {
+    private fun launchCameraWithPermissionCheck(callback: (Uri?, File?) -> Unit) {
         onImagePicked = callback
         when (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)) {
             PackageManager.PERMISSION_GRANTED -> {
@@ -125,21 +126,23 @@ class MainActivity : ComponentActivity() {
         }
     }
     private fun launchCamera() {
-        createImageFileUri().let { uri ->
-            tempImageUri = uri
-            cameraLauncher.launch(uri)
+        createImageFileUri().let { pair ->
+            tempImageUri = pair.first
+            tempImageFile = pair.second
+            cameraLauncher.launch(pair.first)
         }
     }
-    private fun createImageFileUri(): Uri {
+    private fun createImageFileUri(): Pair<Uri, File> {
         val imageFile = File.createTempFile(
             "JPEG_${System.currentTimeMillis()}_",
             ".jpg",
             externalCacheDir
         )
-        return FileProvider.getUriForFile(
+        val pair =  Pair(FileProvider.getUriForFile(
             this,
             "${packageName}.provider",
             imageFile
-        )
+        ), imageFile)
+        return pair
     }
 }
