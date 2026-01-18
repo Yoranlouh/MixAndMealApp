@@ -170,3 +170,26 @@ fun PopularRecipeCardPreview() {
             }
             Text("cooking time: ${sample.cookingTime} min", style = MaterialTheme.typography.bodySmall)
         }
+
+
+@Composable
+fun FavoriteRecipeCardItem(
+    id: Int,
+    title: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    onToggleFavorite: () -> Unit = {}
+) {
+    // Delegate to the unified recipe card component so styling stays consistent
+    PopularRecipeCard(
+        title = title,
+        description = null,
+        cookingTimeMinutes = null,
+        imageUrl = null,
+        onClick = onClick,
+        modifier = modifier
+            .height(240.dp),
+        isFavorite = true,
+        onToggleFavorite = onToggleFavorite
+    )
+}

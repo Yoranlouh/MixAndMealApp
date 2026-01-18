@@ -56,6 +56,7 @@ import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.IngredientUnitEntry
 import com.example.mixandmealapp.models.entries.RecipeImageEntry
+import com.example.mixandmealapp.models.entries.UserDietEntry
 import com.example.mixandmealapp.models.enums.Difficulty
 import com.example.mixandmealapp.models.enums.KitchenStyle
 import com.example.mixandmealapp.models.enums.MealType
@@ -78,6 +79,7 @@ import com.example.mixandmealapp.ui.theme.DarkText
 import kotlinx.coroutines.async
 import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import java.io.File
 
 data class Ingredient(
@@ -92,14 +94,15 @@ fun UploadScreen(
     navController: NavHostController,
     token: String?,
     repo: TokenRepository,
-    onPhotoPick: (callback: (Uri?) -> Unit) -> Unit,
-    onCameraClick: (callback: (Uri?) -> Unit) -> Unit,
+    onPhotoPick: (callback: (Uri?, File?) -> Unit) -> Unit,
+    onCameraClick: (callback: (Uri?, File?) -> Unit) -> Unit,
     recipeId: Int?
 ) {
 
 
     // Camera variables
     var coverPhotoUri by remember { mutableStateOf<Uri?>(null) }
+    var coverPhotoFile by remember { mutableStateOf<File?>(null) }
 
     val scope = rememberCoroutineScope()
 
@@ -246,7 +249,9 @@ fun UploadScreen(
         // Add Cover Photo Section
         PhotoPicker(
             coverPhotoUri = coverPhotoUri,
-            onPhotoClick = { onPhotoPick { uri -> coverPhotoUri = uri } },
+            onPhotoClick = { onPhotoPick { uri, file ->
+                coverPhotoUri = uri
+                coverPhotoFile = file} },
             onPhotoRemove = { coverPhotoUri = null }
         )
 
@@ -258,8 +263,9 @@ fun UploadScreen(
                 onAccept = {
                     showCameraPermissionDialog = false
                     cameraPermissionAccepted = true
-                    onCameraClick { uri ->
+                    onCameraClick { uri, file ->
                         coverPhotoUri = uri
+                        coverPhotoFile = file
                     }
                 },
                 onDecline = {
@@ -275,8 +281,9 @@ fun UploadScreen(
                 if (!cameraPermissionAccepted) {
                     showCameraPermissionDialog = true
                 } else {
-                    onCameraClick { uri ->
+                    onCameraClick { uri, file ->
                         coverPhotoUri = uri
+                        coverPhotoFile = file
                     }
                 }
             }
@@ -614,7 +621,8 @@ fun UploadScreen(
             onClick = {
                 // Launch coroutine for API call
                 scope.launch {
-
+                    val filesToUpload = mutableListOf<File>()
+                    coverPhotoFile?.let { filesToUpload.add(it)}
                     val tokenToUse = async {token ?: repo.getTokenOrDefault() }
                     tokenToUse.await()
                     Log.d("Token", tokenToUse.toString())
@@ -628,13 +636,6 @@ fun UploadScreen(
                             prepTime = getValue(selectedPrepTime),
                             cookingTime = getValue(selectedCookingDuration),
                             difficulty = selectedDifficulty.firstOrNull() ?: Difficulty.EASY,
-//                            images = if (coverPhotoUri != null) {
-//                                listOf(RecipeImageEntry(
-//                                    id = 0,
-//                                    recipeId = 0,
-//                                    imageUrl = coverPhotoUri.toString()
-//                                ))
-//                            } else emptyList(),
                             mealType = selectedMealTypes.firstOrNull(),
                             kitchenStyle = selectedKitchenStyles.firstOrNull(),
                             diets = selectedDiets.map { dietName ->
@@ -658,7 +659,7 @@ fun UploadScreen(
                         ApiService.updateRecipe(
                             tokenToUse.toString(),
                             recipe = request,
-                            images = mutableListOf<File>(),
+                            images = filesToUpload,
                         )
                         showSuccessDialog = true
 

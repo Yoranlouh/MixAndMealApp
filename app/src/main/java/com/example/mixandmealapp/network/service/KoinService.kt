@@ -34,7 +34,7 @@ val appModule = module {
     viewModel { RecipeDetailViewModel(get(), get()) }
     single { AccountViewModel(get(), get()) }
     viewModel { FridgeViewModel(get(), get()) }
-    single { SearchViewModel() }
+    single { SearchViewModel(get()) }
     viewModel { AllergensViewModel(get(),get()) }
     viewModel { MyDietViewModel(get(), get()) }
 }

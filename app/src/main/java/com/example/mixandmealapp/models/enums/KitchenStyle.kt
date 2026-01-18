@@ -1,6 +1,6 @@
 package com.example.mixandmealapp.models.enums
 @kotlinx.serialization.Serializable
-enum class KitchenStyle(kitchenName: String) {
+enum class KitchenStyle(val kitchenName: String) {
     ASIAN("asian"),
     EAST_EUROPEAN("easteuropean"),
     MEXICAN("mexican"),

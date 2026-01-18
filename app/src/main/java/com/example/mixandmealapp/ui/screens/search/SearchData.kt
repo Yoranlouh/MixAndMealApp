@@ -66,3 +66,24 @@ object FilterOptions {
     )
 }
 
+data class Recipe(
+    val id: String,
+    val title: String,
+    val kitchenStyle: String?,
+    val mealType: String?,
+    val allergens: Set<String> = emptySet(),
+    val diets: Set<String> = emptySet(),
+    val description: String = "",
+    val durationMinutes: Int = 30,
+    val difficulty: String = "Easy",
+    val imageUrl: String? = null
+)
+
+data class SearchArgs(
+    val query: String,
+    val kitchenStyles: Set<String> = emptySet(),
+    val mealTypes: Set<String> = emptySet(),
+    val allergens: Set<String> = emptySet(),
+    val diets: Set<String> = emptySet()
+)
+

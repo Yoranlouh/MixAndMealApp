@@ -279,15 +279,13 @@ fun RecipeDetailScreen(
 
                             Spacer(modifier = Modifier.height(6.dp))
                             // Description with inline green "View More" that expands/collapses
-                            val label = if (descExpanded) " View Less" else " View More"
                             val annotated: AnnotatedString = buildAnnotatedString {
                                 append(description)
-                                append(label)
-                                addStringAnnotation(tag = "action", annotation = "toggle", start = description.length, end = description.length + label.length)
+                                addStringAnnotation(tag = "action", annotation = "toggle", start = description.length, end = description.length)
                                 addStyle(
                                     style = SpanStyle(color = BrandGreen, fontWeight = FontWeight.Medium),
                                     start = description.length,
-                                    end = description.length + label.length
+                                    end = description.length
                                 )
                             }
                             ClickableText(
@@ -305,13 +303,7 @@ fun RecipeDetailScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     // Nutrition chips
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        NutrientChip(Icons.Filled.Grain, "65g carbs")
-                        NutrientChip(Icons.Filled.WaterDrop, "27g proteins")
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        NutrientChip(Icons.Filled.Grain, "120 Kcal")
-                        NutrientChip(Icons.Filled.WaterDrop, "91g fats")
+
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))

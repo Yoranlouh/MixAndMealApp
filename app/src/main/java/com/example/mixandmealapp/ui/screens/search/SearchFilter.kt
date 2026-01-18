@@ -1,200 +1,63 @@
-package com.example.mixandmealapp.ui.screens.search
+import com.example.mixandmealapp.R
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import com.example.mixandmealapp.ui.screens.upload.FilterSection
+object FilterOptions {
+    val kitchenStyles = listOf(
+        R.string.upload_kitchen_style_asian,
+        R.string.upload_kitchen_style_dutch,
+        R.string.upload_kitchen_style_easteurope,
+        R.string.upload_kitchen_style_french,
+        R.string.upload_kitchen_style_greek,
+        R.string.upload_kitchen_style_indian,
+        R.string.upload_kitchen_style_italian,
+        R.string.upload_kitchen_style_japanese,
+        R.string.upload_kitchen_style_korean,
+        R.string.upload_kitchen_style_mediterranean,
+        R.string.upload_kitchen_style_mexican,
+        R.string.upload_kitchen_style_spanish,
+        R.string.upload_kitchen_style_thai,
+        R.string.upload_kitchen_style_turkish,
+        R.string.upload_kitchen_style_vietnamese
+    )
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SearchFilterBottomSheet(
-    show: Boolean,
-    selectedKitchenStyles: String,
-    selectedMealTypes: String,
-    selectedAllergens: List<String>,
-    selectedDiets: List<String>,
-    onToggleKitchen: (String) -> Unit,
-    onToggleMealType: (String) -> Unit,
-    onToggleAllergen: (String) -> Unit,
-    onToggleDiet: (String) -> Unit,
-    onApply: () -> Unit,
-    onClearAll: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    if (!show) return
+    val mealTypes = listOf(
+        R.string.upload_meal_type_breakfast,
+        R.string.upload_meal_type_lunch,
+        R.string.upload_meal_type_dinner,
+        R.string.upload_meal_type_dessert
+    )
 
-    var kitchenExpanded by remember { mutableStateOf(false) }
-    var mealTypeExpanded by remember { mutableStateOf(false) }
-    var allergensExpanded by remember { mutableStateOf(false) }
-    var dietsExpanded by remember { mutableStateOf(false) }
+    val allergens = listOf(
+        R.string.upload_allergens_gluten,
+        R.string.upload_allergens_shellfish,
+        R.string.upload_allergens_eggs,
+        R.string.upload_allergens_fish,
+        R.string.upload_allergens_peanuts,
+        R.string.upload_allergens_soy,
+        R.string.upload_allergens_milk,
+        R.string.upload_allergens_tree_nuts,
+        R.string.upload_allergens_celery,
+        R.string.upload_allergens_mustard,
+        R.string.upload_allergens_sesame,
+        R.string.upload_allergens_sulphites,
+        R.string.upload_allergens_lupin,
+        R.string.upload_allergens_molluscs,
+        R.string.upload_allergens_corn
+    )
 
-    // Translated filter options
-    val kitchenStylesStrings = FilterOptions.kitchenStyles.map { stringResource(it) }
-    val mealTypeStrings = FilterOptions.mealTypes.map { stringResource(it) }
-    val allergensStrings = FilterOptions.allergens.map { stringResource(it) }
-    val dietsStrings = FilterOptions.diets.map { stringResource(it) }
-
-    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
-        Text(
-            text = "Filters",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            // Kitchen Styles (multi-select)
-            FilterSection(
-                title = "Kitchen Styles",
-                options = kitchenStylesStrings,
-                selectedOptions = setOf(selectedKitchenStyles),
-                expanded = kitchenExpanded,
-                onHeaderToggle = { kitchenExpanded = !kitchenExpanded },
-                onOptionToggle = { opt ->
-                    onToggleKitchen(opt)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Meal Types (multi-select)
-            FilterSection(
-                title = "Meal Types",
-                options = mealTypeStrings,
-                selectedOptions = setOf(selectedMealTypes),
-                expanded = mealTypeExpanded,
-                onHeaderToggle = { mealTypeExpanded = !mealTypeExpanded },
-                onOptionToggle = { opt ->
-                    onToggleMealType(opt)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Allergens (multi-select)
-            FilterSection(
-                title = "Allergens",
-                options = allergensStrings,
-                selectedOptions = selectedAllergens.toSet(),
-                expanded = allergensExpanded,
-                onHeaderToggle = { allergensExpanded = !allergensExpanded },
-                onOptionToggle = { opt ->
-                    onToggleAllergen(opt)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Diets (multi-select)
-            FilterSection(
-                title = "Diets",
-                options = dietsStrings,
-                selectedOptions = selectedDiets.toSet(),
-                expanded = dietsExpanded,
-                onHeaderToggle = { dietsExpanded = !dietsExpanded },
-                onOptionToggle = { opt ->
-                    onToggleDiet(opt)
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Divider()
-
-        Button(
-            onClick = onApply,
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .fillMaxWidth()
-        ) { Text("Apply filters") }
-
-        Button(
-            onClick = onClearAll,
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 0.dp)
-                .fillMaxWidth()
-        ) { Text("Clear all") }
-
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-@Composable
-fun CompactFilterSummary(
-    selectedKitchenStyles: String,
-    selectedMealTypes: String,
-    selectedAllergens: List<String>,
-    selectedDiets: List<String>,
-    onOpenFilters: () -> Unit,
-    onClearAll: () -> Unit
-) {
-    val total = selectedAllergens.size + selectedDiets.size
-    val expanded = remember { mutableStateOf(false) }
-
-    androidx.compose.material3.OutlinedButton(
-        onClick = { expanded.value = true },
-        modifier = Modifier
-            .padding(top = 8.dp)
-    ) {
-        Text(text = if (total > 0) "Filters ($total)" else "Filters")
-    }
-
-    DropdownMenu(expanded = expanded.value, onDismissRequest = { expanded.value = false }) {
-        if (total == 0) {
-            DropdownMenuItem(text = { Text("No filters active") }, onClick = { expanded.value = false })
-        } else {
-            if (selectedKitchenStyles.isNotEmpty()) {
-                DropdownMenuItem(
-                    text = { Text("Kitchen: " + selectedKitchenStyles) },
-                    onClick = { }
-                )
-            }
-            if (selectedMealTypes.isNotEmpty()) {
-                DropdownMenuItem(
-                    text = { Text("Meal: " + selectedMealTypes) },
-                    onClick = { }
-                )
-            }
-            if (selectedAllergens.isNotEmpty()) {
-                DropdownMenuItem(
-                    text = { Text("Allergens: " + selectedAllergens.joinToString(limit = 3)) },
-                    onClick = { }
-                )
-            }
-            if (selectedDiets.isNotEmpty()) {
-                DropdownMenuItem(
-                    text = { Text("Diets: " + selectedDiets.joinToString(limit = 3)) },
-                    onClick = { }
-                )
-            }
-            Divider()
-            DropdownMenuItem(text = { Text("Edit filters…") }, onClick = {
-                expanded.value = false
-                onOpenFilters()
-            })
-            DropdownMenuItem(text = { Text("Clear all") }, onClick = {
-                expanded.value = false
-                onClearAll()
-            })
-        }
-    }
+    val diets = listOf(
+        R.string.upload_diets_vegan,
+        R.string.upload_diets_vegetarian,
+        R.string.upload_diets_gluten_free,
+        R.string.upload_diets_lactose_free,
+        R.string.upload_diets_nut_free,
+        R.string.upload_diets_dairy_free,
+        R.string.upload_diets_low_sugar,
+        R.string.upload_diets_low_salt,
+        R.string.upload_diets_halal,
+        R.string.upload_diets_kosher,
+        R.string.upload_diets_paleo,
+        R.string.upload_diets_flexitarian,
+        R.string.upload_diets_raw_food,
+        R.string.upload_diets_keto
+    )
 }
