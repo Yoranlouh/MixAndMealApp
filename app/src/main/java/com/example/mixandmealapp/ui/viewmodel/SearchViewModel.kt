@@ -13,6 +13,8 @@ import com.example.mixandmealapp.network.ApiService
 import com.example.mixandmealapp.repository.RecipeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,9 +48,12 @@ class SearchViewModel @Inject constructor(
             )
             
             try {
-                val recipeCards = repository.searchRecipeRequest(request)
-                _uiState.value = _uiState.value.copy(recipes = recipeCards)
-
+                    val recipeCardsDeferred = async { repository.searchRecipeRequest(request) }
+                    val recipeCards = recipeCardsDeferred.await()
+                    _uiState.value = _uiState.value.copy(
+                        recipes = recipeCards,
+                        isLoading = false
+                    )
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(error = "Error fetching recipes")
             }
