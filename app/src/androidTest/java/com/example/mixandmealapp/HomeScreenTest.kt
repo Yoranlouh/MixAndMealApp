@@ -18,6 +18,7 @@ class HomeScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    // HS-01
     @Test
     fun homeScreen_showsHeaderAndSections() {
         composeTestRule.setContent {
@@ -47,6 +48,7 @@ class HomeScreenTest {
             .assertExists()
     }
 
+    // HS-02
     @Test
     fun homeScreen_showsPrivacyDialogAndCallsOnAccept() {
         var accepted = false

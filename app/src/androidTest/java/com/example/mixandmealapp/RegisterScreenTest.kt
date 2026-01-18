@@ -18,6 +18,7 @@ class RegisterScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    // RS-01
     @Test
     fun testGoToLogin_IsClickable() {
         var goToLoginClicked = false
@@ -36,6 +37,7 @@ class RegisterScreenTest {
         assert(goToLoginClicked)
     }
 
+    // RS-02
     @Test
     fun testValidation_ShowsErrors_WhenFieldsInvalid() {
         composeTestRule.setContent {

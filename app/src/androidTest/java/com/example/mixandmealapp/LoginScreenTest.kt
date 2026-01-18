@@ -17,6 +17,7 @@ class LoginScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    // LS-01
     @Test
     fun testLoginFlow_EntersText_AndClicksLogin() {
         var capturedEmail = ""
@@ -59,6 +60,7 @@ class LoginScreenTest {
         }
     }
 
+    // LS-02
     @Test
     fun testNavigationToRegister_IsClickable() {
         var registerClicked = false

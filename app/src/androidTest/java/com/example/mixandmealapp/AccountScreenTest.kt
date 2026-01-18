@@ -17,6 +17,7 @@ class AccountScreenTest : KoinTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    // AS-01
     @Test
     fun accountScreen_whenLoggedIn_displaysSections() {
         composeTestRule.setContent {
@@ -36,6 +37,7 @@ class AccountScreenTest : KoinTest {
         composeTestRule.onNodeWithText("My Fridge", substring = true).assertIsDisplayed()
     }
 
+    // AS-02
     @Test
     fun accountScreen_whenLoggedOut_displaysLoginPrompt() {
         composeTestRule.setContent {
