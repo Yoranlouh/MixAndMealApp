@@ -225,7 +225,7 @@ object ApiService {
 
     // In ApiService.kt
     suspend fun recipeSearchRequest(request : RecipeSearchRequest) : List<RecipeCardResponse> =
-        client.get("$domain/search-recipes") {contentType(ContentType.Application.Json)
+        client.post("$domain/search-recipes") {contentType(ContentType.Application.Json)
             setBody(request)
         }.body()
 
