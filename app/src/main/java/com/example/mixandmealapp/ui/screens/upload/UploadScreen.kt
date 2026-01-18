@@ -81,6 +81,7 @@ import com.example.mixandmealapp.ui.viewmodel.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.io.File
+import androidx.core.net.toUri
 
 data class Ingredient(
     val name: String,
@@ -196,7 +197,7 @@ fun UploadScreen(
                     }
 
                     if (recipeToEdit.images.isNotEmpty()) {
-                        coverPhotoUri = Uri.parse(recipeToEdit.images.first().imageUrl)
+                        coverPhotoUri = recipeToEdit.images.first().imageUrl.toUri()
                     }
 
 
@@ -656,11 +657,13 @@ fun UploadScreen(
                             }
                         )
 
-                        ApiService.updateRecipe(
+                        val update = async{ApiService.updateRecipe(
                             tokenToUse.toString(),
                             recipe = request,
-                            images = filesToUpload,
-                        )
+                        )}
+                        val recipeId = update.await()
+                        val image = async { ApiService.updateImage(tokenToUse.toString(), filesToUpload, recipeId.id!!) }
+                        image.await()
                         showSuccessDialog = true
 
                     } catch (e: Exception) {

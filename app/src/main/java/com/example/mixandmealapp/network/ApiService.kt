@@ -180,22 +180,14 @@ object ApiService {
         }.body()!!
     }
 
-    suspend fun updateRecipe(
+    suspend fun updateImage(
         token: String?,
-        recipe: RecipeUploadRequest,
-        images: List<File>
-    ): RecipeResponse {
+        images: List<File>,
+        id:Int
+    ){
         return client.submitFormWithBinaryData(
-            url = "$domain/update-recipe",
+            url = "$domain/update-image/$id",
             formData = formData {
-                // JSON part
-                append(
-                    "recipe",
-                    Json.encodeToString(recipe),
-                    Headers.build {
-                        append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    }
-                )
                 // Image parts
                 images.forEachIndexed { index, bytes ->
                     append(
@@ -210,6 +202,16 @@ object ApiService {
             }
         ) {
             header("Authorization", "Bearer $token")
+        }.body()
+    }
+    suspend fun updateRecipe(
+        token: String?,
+        recipe: RecipeUploadRequest,
+    ): RecipeResponse {
+        return client.post("$domain/update-recipe"){
+            header("Authorization", "Bearer $token")
+            contentType(ContentType.Application.Json)
+            setBody(recipe)
         }.body()
     }
 
