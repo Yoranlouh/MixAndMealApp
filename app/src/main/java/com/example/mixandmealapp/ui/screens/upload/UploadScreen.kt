@@ -80,7 +80,7 @@ data class Ingredient(
     val name: String,
     var amount: Double? = null,
     var unitType: String = "",
-    var isConfirmed: Boolean = false
+    var isConfirmed: Boolean = true
 )
 
 @Composable
@@ -475,7 +475,7 @@ fun UploadScreen(
             OutlinedButton(
                 onClick = {
                     // Voeg een leeg ingrediëntveld toe
-                    ingredients.add(Ingredient(name = "", amount = null, unitType = "", isConfirmed = false))
+                    ingredients.add(Ingredient(name = "", amount = 100.0, unitType = "KG", isConfirmed = false))
                     newIngredientName = ""
                 },
                 modifier = Modifier.fillMaxWidth(),
