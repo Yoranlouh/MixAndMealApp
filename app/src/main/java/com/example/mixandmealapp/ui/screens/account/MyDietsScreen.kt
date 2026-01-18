@@ -44,7 +44,6 @@ fun DietScreen(
 
     val uiState by vm.uiState.collectAsState()
     var newDiet by remember { mutableStateOf("") }
-    val user by homeViewModel.role.collectAsState()
 
     Scaffold(
         topBar = {
@@ -101,8 +100,8 @@ fun DietScreen(
             // Diet lijst (use items from ViewModel)
             uiState.items.forEach { item ->
                 Labels(
-                    label = item.displayName,
-                    onRemove = { vm.removeItem(item.displayName) }
+                    label = item.dietName,
+                    onRemove = { vm.removeItem(item) }
                 )
             }
 

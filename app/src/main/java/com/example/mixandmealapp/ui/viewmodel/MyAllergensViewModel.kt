@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class AllergensUiState(
-    val items: List<AllergenEntry> = emptyList(),
+    val items: List<UserAllergenEntry> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -33,7 +33,7 @@ class AllergensViewModel(
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             try {
                 val token = tokenRepo.getTokenOrDefault()
-                val list = repo.getAllAllergens()
+                val list = repo.getAllergens(token)
                 _uiState.value = _uiState.value.copy(items = list, isLoading = false)
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(error = t.message, isLoading = false)
@@ -41,12 +41,12 @@ class AllergensViewModel(
         }
     }
 
-    fun addItem(allergen: AllergenEntry) {
+    fun addItem(allergen: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             try {
                 val token = tokenRepo.getTokenOrDefault()
-                val updatedList = repo.addAllergen(token, AllergenIDRequest(allergen.displayName))
+                val updatedList = repo.addAllergen(token, AllergenIDRequest(allergen))
                 _uiState.value = _uiState.value.copy(items = updatedList, isLoading = false, error = null)
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(error = t.message, isLoading = false)
@@ -54,12 +54,12 @@ class AllergensViewModel(
         }
     }
 
-    fun removeItem(allergen: AllergenEntry) {
+    fun removeItem(id: UserAllergenEntry) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             try {
                 val token = tokenRepo.getTokenOrDefault()
-                val updatedList = repo.removeAllergen(token, AllergenIDRequest(allergen.displayName))
+                val updatedList = repo.removeAllergen(token, AllergenIDRequest(id.allergenName))
                 _uiState.value = _uiState.value.copy(items = updatedList, isLoading = false, error = null)
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(error = t.message, isLoading = false)

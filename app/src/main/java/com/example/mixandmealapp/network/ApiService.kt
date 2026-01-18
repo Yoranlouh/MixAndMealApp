@@ -75,31 +75,31 @@ object ApiService {
             header("Authorization", "Bearer $token")
         }.body()
 
-    suspend fun getDietsForUser(token: String?): List<DietEntry> =
+    suspend fun getDietsForUser(token: String?): List<UserDietEntry> =
         client.get("$domain/user/diets") {
             header("Authorization", "Bearer $token")
         }.body()
 
-    suspend fun addDietForUser(token: String?, diet: DietsIDRequest): List<DietEntry> =
+    suspend fun addDietForUser(token: String?, diet: DietsIDRequest): List<UserDietEntry> =
         client.post("$domain/user/diets") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(diet)
         }.body()
 
-    suspend fun removeDietForUser(token: String?, diet: DietsIDRequest): List<DietEntry> =
+    suspend fun removeDietForUser(token: String?, diet: DietsIDRequest): List<UserDietEntry> =
         client.delete("$domain/user/diets") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(diet)
         }.body()
 
-    suspend fun getAllergensForUser(token: String?): List<AllergenEntry> =
+    suspend fun getAllergensForUser(token: String?): List<UserAllergenEntry> =
         client.get("$domain/user/allergens") {
             header("Authorization", "Bearer $token")
         }.body()
 
-    suspend fun addAllergenForUser(token: String?, allergen: AllergenIDRequest): List<AllergenEntry> =
+    suspend fun addAllergenForUser(token: String?, allergen: AllergenIDRequest): List<UserAllergenEntry> =
         client.post("$domain/user/allergens") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
@@ -109,18 +109,22 @@ object ApiService {
     suspend fun removeAllergenForUser(
         token: String?,
         allergen: AllergenIDRequest
-    ): List<AllergenEntry> =
+    ): List<UserAllergenEntry> =
         client.delete("$domain/user/allergens") {
             header("Authorization", "Bearer $token")
             contentType(ContentType.Application.Json)
             setBody(allergen)
         }.body()
 
-    suspend fun getAllAllergens(): List<AllergenEntry> =
-        client.get("$domain/allergens").body()
+    suspend fun getAllAllergens(): List<UserAllergenEntry> =
+        client.get("$domain/diets") {
+            header("Authorization", "Bearer $")
+        }.body()
 
-    suspend fun getAllDiets(): List<DietEntry> =
-        client.get("$domain/diets").body()
+    suspend fun getAllDiets(): List<UserDietEntry> =
+        client.get("$domain/diets") {
+            header("Authorization", "Bearer $")
+        }.body()
 
     suspend fun getFavouritesForUser(token: String?): List<RecipeCardResponse> =
         client.get("$domain/favourites") {

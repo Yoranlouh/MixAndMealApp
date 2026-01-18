@@ -3,6 +3,8 @@ package com.example.mixandmealapp.repository
 import android.util.Log
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
+import com.example.mixandmealapp.models.entries.UserAllergenEntry
+import com.example.mixandmealapp.models.entries.UserDietEntry
 import com.example.mixandmealapp.models.entries.UserFridgeEntry
 import com.example.mixandmealapp.models.requests.AllergenIDRequest
 import com.example.mixandmealapp.models.requests.DietsIDRequest
@@ -48,35 +50,41 @@ class UserRepository() {
         }
     }
 
-    suspend fun getDiets(token: String?): List<DietEntry> {
+    suspend fun getDiets(token: String?
+    ): List<UserDietEntry> {
         return ApiService.getDietsForUser(token)
     }
 
-    suspend fun addDiet(token: String, diet: DietsIDRequest) : List<DietEntry> {
-        return ApiService.addDietForUser(token, diet)
+    suspend fun addDiet(token: String, dietId: DietsIDRequest
+    ) : List<UserDietEntry> {
+        return ApiService.addDietForUser(token, dietId)
     }
 
-    suspend fun removeDiet(token: String, diet: DietsIDRequest) : List<DietEntry> {
-        return ApiService.removeDietForUser(token, diet)
+    suspend fun removeDiet(token: String, dietId: DietsIDRequest
+    ) : List<UserDietEntry> {
+        return ApiService.removeDietForUser(token, dietId)
     }
 
-    suspend fun getAllergens(token: String?): List<AllergenEntry> {
+    suspend fun getAllergens(token: String?): List<UserAllergenEntry> {
         return ApiService.getAllergensForUser(token)
     }
 
-    suspend fun addAllergen(token: String, allergen: AllergenIDRequest) : List<AllergenEntry> {
+    suspend fun addAllergen(token: String?, allergen: AllergenIDRequest
+    ) : List<UserAllergenEntry> {
         return ApiService.addAllergenForUser(token, allergen)
     }
 
-    suspend fun removeAllergen(token: String, allergen: AllergenIDRequest) : List<AllergenEntry> {
+    suspend fun removeAllergen(token: String, allergen: AllergenIDRequest
+    ) : List<UserAllergenEntry> {
         return ApiService.removeAllergenForUser(token, allergen)
     }
 
-    suspend fun getAllAllergens(): List<AllergenEntry> {
+    suspend fun getAllAllergens(
+    ): List<UserAllergenEntry> {
         return ApiService.getAllAllergens()
     }
 
-    suspend fun getAllDiets(): List<DietEntry> {
+    suspend fun getAllDiets(): List<UserDietEntry> {
         return ApiService.getAllDiets()
     }
 

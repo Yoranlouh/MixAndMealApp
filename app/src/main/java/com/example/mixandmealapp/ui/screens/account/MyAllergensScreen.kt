@@ -108,7 +108,7 @@ fun AllergensScreen(
             // Allergenenlijst (use items from ViewModel)
             uiState.items.forEach { item ->
                 Labels(
-                    label = item.displayName,
+                    label = item.allergenName,
                     onRemove = { vm.removeItem(item) }
                 )
             }

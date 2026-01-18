@@ -8,7 +8,8 @@ import com.example.mixandmealapp.ui.navigation.AppNavigation
 
 class FridgeRepository {
 
-    suspend fun getFridgeItems(token: String?): List<UserFridgeEntry>{
+    suspend fun getFridgeItems(token: String?
+    ): List<UserFridgeEntry>{
         return ApiService.getFridge(token)
     }
 

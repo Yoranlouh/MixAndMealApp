@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.mixandmealapp.data.TokenRepository
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
+import com.example.mixandmealapp.models.entries.UserAllergenEntry
+import com.example.mixandmealapp.models.entries.UserDietEntry
 import com.example.mixandmealapp.models.requests.AllergenIDRequest
 import com.example.mixandmealapp.models.requests.DietsIDRequest
 import com.example.mixandmealapp.repository.UserRepository
@@ -24,10 +26,10 @@ data class AccountUiState(
     val isSaving: Boolean = false,
     val error: String? = null,
     val saved: Boolean = false,
-    val userAllergens: List<AllergenEntry> = emptyList(),
-    val userDiets: List<DietEntry> = emptyList(),
-    val allAvailableAllergens: List<AllergenEntry> = emptyList(),
-    val allAvailableDiets: List<DietEntry> = emptyList()
+    val userAllergens: List<UserAllergenEntry> = emptyList(),
+    val userDiets: List<UserDietEntry> = emptyList(),
+    val allAvailableAllergens: List<UserAllergenEntry> = emptyList(),
+    val allAvailableDiets: List<UserDietEntry> = emptyList()
 )
 
 class AccountViewModel(

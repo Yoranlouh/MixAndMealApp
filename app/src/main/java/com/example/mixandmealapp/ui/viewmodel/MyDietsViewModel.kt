@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class DietsUiState(
-    val items: List<DietEntry> = emptyList(),
+    val items: List<UserDietEntry> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
@@ -59,12 +59,12 @@ class MyDietViewModel(
         }
     }
 
-    fun removeItem(diet: String) {
+    fun removeItem(id: UserDietEntry) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
             try {
                 val token = tokenRepo.getTokenOrDefault()
-                val updatedList = repo.removeDiet(token, DietsIDRequest(diet))
+                val updatedList = repo.removeDiet(token, DietsIDRequest(id.dietName))
                 _uiState.value = _uiState.value.copy(items = updatedList, isLoading = false, error = null)
             } catch (t: Throwable) {
                 _uiState.value = _uiState.value.copy(error = t.message, isLoading = false)

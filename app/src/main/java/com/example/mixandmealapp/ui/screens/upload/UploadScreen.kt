@@ -56,6 +56,7 @@ import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.entries.IngredientUnitEntry
 import com.example.mixandmealapp.models.entries.RecipeImageEntry
+import com.example.mixandmealapp.models.entries.UserDietEntry
 import com.example.mixandmealapp.models.enums.Difficulty
 import com.example.mixandmealapp.models.enums.KitchenStyle
 import com.example.mixandmealapp.models.enums.MealType
@@ -181,7 +182,7 @@ fun UploadScreen(
                     selectedKitchenStyles = setOf(recipeToEdit.kitchenStyle)
                     selectedMealTypes = setOf(recipeToEdit.mealType)
                     selectedAllergens = recipeToEdit.allergens.map { it.name }.toSet()
-                    selectedDiets = recipeToEdit.diets.map { it.displayName }.toSet()
+                    selectedDiets = recipeToEdit.diets.map { it.dietName }.toSet()
 
                     // Map the cooking time to your segmented button index
                     selectedCookingDuration = when (recipeToEdit.cookingTime) {
@@ -638,7 +639,7 @@ fun UploadScreen(
                             mealType = selectedMealTypes.firstOrNull(),
                             kitchenStyle = selectedKitchenStyles.firstOrNull(),
                             diets = selectedDiets.map { dietName ->
-                                DietEntry(id = 0, displayName = dietName, description = "")
+                                UserDietEntry(Id = 0, dietName = dietName, description = "")
                             },
                             allergens = selectedAllergens.map { allergenName ->
                                 AllergenEntry(name = allergenName, id = 0, displayName = allergenName, description = "")
