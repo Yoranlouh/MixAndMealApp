@@ -1,32 +1,42 @@
 package com.example.mixandmealapp.ui.screens.search
 
+import android.content.Context
+import android.content.Intent
+import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.mixandmealapp.R
 import com.example.mixandmealapp.models.entries.AllergenEntry
 import com.example.mixandmealapp.models.entries.DietEntry
 import com.example.mixandmealapp.models.enums.Difficulty
@@ -37,40 +47,31 @@ import com.example.mixandmealapp.ui.components.PopularRecipeCard
 import com.example.mixandmealapp.ui.screens.upload.FilterSection
 import com.example.mixandmealapp.ui.theme.BrandOrange
 import com.example.mixandmealapp.ui.viewmodel.SearchViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.KoinApplication.Companion.init
 import java.util.Locale
-import java.util.Locale.getDefault
-
 
 @Composable
 fun SearchScreen(
     onSearch: (RecipeSearchRequest) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = koinViewModel(),
-    navController: NavController
+    navController: NavController,
+    onSpeechRecognize: (callback: (String?) -> Unit) -> Unit
 ) {
-
     val context = LocalContext.current
     var tts: TextToSpeech? by remember { mutableStateOf(null) }
-    val noInstructionsMessage = stringResource(id = com.example.mixandmealapp.R.string.no_instructions_message)
-
+    val noInstructionsMessage = stringResource(id = R.string.no_instructions_message)
 
     DisposableEffect(Unit) {
         val ttsInstance = TextToSpeech(context) { status ->
+            // TTS initialization callback
         }
         tts = ttsInstance
         onDispose {
             ttsInstance.stop()
             ttsInstance.shutdown()
         }
-    }
-
-
-    LaunchedEffect(Unit) {
-        viewModel.reloadSearchScreen()
     }
 
     val scope = rememberCoroutineScope()
@@ -108,6 +109,7 @@ fun SearchScreen(
             AllergenEntry(15, "corn", "Corn", "")
         )
     }
+
     // Diet list
     val dietList = remember {
         listOf(
@@ -133,8 +135,7 @@ fun SearchScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // First row: search field + search button
-
+        // Search + Voice row
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -147,24 +148,43 @@ fun SearchScreen(
                 onValueChange = { searchQuery = it },
                 label = { Text("Search recipes") },
                 modifier = Modifier.weight(1f),
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = {
+                            onSpeechRecognize { result ->
+                                if (result != null) {
+                                    searchQuery = result
+                                } else {
+                                    Toast.makeText(context, "No speech detected", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Mic,
+                            contentDescription = "Voice Search"
+                        )
+                    }
+                }
             )
 
             Button(
                 onClick = {
                     scope.launch {
                         val difficultyToSend = selectedDifficulty?.uppercase()
-
                         onSearch(
                             RecipeSearchRequest(
-                                searchQuery,
-                                difficultyToSend,
-                                selectedMealType,
-                                selectedKitchenStyle,
-                                maxCookingTime,
-                                selectedDiets,
-                                selectedAllergens,
-                                emptyList(),
+                                partialTitle = searchQuery,
+                                difficulty = difficultyToSend,
+                                mealType = selectedMealType,
+                                kitchenStyle = selectedKitchenStyle,
+                                maxCookingTime = maxCookingTime,
+                                diets = selectedDiets,
+                                allergens = selectedAllergens,
+                                ingredients = emptyList()
                             )
                         )
                     }
@@ -173,24 +193,9 @@ fun SearchScreen(
             ) {
                 Text("Search")
             }
-            IconButton(onClick = {
-                val textToRead = if (instructions == "Not found" || instructions.isBlank()) {
-                    noInstructionsMessage
-                } else {
-                    instructions
-                }
-                tts?.speak(textToRead, TextToSpeech.QUEUE_FLUSH, null, null)
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.VolumeUp,
-                    contentDescription = stringResource(id = com.example.mixandmealapp.R.string.read_instructions),
-                    tint = BrandOrange
-                )
-            }
         }
 
-
-        // Second row: max cooking time
+        // Max cooking time input
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -200,165 +205,130 @@ fun SearchScreen(
         ) {
             OutlinedTextField(
                 value = maxCookingTime?.toString() ?: "",
-                onValueChange = {
-                    maxCookingTime = it.toIntOrNull()
+                onValueChange = { value ->
+                    maxCookingTime = value.toIntOrNull()
                 },
                 label = { Text("Max cooking time (min)") },
-                modifier = Modifier.weight(1f),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true
+                singleLine = true,
+                modifier = Modifier.weight(1f)
             )
         }
 
-        // Difficulty Filter Buttons
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Text(
-                text = "Difficulty",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                items(Difficulty.entries.toTypedArray()) { difficulty ->
-                    FilterChip(
-                        selected = selectedDifficulty == difficulty.difficultyName,
-                        onClick = { selectedDifficulty = difficulty.difficultyName },
-                        label = { Text(difficulty.difficultyName.replaceFirstChar { it.uppercase() }) }
-                    )
-                }
-            }
-        }
+        // Difficulty section
+        FilterSection(
+            title = "Difficulty",
+            chips = Difficulty.entries.map { it.difficultyName },
+            selected = selectedDifficulty,
+            onSelect = { selectedDifficulty = it }
+        )
 
-        // Kitchen Style Filter Buttons
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Text(
-                text = "Kitchen Style",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                items(KitchenStyle.entries.toTypedArray()) { style ->
-                    FilterChip(
-                        selected = selectedKitchenStyle == style.kitchenName,
-                        onClick = { selectedKitchenStyle = style.kitchenName },
-                        label = { Text(style.kitchenName.replaceFirstChar { it.uppercase() }) },
-                        modifier = Modifier
-                    )
-                }
-            }
-        }
+        // Kitchen style section
+        FilterSection(
+            title = "Kitchen Style",
+            chips = KitchenStyle.entries.map { it.kitchenName },
+            selected = selectedKitchenStyle,
+            onSelect = { selectedKitchenStyle = it }
+        )
 
-        // Meal Type Filter Buttons
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Text(
-                text = "Meal Type",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                items(MealType.entries.toTypedArray()) { mealType ->
-                    FilterChip(
-                        selected = selectedMealType == mealType.mealTypeName,
-                        onClick = { selectedMealType = mealType.mealTypeName },
-                        label = { Text(mealType.mealTypeName.replaceFirstChar { it.uppercase() }) },
-                        modifier = Modifier
-                    )
-                }
-            }
-        }
+        // Meal type section
+        FilterSection(
+            title = "Meal Type",
+            chips = MealType.entries.map { it.mealTypeName },
+            selected = selectedMealType,
+            onSelect = { selectedMealType = it }
+        )
 
-//         Allergen Filter Buttons (multi-select)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Text(
-                text = "Exclude Allergens (${selectedAllergens.size})",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                items(allergenList) { allergen ->
-                    FilterChip(
-                        selected = selectedAllergens.contains(allergen.id),
-                        onClick = {
-                            selectedAllergens = if (selectedAllergens.contains(allergen.id)) {
-                                selectedAllergens - allergen.id
-                            } else {
-                                selectedAllergens + allergen.id
-                            }
-                        },
-                        label = {
-                            Text(
-                                text = allergen.displayName,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    )
+        // Allergen section
+        MultiSelectFilterSection(
+            title = "Exclude Allergens (${selectedAllergens.size})",
+            entries = allergenList.map { it.id to it.displayName },
+            selected = selectedAllergens,
+            onToggle = { id ->
+                selectedAllergens = if (selectedAllergens.contains(id)) {
+                    selectedAllergens - id
+                } else {
+                    selectedAllergens + id
                 }
             }
-        }
-// Diet Filter Buttons (multi-select)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            Text(
-                text = "Diets (${selectedDiets.size})",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                items(dietList) { diet ->
-                    FilterChip(
-                        selected = selectedDiets.contains(diet.id),
-                        onClick = {
-                            selectedDiets = if (selectedDiets.contains(diet.id)) {
-                                selectedDiets - diet.id
-                            } else {
-                                selectedDiets + diet.id
-                            }
-                        },
-                        label = {
-                            Text(
-                                text = diet.displayName,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    )
+        )
+
+        // Diet section
+        MultiSelectFilterSection(
+            title = "Diets (${selectedDiets.size})",
+            entries = dietList.map { it.id to it.displayName },
+            selected = selectedDiets,
+            onToggle = { id ->
+                selectedDiets = if (selectedDiets.contains(id)) {
+                    selectedDiets - id
+                } else {
+                    selectedDiets + id
                 }
+            }
+        )
+    }
+}
+
+@Composable
+private fun FilterSection(
+    title: String,
+    chips: List<String>,
+    selected: String?,
+    onSelect: (String?) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(chips) { name ->
+                FilterChip(
+                    selected = selected == name,
+                    onClick = { onSelect(name) },
+                    label = { Text(name.replaceFirstChar { it.uppercase() }) }
+                )
             }
         }
     }
 }
 
+@Composable
+private fun MultiSelectFilterSection(
+    title: String,
+    entries: List<Pair<Int, String>>,
+    selected: List<Int>,
+    onToggle: (Int) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            items(entries) { (id, name) ->
+                FilterChip(
+                    selected = id in selected,
+                    onClick = { onToggle(id) },
+                    label = {
+                        Text(
+                            text = name,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
