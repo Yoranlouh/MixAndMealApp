@@ -34,14 +34,14 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     var uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
-    fun searchRecipes(query: String) {
+    fun searchRecipes(query: String, maxCookingTime: Int?) {
         viewModelScope.launch {
             val request = RecipeSearchRequest(
                 query, 
                 null, 
                 null, 
                 null, 
-                null, 
+                maxCookingTime,
                 emptyList(),
                 emptyList(),
                 emptyList()

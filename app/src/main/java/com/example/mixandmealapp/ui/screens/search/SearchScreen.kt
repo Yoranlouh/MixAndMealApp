@@ -31,7 +31,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SearchScreen(
-    onSearch: (String) -> Unit,
+    onSearch: (String, Int?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = koinViewModel(),
     navController: NavController,
@@ -42,7 +42,8 @@ fun SearchScreen(
 //    val recipes by viewModel.filteredRecipes.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 //    val searchQuery by viewModel.searchQuery.collectAsState()
-//    val maxCookingTime by viewModel.maxCookingTime.collectAsState()
+    var maxCookingTime: Int? by remember { mutableStateOf(0) }
+
 //    val selectedFilters by viewModel.selectedFilters.collectAsState()
 //    var isLoading by viewModel.isLoading.collectAsState()
 //
@@ -64,25 +65,25 @@ fun SearchScreen(
             Button(
                 onClick = {
                     scope.launch {
-                        onSearch(searchQuery)
+                        onSearch(
+                            searchQuery,
+                            maxCookingTime,
+
+                            )
                     }
                 }
             ) {
                 Text("Search")
             }
         }
-        Spacer(modifier = Modifier.width(8.dp))
-//            OutlinedTextField(
-//                value = maxCookingTime.toString(),
-//                onValueChange = {
-//                    val time = it.toIntOrNull() ?: 0
-//                    viewModel.updateMaxCookingTime(time)
-//                },
-//                label = { Text("Max time (min)") },
-//                modifier = Modifier.width(120.dp),
-//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-//            )
-//        }
+            OutlinedTextField(
+                value = maxCookingTime.toString(),
+                onValueChange = { maxCookingTime = it.toIntOrNull() },
+                label = { Text("Max time (min)") },
+                modifier = Modifier.width(120.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+        }
 //
 //        // Filter chips sections
 //        FilterSection(
@@ -192,7 +193,7 @@ fun SearchScreen(
 //        }
 //    }
     }
-}
+
 
 //
 //@Composable
